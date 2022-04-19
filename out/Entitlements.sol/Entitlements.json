@@ -1,0 +1,869 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220bfe2cf3db5ca93d0b91a74058b13c3ce12f238400aa779119e5b9d67ceaf8db964736f6c634300080a0033",
+    "sourceMap": "53:1518:43:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;53:1518:43;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220bfe2cf3db5ca93d0b91a74058b13c3ce12f238400aa779119e5b9d67ceaf8db964736f6c634300080a0033",
+    "sourceMap": "53:1518:43:-:0;;;;;;;;",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/regynald/Code/hook/protocol/src/lib/Entitlements.sol",
+    "exportedSymbols": {
+      "Entitlements": [
+        16768
+      ],
+      "Signatures": [
+        17079
+      ]
+    },
+    "id": 16769,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 16707,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".10"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:43"
+      },
+      {
+        "absolutePath": "/Users/regynald/Code/hook/protocol/src/lib/Signatures.sol",
+        "file": "./Signatures.sol",
+        "id": 16708,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 16769,
+        "sourceUnit": 17080,
+        "src": "25:26:43",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Entitlements",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "id": 16768,
+        "linearizedBaseContracts": [
+          16768
+        ],
+        "name": "Entitlements",
+        "nameLocation": "61:12:43",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": true,
+            "id": 16725,
+            "mutability": "constant",
+            "name": "_ENTITLEMENT_TYPEHASH",
+            "nameLocation": "215:21:43",
+            "nodeType": "VariableDeclaration",
+            "scope": 16768,
+            "src": "190:292:43",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 16709,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "190:7:43",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "arguments": [
+                {
+                  "arguments": [
+                    {
+                      "arguments": [
+                        {
+                          "hexValue": "456e7469746c656d656e7428",
+                          "id": 16715,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "283:14:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_aea908b72072576b5c1b66b767a690b0c543a8a3ec3c3a133a1c31c6d3c08244",
+                            "typeString": "literal_string \"Entitlement(\""
+                          },
+                          "value": "Entitlement("
+                        },
+                        {
+                          "hexValue": "616464726573732062656e6566696369616c4f776e65722c",
+                          "id": 16716,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "309:26:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_7d7a029740c4e6490356ea26aaa80a2268beae07b2ea1ab2da6e9cd9a99029df",
+                            "typeString": "literal_string \"address beneficialOwner,\""
+                          },
+                          "value": "address beneficialOwner,"
+                        },
+                        {
+                          "hexValue": "61646472657373206f70657261746f722c",
+                          "id": 16717,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "347:19:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_ed7b6523255050ee8fa2c37c7877523f28e452d25c96af02e27e6611efd8c700",
+                            "typeString": "literal_string \"address operator,\""
+                          },
+                          "value": "address operator,"
+                        },
+                        {
+                          "hexValue": "61646472657373206e6674436f6e74726163742c",
+                          "id": 16718,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "378:22:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_5916682adb9e7ff774e89360426957506971d58136edbd5a92ab35a0d60a665d",
+                            "typeString": "literal_string \"address nftContract,\""
+                          },
+                          "value": "address nftContract,"
+                        },
+                        {
+                          "hexValue": "75696e74323536206e6674546f6b656e49642c",
+                          "id": 16719,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "412:21:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_4ab494e70f4cf23b7abc418e74bea71fd20b4c37c84ef1eeec9eae582b252fbd",
+                            "typeString": "literal_string \"uint256 nftTokenId,\""
+                          },
+                          "value": "uint256 nftTokenId,"
+                        },
+                        {
+                          "hexValue": "75696e7432353620657870697279",
+                          "id": 16720,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "445:16:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_4d6a2ef6010e37d6ee069b276599c65977a9cc54143724dde11f72619dde6c91",
+                            "typeString": "literal_string \"uint256 expiry\""
+                          },
+                          "value": "uint256 expiry"
+                        },
+                        {
+                          "hexValue": "29",
+                          "id": 16721,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "471:3:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_59d76dc3b33357eda30db1508968fbb18f21b9cd2442f1559b20154ddaa4d7ed",
+                            "typeString": "literal_string \")\""
+                          },
+                          "value": ")"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_stringliteral_aea908b72072576b5c1b66b767a690b0c543a8a3ec3c3a133a1c31c6d3c08244",
+                            "typeString": "literal_string \"Entitlement(\""
+                          },
+                          {
+                            "typeIdentifier": "t_stringliteral_7d7a029740c4e6490356ea26aaa80a2268beae07b2ea1ab2da6e9cd9a99029df",
+                            "typeString": "literal_string \"address beneficialOwner,\""
+                          },
+                          {
+                            "typeIdentifier": "t_stringliteral_ed7b6523255050ee8fa2c37c7877523f28e452d25c96af02e27e6611efd8c700",
+                            "typeString": "literal_string \"address operator,\""
+                          },
+                          {
+                            "typeIdentifier": "t_stringliteral_5916682adb9e7ff774e89360426957506971d58136edbd5a92ab35a0d60a665d",
+                            "typeString": "literal_string \"address nftContract,\""
+                          },
+                          {
+                            "typeIdentifier": "t_stringliteral_4ab494e70f4cf23b7abc418e74bea71fd20b4c37c84ef1eeec9eae582b252fbd",
+                            "typeString": "literal_string \"uint256 nftTokenId,\""
+                          },
+                          {
+                            "typeIdentifier": "t_stringliteral_4d6a2ef6010e37d6ee069b276599c65977a9cc54143724dde11f72619dde6c91",
+                            "typeString": "literal_string \"uint256 expiry\""
+                          },
+                          {
+                            "typeIdentifier": "t_stringliteral_59d76dc3b33357eda30db1508968fbb18f21b9cd2442f1559b20154ddaa4d7ed",
+                            "typeString": "literal_string \")\""
+                          }
+                        ],
+                        "expression": {
+                          "id": 16713,
+                          "name": "abi",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -1,
+                          "src": "257:3:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_abi",
+                            "typeString": "abi"
+                          }
+                        },
+                        "id": 16714,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "encodePacked",
+                        "nodeType": "MemberAccess",
+                        "src": "257:16:43",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_abiencodepacked_pure$__$returns$_t_bytes_memory_ptr_$",
+                          "typeString": "function () pure returns (bytes memory)"
+                        }
+                      },
+                      "id": 16722,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "257:223:43",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_memory_ptr",
+                        "typeString": "bytes memory"
+                      }
+                    }
+                  ],
+                  "expression": {
+                    "argumentTypes": [
+                      {
+                        "typeIdentifier": "t_bytes_memory_ptr",
+                        "typeString": "bytes memory"
+                      }
+                    ],
+                    "id": 16712,
+                    "name": "keccak256",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": -8,
+                    "src": "247:9:43",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                      "typeString": "function (bytes memory) pure returns (bytes32)"
+                    }
+                  },
+                  "id": 16723,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "functionCall",
+                  "lValueRequested": false,
+                  "names": [],
+                  "nodeType": "FunctionCall",
+                  "src": "247:234:43",
+                  "tryCall": false,
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                ],
+                "id": 16711,
+                "isConstant": false,
+                "isLValue": false,
+                "isPure": true,
+                "lValueRequested": false,
+                "nodeType": "ElementaryTypeNameExpression",
+                "src": "239:7:43",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_type$_t_uint256_$",
+                  "typeString": "type(uint256)"
+                },
+                "typeName": {
+                  "id": 16710,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "239:7:43",
+                  "typeDescriptions": {}
+                }
+              },
+              "id": 16724,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "typeConversion",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "239:243:43",
+              "tryCall": false,
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "canonicalName": "Entitlements.Entitlement",
+            "id": 16741,
+            "members": [
+              {
+                "constant": false,
+                "id": 16728,
+                "mutability": "mutable",
+                "name": "beneficialOwner",
+                "nameLocation": "678:15:43",
+                "nodeType": "VariableDeclaration",
+                "scope": 16741,
+                "src": "670:23:43",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 16727,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "670:7:43",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 16731,
+                "mutability": "mutable",
+                "name": "operator",
+                "nameLocation": "812:8:43",
+                "nodeType": "VariableDeclaration",
+                "scope": 16741,
+                "src": "804:16:43",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 16730,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "804:7:43",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 16734,
+                "mutability": "mutable",
+                "name": "nftContract",
+                "nameLocation": "899:11:43",
+                "nodeType": "VariableDeclaration",
+                "scope": 16741,
+                "src": "891:19:43",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 16733,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "891:7:43",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 16737,
+                "mutability": "mutable",
+                "name": "nftTokenId",
+                "nameLocation": "979:10:43",
+                "nodeType": "VariableDeclaration",
+                "scope": 16741,
+                "src": "971:18:43",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 16736,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "971:7:43",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 16740,
+                "mutability": "mutable",
+                "name": "expiry",
+                "nameLocation": "1096:6:43",
+                "nodeType": "VariableDeclaration",
+                "scope": 16741,
+                "src": "1088:14:43",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 16739,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1088:7:43",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Entitlement",
+            "nameLocation": "531:11:43",
+            "nodeType": "StructDefinition",
+            "scope": 16768,
+            "src": "524:585:43",
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 16766,
+              "nodeType": "Block",
+              "src": "1253:315:43",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "arguments": [
+                          {
+                            "id": 16752,
+                            "name": "_ENTITLEMENT_TYPEHASH",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 16725,
+                            "src": "1349:21:43",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          {
+                            "expression": {
+                              "id": 16753,
+                              "name": "entitlement",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 16744,
+                              "src": "1384:11:43",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
+                                "typeString": "struct Entitlements.Entitlement memory"
+                              }
+                            },
+                            "id": 16754,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "beneficialOwner",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 16728,
+                            "src": "1384:27:43",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "expression": {
+                              "id": 16755,
+                              "name": "entitlement",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 16744,
+                              "src": "1425:11:43",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
+                                "typeString": "struct Entitlements.Entitlement memory"
+                              }
+                            },
+                            "id": 16756,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "operator",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 16731,
+                            "src": "1425:20:43",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "expression": {
+                              "id": 16757,
+                              "name": "entitlement",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 16744,
+                              "src": "1459:11:43",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
+                                "typeString": "struct Entitlements.Entitlement memory"
+                              }
+                            },
+                            "id": 16758,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "nftContract",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 16734,
+                            "src": "1459:23:43",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "expression": {
+                              "id": 16759,
+                              "name": "entitlement",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 16744,
+                              "src": "1496:11:43",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
+                                "typeString": "struct Entitlements.Entitlement memory"
+                              }
+                            },
+                            "id": 16760,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "nftTokenId",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 16737,
+                            "src": "1496:22:43",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          {
+                            "expression": {
+                              "id": 16761,
+                              "name": "entitlement",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 16744,
+                              "src": "1532:11:43",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
+                                "typeString": "struct Entitlements.Entitlement memory"
+                              }
+                            },
+                            "id": 16762,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "expiry",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 16740,
+                            "src": "1532:18:43",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          ],
+                          "expression": {
+                            "id": 16750,
+                            "name": "abi",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": -1,
+                            "src": "1325:3:43",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_abi",
+                              "typeString": "abi"
+                            }
+                          },
+                          "id": 16751,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "memberName": "encode",
+                          "nodeType": "MemberAccess",
+                          "src": "1325:10:43",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_abiencode_pure$__$returns$_t_bytes_memory_ptr_$",
+                            "typeString": "function () pure returns (bytes memory)"
+                          }
+                        },
+                        "id": 16763,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1325:235:43",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 16749,
+                      "name": "keccak256",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": -8,
+                      "src": "1315:9:43",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                        "typeString": "function (bytes memory) pure returns (bytes32)"
+                      }
+                    },
+                    "id": 16764,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1315:246:43",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "functionReturnParameters": 16748,
+                  "id": 16765,
+                  "nodeType": "Return",
+                  "src": "1308:253:43"
+                }
+              ]
+            },
+            "id": 16767,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getEntitlementStructHash",
+            "nameLocation": "1124:24:43",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 16745,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16744,
+                  "mutability": "mutable",
+                  "name": "entitlement",
+                  "nameLocation": "1168:11:43",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16767,
+                  "src": "1149:30:43",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
+                    "typeString": "struct Entitlements.Entitlement"
+                  },
+                  "typeName": {
+                    "id": 16743,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 16742,
+                      "name": "Entitlement",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 16741,
+                      "src": "1149:11:43"
+                    },
+                    "referencedDeclaration": 16741,
+                    "src": "1149:11:43",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Entitlement_$16741_storage_ptr",
+                      "typeString": "struct Entitlements.Entitlement"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1148:32:43"
+            },
+            "returnParameters": {
+              "id": 16748,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16747,
+                  "mutability": "mutable",
+                  "name": "structHash",
+                  "nameLocation": "1237:10:43",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16767,
+                  "src": "1229:18:43",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 16746,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1229:7:43",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1228:20:43"
+            },
+            "scope": 16768,
+            "src": "1115:453:43",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 16769,
+        "src": "53:1518:43",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:1571:43"
+  }
+}

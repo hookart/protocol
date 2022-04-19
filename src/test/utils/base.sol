@@ -1,0 +1,188 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.10;
+
+import "ds-test/test.sol";
+import "forge-std/Test.sol";
+
+import "./tokens/TestERC721.sol";
+import "./tokens/WETH.sol";
+import "../../HookCoveredCall.sol";
+import "../../HookCoveredCallBeacon.sol";
+import "../../HookCoveredCallFactory.sol";
+import "../../HookCoveredCallImplV1.sol";
+import "../../HookERC721Vault.sol";
+import "../../HookERC721VaultBeacon.sol";
+import "../../HookERC721VaultFactory.sol";
+import "../../HookERC721VaultImplV1.sol";
+import "../../HookProtocol.sol";
+
+import "../../lib/Entitlements.sol";
+import "../../lib/Signatures.sol";
+import "../../mixin/EIP712.sol";
+import "../../mixin/PermissionConstants.sol";
+
+import "../../interfaces/IHookProtocol.sol";
+import "../../interfaces/IHookCoveredCall.sol";
+
+contract HookProtocolTest is Test, EIP712, PermissionConstants {
+    address internal admin;
+    address internal buyer;
+    uint256 internal writerpkey;
+    address internal writer;
+    address internal firstBidder;
+    address internal secondBidder;
+    IHookCoveredCall calls;
+    TestERC721 internal token;
+    WETH internal weth;
+    uint256 internal underlyingTokenId;
+    address internal protocolAddress;
+    HookProtocol protocol;
+    uint256 internal optionTokenId;
+    HookERC721VaultFactory vaultFactory;
+
+    event CallCreated(
+        address writer,
+        address tokenContract,
+        uint256 tokenId,
+        uint256 optionId,
+        uint256 strikePrice,
+        uint256 expiration
+    );
+
+    function setUpAddresses() public {
+        token = new TestERC721();
+        weth = new WETH();
+
+        buyer = address(4);
+        vm.label(buyer, "option buyer");
+
+        writerpkey = uint256(0xBDCE);
+        writer = vm.addr(writerpkey);
+        vm.label(writer, "option writer");
+
+        admin = address(69);
+        vm.label(admin, "contract admin");
+    }
+
+    function setUpFullProtocol() public {
+        protocol = new HookProtocol(admin);
+        protocolAddress = address(protocol);
+        setAddressForEipDomain(protocolAddress);
+
+        // Deploy new vault factory
+        HookERC721VaultImplV1 vaultImpl = new HookERC721VaultImplV1();
+        HookERC721VaultBeacon vaultBeacon = new HookERC721VaultBeacon(
+            address(vaultImpl),
+            address(protocol),
+            PermissionConstants.ADMIN_ROLE
+        );
+        vaultFactory = new HookERC721VaultFactory(
+            protocolAddress,
+            address(vaultBeacon)
+        );
+        vm.prank(address(admin));
+        protocol.setVaultFactory(address(vaultFactory));
+
+        // Deploy a new Covered Call Factory
+        HookCoveredCallImplV1 callImpl = new HookCoveredCallImplV1();
+        HookCoveredCallBeacon callBeacon = new HookCoveredCallBeacon(
+            address(callImpl),
+            address(protocol),
+            PermissionConstants.ADMIN_ROLE
+        );
+        HookCoveredCallFactory callFactory = new HookCoveredCallFactory(
+            protocolAddress,
+            address(callBeacon)
+        );
+        vm.prank(address(admin));
+        protocol.setCoveredCallFactory(address(callFactory));
+        vm.prank(address(admin));
+
+        // make a call factory for our token
+        calls = IHookCoveredCall(
+            callFactory.makeCallInsturment(address(token))
+        );
+    }
+
+    function setUpMintOption() public {
+        vm.startPrank(address(writer));
+
+        // Writer approve covered call
+        token.setApprovalForAll(address(calls), true);
+
+        uint256 expiration = block.timestamp + 3 days;
+
+        vm.expectEmit(true, true, true, true);
+        emit CallCreated(
+            address(writer),
+            address(token),
+            underlyingTokenId,
+            1, // This would be the first option id.
+            1000,
+            expiration
+        );
+        optionTokenId = calls.mint(
+            address(token),
+            underlyingTokenId,
+            1000,
+            expiration,
+            makeSignature(underlyingTokenId, expiration, writer)
+        );
+
+        // Assume that the writer somehow sold the option NFT to the buyer.
+        // Outside of the scope of these tests.
+        calls.safeTransferFrom(writer, buyer, optionTokenId);
+        vm.stopPrank();
+    }
+
+    function setUpOptionBids() public {
+        firstBidder = address(37);
+        vm.label(firstBidder, "First option bidder");
+        vm.deal(address(firstBidder), 1 ether);
+
+        secondBidder = address(38);
+        vm.label(secondBidder, "Second option bidder");
+        vm.deal(address(secondBidder), 1 ether);
+        
+        vm.warp(block.timestamp + 2.1 days);
+
+        vm.prank(firstBidder);
+        uint256 firstBidderStartBalance = firstBidder.balance;
+        calls.bid{value: 0.1 ether}(optionTokenId);
+
+        vm.prank(secondBidder);
+        uint256 secondBidderStartBalance = secondBidder.balance;
+        calls.bid{value: 0.2 ether}(optionTokenId);
+
+        // Fast forward to beyond the expiration date.
+        vm.warp(block.timestamp + 3.1 days);
+    }
+    
+    function makeSignature(
+        uint256 tokenId,
+        uint256 expiry,
+        address writer
+    ) internal returns (Signatures.Signature memory sig) {
+        bytes32 structHash = Entitlements.getEntitlementStructHash(
+            Entitlements.Entitlement({
+                beneficialOwner: address(writer),
+                operator: address(calls),
+                nftContract: address(token),
+                nftTokenId: tokenId,
+                expiry: expiry
+            })
+        );
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            writerpkey,
+            _getEIP712Hash(structHash)
+        );
+        Signatures.Signature memory sig = Signatures.Signature({
+            signatureType: Signatures.SignatureType.EIP712,
+            v: v,
+            r: r,
+            s: s
+        });
+        return sig;
+    }
+}

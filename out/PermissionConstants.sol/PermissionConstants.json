@@ -1,0 +1,455 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ALLOWLISTER_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PAUSER_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "VAULT_UPGRADER",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/regynald/Code/hook/protocol/src/mixin/PermissionConstants.sol",
+    "exportedSymbols": {
+      "PermissionConstants": [
+        17160
+      ]
+    },
+    "id": 17161,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 17135,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".10"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "38:24:47"
+      },
+      {
+        "abstract": true,
+        "baseContracts": [],
+        "canonicalName": "PermissionConstants",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 17160,
+        "linearizedBaseContracts": [
+          17160
+        ],
+        "name": "PermissionConstants",
+        "nameLocation": "82:19:47",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": true,
+            "documentation": {
+              "id": 17136,
+              "nodeType": "StructuredDocumentation",
+              "src": "108:101:47",
+              "text": "----- ROLES --------\n @notice The Hook protocol admin can make any changes to the protocol"
+            },
+            "functionSelector": "75b238fc",
+            "id": 17141,
+            "mutability": "constant",
+            "name": "ADMIN_ROLE",
+            "nameLocation": "238:10:47",
+            "nodeType": "VariableDeclaration",
+            "scope": 17160,
+            "src": "214:60:47",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 17137,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "214:7:47",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "arguments": [
+                {
+                  "hexValue": "41444d494e5f524f4c45",
+                  "id": 17139,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "261:12:47",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775",
+                    "typeString": "literal_string \"ADMIN_ROLE\""
+                  },
+                  "value": "ADMIN_ROLE"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775",
+                    "typeString": "literal_string \"ADMIN_ROLE\""
+                  }
+                ],
+                "id": 17138,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": -8,
+                "src": "251:9:47",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 17140,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "251:23:47",
+              "tryCall": false,
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "documentation": {
+              "id": 17142,
+              "nodeType": "StructuredDocumentation",
+              "src": "281:86:47",
+              "text": "@notice the allowlister is able to enable and disable projects to mint insturments"
+            },
+            "functionSelector": "acca6838",
+            "id": 17147,
+            "mutability": "constant",
+            "name": "ALLOWLISTER_ROLE",
+            "nameLocation": "396:16:47",
+            "nodeType": "VariableDeclaration",
+            "scope": 17160,
+            "src": "372:72:47",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 17143,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "372:7:47",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "arguments": [
+                {
+                  "hexValue": "414c4c4f574c49535445525f524f4c45",
+                  "id": 17145,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "425:18:47",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_fba4f6dd992a27a814ee807eb2f9332d6d01312041726966a540cf4a4a891553",
+                    "typeString": "literal_string \"ALLOWLISTER_ROLE\""
+                  },
+                  "value": "ALLOWLISTER_ROLE"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_fba4f6dd992a27a814ee807eb2f9332d6d01312041726966a540cf4a4a891553",
+                    "typeString": "literal_string \"ALLOWLISTER_ROLE\""
+                  }
+                ],
+                "id": 17144,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": -8,
+                "src": "415:9:47",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 17146,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "415:29:47",
+              "tryCall": false,
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "documentation": {
+              "id": 17148,
+              "nodeType": "StructuredDocumentation",
+              "src": "451:85:47",
+              "text": "@notice the paueser is able to start and pause various components of the protocol"
+            },
+            "functionSelector": "e63ab1e9",
+            "id": 17153,
+            "mutability": "constant",
+            "name": "PAUSER_ROLE",
+            "nameLocation": "565:11:47",
+            "nodeType": "VariableDeclaration",
+            "scope": 17160,
+            "src": "541:62:47",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 17149,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "541:7:47",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "arguments": [
+                {
+                  "hexValue": "5041555345525f524f4c45",
+                  "id": 17151,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "589:13:47",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a",
+                    "typeString": "literal_string \"PAUSER_ROLE\""
+                  },
+                  "value": "PAUSER_ROLE"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a",
+                    "typeString": "literal_string \"PAUSER_ROLE\""
+                  }
+                ],
+                "id": 17150,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": -8,
+                "src": "579:9:47",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 17152,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "579:24:47",
+              "tryCall": false,
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "documentation": {
+              "id": 17154,
+              "nodeType": "StructuredDocumentation",
+              "src": "610:88:47",
+              "text": "@notice the vault upgrader role is able to upgrade the implementation for all vaults"
+            },
+            "functionSelector": "0d5e67ec",
+            "id": 17159,
+            "mutability": "constant",
+            "name": "VAULT_UPGRADER",
+            "nameLocation": "727:14:47",
+            "nodeType": "VariableDeclaration",
+            "scope": 17160,
+            "src": "703:68:47",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 17155,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "703:7:47",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "arguments": [
+                {
+                  "hexValue": "5641554c545f5550475241444552",
+                  "id": 17157,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "754:16:47",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e",
+                    "typeString": "literal_string \"VAULT_UPGRADER\""
+                  },
+                  "value": "VAULT_UPGRADER"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e",
+                    "typeString": "literal_string \"VAULT_UPGRADER\""
+                  }
+                ],
+                "id": 17156,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": -8,
+                "src": "744:9:47",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 17158,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "744:27:47",
+              "tryCall": false,
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "visibility": "public"
+          }
+        ],
+        "scope": 17161,
+        "src": "64:710:47",
+        "usedErrors": []
+      }
+    ],
+    "src": "38:737:47"
+  }
+}

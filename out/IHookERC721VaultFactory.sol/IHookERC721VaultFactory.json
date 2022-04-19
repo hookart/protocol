@@ -1,0 +1,329 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "nftAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getVault",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "nftAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "makeVault",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/regynald/Code/hook/protocol/src/interfaces/IHookERC721VaultFactory.sol",
+    "exportedSymbols": {
+      "IHookERC721VaultFactory": [
+        16686
+      ]
+    },
+    "id": 16687,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 16667,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".10"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:41"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IHookERC721VaultFactory",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 16686,
+        "linearizedBaseContracts": [
+          16686
+        ],
+        "name": "IHookERC721VaultFactory",
+        "nameLocation": "35:23:41",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "d99d13f5",
+            "id": 16676,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getVault",
+            "nameLocation": "186:8:41",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 16672,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16669,
+                  "mutability": "mutable",
+                  "name": "nftAddress",
+                  "nameLocation": "203:10:41",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16676,
+                  "src": "195:18:41",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16668,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "195:7:41",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16671,
+                  "mutability": "mutable",
+                  "name": "tokenId",
+                  "nameLocation": "223:7:41",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16676,
+                  "src": "215:15:41",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 16670,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "215:7:41",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "194:37:41"
+            },
+            "returnParameters": {
+              "id": 16675,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16674,
+                  "mutability": "mutable",
+                  "name": "vault",
+                  "nameLocation": "287:5:41",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16676,
+                  "src": "279:13:41",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16673,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "279:7:41",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "278:15:41"
+            },
+            "scope": 16686,
+            "src": "177:117:41",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "d79db531",
+            "id": 16685,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "makeVault",
+            "nameLocation": "309:9:41",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 16681,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16678,
+                  "mutability": "mutable",
+                  "name": "nftAddress",
+                  "nameLocation": "327:10:41",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16685,
+                  "src": "319:18:41",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16677,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "319:7:41",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16680,
+                  "mutability": "mutable",
+                  "name": "tokenId",
+                  "nameLocation": "347:7:41",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16685,
+                  "src": "339:15:41",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 16679,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "339:7:41",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "318:37:41"
+            },
+            "returnParameters": {
+              "id": 16684,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16683,
+                  "mutability": "mutable",
+                  "name": "vault",
+                  "nameLocation": "398:5:41",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16685,
+                  "src": "390:13:41",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16682,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "390:7:41",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "389:15:41"
+            },
+            "scope": 16686,
+            "src": "300:105:41",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 16687,
+        "src": "25:382:41",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:408:41"
+  }
+}

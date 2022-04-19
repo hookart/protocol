@@ -1,0 +1,265 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "nftAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getCallInsturment",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "calls",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "nftAddress",
+          "type": "address"
+        }
+      ],
+      "name": "makeCallInsturment",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "calls",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/regynald/Code/hook/protocol/src/interfaces/IHookCoveredCallFactory.sol",
+    "exportedSymbols": {
+      "IHookCoveredCallFactory": [
+        16580
+      ]
+    },
+    "id": 16581,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 16565,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".10"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:39"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IHookCoveredCallFactory",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 16580,
+        "linearizedBaseContracts": [
+          16580
+        ],
+        "name": "IHookCoveredCallFactory",
+        "nameLocation": "35:23:39",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "4d237b33",
+            "id": 16572,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getCallInsturment",
+            "nameLocation": "186:17:39",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 16568,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16567,
+                  "mutability": "mutable",
+                  "name": "nftAddress",
+                  "nameLocation": "212:10:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16572,
+                  "src": "204:18:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16566,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "204:7:39",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "203:20:39"
+            },
+            "returnParameters": {
+              "id": 16571,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16570,
+                  "mutability": "mutable",
+                  "name": "calls",
+                  "nameLocation": "279:5:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16572,
+                  "src": "271:13:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16569,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "271:7:39",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "270:15:39"
+            },
+            "scope": 16580,
+            "src": "177:109:39",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "7aefc203",
+            "id": 16579,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "makeCallInsturment",
+            "nameLocation": "301:18:39",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 16575,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16574,
+                  "mutability": "mutable",
+                  "name": "nftAddress",
+                  "nameLocation": "328:10:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16579,
+                  "src": "320:18:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16573,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "320:7:39",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "319:20:39"
+            },
+            "returnParameters": {
+              "id": 16578,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16577,
+                  "mutability": "mutable",
+                  "name": "calls",
+                  "nameLocation": "382:5:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16579,
+                  "src": "374:13:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16576,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "374:7:39",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "373:15:39"
+            },
+            "scope": 16580,
+            "src": "292:97:39",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 16581,
+        "src": "25:366:39",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:392:39"
+  }
+}
