@@ -147,11 +147,9 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
         vm.warp(block.timestamp + 2.1 days);
 
         vm.prank(firstBidder);
-        uint256 firstBidderStartBalance = firstBidder.balance;
         calls.bid{value: 0.1 ether}(optionTokenId);
 
         vm.prank(secondBidder);
-        uint256 secondBidderStartBalance = secondBidder.balance;
         calls.bid{value: 0.2 ether}(optionTokenId);
 
         // Fast forward to beyond the expiration date.
