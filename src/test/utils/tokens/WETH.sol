@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.10;
+pragma solidity ^0.8.10;
 
 /// @title WETH
-/// @notice FOR TEST PURPOSES ONLY. Source: https://github.com/gnosis/canonical-weth/blob/0dd1ea3e295eef916d0c6223ec63141137d22d67/contracts/WETH9.sol
+/// @notice FOR TEST PURPOSES ONLY. 
+/// Source: https://github.com/gnosis/canonical-weth/blob/0dd1ea3e295eef916d0c6223ec63141137d22d67/contracts/WETH9.sol
 contract WETH {
     string public name = "Wrapped Ether";
     string public symbol = "WETH";
