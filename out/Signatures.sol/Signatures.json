@@ -1,13 +1,13 @@
 {
   "abi": [],
   "bytecode": {
-    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220e25d7fa8bffdbe378d336ccb9e7f2e7f91078faea72f3f79f3ef88d0177944cc64736f6c634300080a0033",
-    "sourceMap": "82:2109:45:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;82:2109:45;;;;;;;;;;;;;;;;;",
+    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220c0f1879d8d4a1615607f163cdc773cc99be7bb646c2f5032f2d7a74f12a5659464736f6c634300080a0033",
+    "sourceMap": "83:2109:45:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;83:2109:45;;;;;;;;;;;;;;;;;",
     "linkReferences": {}
   },
   "deployedBytecode": {
-    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220e25d7fa8bffdbe378d336ccb9e7f2e7f91078faea72f3f79f3ef88d0177944cc64736f6c634300080a0033",
-    "sourceMap": "82:2109:45:-:0;;;;;;;;",
+    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220c0f1879d8d4a1615607f163cdc773cc99be7bb646c2f5032f2d7a74f12a5659464736f6c634300080a0033",
+    "sourceMap": "83:2109:45:-:0;;;;;;;;",
     "linkReferences": {}
   },
   "ast": {
@@ -24,11 +24,12 @@
         "id": 16997,
         "literals": [
           "solidity",
+          "^",
           "0.8",
           ".10"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:45"
+        "src": "0:24:45"
       },
       {
         "abstract": false,
@@ -39,7 +40,7 @@
         "documentation": {
           "id": 16998,
           "nodeType": "StructuredDocumentation",
-          "src": "25:57:45",
+          "src": "26:57:45",
           "text": "@dev A library for validating signatures from ZeroEx"
         },
         "fullyImplemented": true,
@@ -48,7 +49,7 @@
           17079
         ],
         "name": "Signatures",
-        "nameLocation": "90:10:45",
+        "nameLocation": "91:10:45",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
@@ -56,10 +57,10 @@
             "id": 17001,
             "mutability": "constant",
             "name": "ETH_SIGN_HASH_PREFIX",
-            "nameLocation": "192:20:45",
+            "nameLocation": "193:20:45",
             "nodeType": "VariableDeclaration",
             "scope": 17079,
-            "src": "167:122:45",
+            "src": "168:122:45",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -70,7 +71,7 @@
               "id": 16999,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "167:7:45",
+              "src": "168:7:45",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -85,7 +86,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "223:66:45",
+              "src": "224:66:45",
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_11430537079145650693387304458692941425836787954612963690241153482819318579200_by_1",
                 "typeString": "int_const 1143...(69 digits omitted)...9200"
@@ -101,22 +102,22 @@
               {
                 "id": 17002,
                 "name": "EIP712",
-                "nameLocation": "363:6:45",
+                "nameLocation": "364:6:45",
                 "nodeType": "EnumValue",
-                "src": "363:6:45"
+                "src": "364:6:45"
               },
               {
                 "id": 17003,
                 "name": "ETHSIGN",
-                "nameLocation": "379:7:45",
+                "nameLocation": "380:7:45",
                 "nodeType": "EnumValue",
-                "src": "379:7:45"
+                "src": "380:7:45"
               }
             ],
             "name": "SignatureType",
-            "nameLocation": "339:13:45",
+            "nameLocation": "340:13:45",
             "nodeType": "EnumDefinition",
-            "src": "334:58:45"
+            "src": "335:58:45"
           },
           {
             "canonicalName": "Signatures.Signature",
@@ -127,10 +128,10 @@
                 "id": 17007,
                 "mutability": "mutable",
                 "name": "signatureType",
-                "nameLocation": "516:13:45",
+                "nameLocation": "517:13:45",
                 "nodeType": "VariableDeclaration",
                 "scope": 17014,
-                "src": "502:27:45",
+                "src": "503:27:45",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -145,10 +146,10 @@
                     "name": "SignatureType",
                     "nodeType": "IdentifierPath",
                     "referencedDeclaration": 17004,
-                    "src": "502:13:45"
+                    "src": "503:13:45"
                   },
                   "referencedDeclaration": 17004,
-                  "src": "502:13:45",
+                  "src": "503:13:45",
                   "typeDescriptions": {
                     "typeIdentifier": "t_enum$_SignatureType_$17004",
                     "typeString": "enum Signatures.SignatureType"
@@ -161,10 +162,10 @@
                 "id": 17009,
                 "mutability": "mutable",
                 "name": "v",
-                "nameLocation": "575:1:45",
+                "nameLocation": "576:1:45",
                 "nodeType": "VariableDeclaration",
                 "scope": 17014,
-                "src": "569:7:45",
+                "src": "570:7:45",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -175,7 +176,7 @@
                   "id": 17008,
                   "name": "uint8",
                   "nodeType": "ElementaryTypeName",
-                  "src": "569:5:45",
+                  "src": "570:5:45",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint8",
                     "typeString": "uint8"
@@ -188,10 +189,10 @@
                 "id": 17011,
                 "mutability": "mutable",
                 "name": "r",
-                "nameLocation": "624:1:45",
+                "nameLocation": "625:1:45",
                 "nodeType": "VariableDeclaration",
                 "scope": 17014,
-                "src": "616:9:45",
+                "src": "617:9:45",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -202,7 +203,7 @@
                   "id": 17010,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "616:7:45",
+                  "src": "617:7:45",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -215,10 +216,10 @@
                 "id": 17013,
                 "mutability": "mutable",
                 "name": "s",
-                "nameLocation": "673:1:45",
+                "nameLocation": "674:1:45",
                 "nodeType": "VariableDeclaration",
                 "scope": 17014,
-                "src": "665:9:45",
+                "src": "666:9:45",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -229,7 +230,7 @@
                   "id": 17012,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "665:7:45",
+                  "src": "666:7:45",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -239,17 +240,17 @@
               }
             ],
             "name": "Signature",
-            "nameLocation": "440:9:45",
+            "nameLocation": "441:9:45",
             "nodeType": "StructDefinition",
             "scope": 17079,
-            "src": "433:248:45",
+            "src": "434:248:45",
             "visibility": "public"
           },
           {
             "body": {
               "id": 17077,
               "nodeType": "Block",
-              "src": "1095:1094:45",
+              "src": "1096:1094:45",
               "statements": [
                 {
                   "condition": {
@@ -269,7 +270,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 17020,
-                        "src": "1110:9:45",
+                        "src": "1111:9:45",
                         "typeDescriptions": {
                           "typeIdentifier": "t_struct$_Signature_$17014_memory_ptr",
                           "typeString": "struct Signatures.Signature memory"
@@ -283,7 +284,7 @@
                       "memberName": "signatureType",
                       "nodeType": "MemberAccess",
                       "referencedDeclaration": 17007,
-                      "src": "1110:23:45",
+                      "src": "1111:23:45",
                       "typeDescriptions": {
                         "typeIdentifier": "t_enum$_SignatureType_$17004",
                         "typeString": "enum Signatures.SignatureType"
@@ -298,7 +299,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 17004,
-                        "src": "1137:13:45",
+                        "src": "1138:13:45",
                         "typeDescriptions": {
                           "typeIdentifier": "t_type$_t_enum$_SignatureType_$17004_$",
                           "typeString": "type(enum Signatures.SignatureType)"
@@ -312,13 +313,13 @@
                       "memberName": "EIP712",
                       "nodeType": "MemberAccess",
                       "referencedDeclaration": 17002,
-                      "src": "1137:20:45",
+                      "src": "1138:20:45",
                       "typeDescriptions": {
                         "typeIdentifier": "t_enum$_SignatureType_$17004",
                         "typeString": "enum Signatures.SignatureType"
                       }
                     },
-                    "src": "1110:47:45",
+                    "src": "1111:47:45",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -342,7 +343,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 17020,
-                          "src": "1373:9:45",
+                          "src": "1374:9:45",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Signature_$17014_memory_ptr",
                             "typeString": "struct Signatures.Signature memory"
@@ -356,7 +357,7 @@
                         "memberName": "signatureType",
                         "nodeType": "MemberAccess",
                         "referencedDeclaration": 17007,
-                        "src": "1373:23:45",
+                        "src": "1374:23:45",
                         "typeDescriptions": {
                           "typeIdentifier": "t_enum$_SignatureType_$17004",
                           "typeString": "enum Signatures.SignatureType"
@@ -371,7 +372,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 17004,
-                          "src": "1400:13:45",
+                          "src": "1401:13:45",
                           "typeDescriptions": {
                             "typeIdentifier": "t_type$_t_enum$_SignatureType_$17004_$",
                             "typeString": "type(enum Signatures.SignatureType)"
@@ -385,13 +386,13 @@
                         "memberName": "ETHSIGN",
                         "nodeType": "MemberAccess",
                         "referencedDeclaration": 17003,
-                        "src": "1400:21:45",
+                        "src": "1401:21:45",
                         "typeDescriptions": {
                           "typeIdentifier": "t_enum$_SignatureType_$17004",
                           "typeString": "enum Signatures.SignatureType"
                         }
                       },
-                      "src": "1373:48:45",
+                      "src": "1374:48:45",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bool",
                         "typeString": "bool"
@@ -399,11 +400,11 @@
                     },
                     "id": 17065,
                     "nodeType": "IfStatement",
-                    "src": "1369:666:45",
+                    "src": "1370:666:45",
                     "trueBody": {
                       "id": 17064,
                       "nodeType": "Block",
-                      "src": "1423:612:45",
+                      "src": "1424:612:45",
                       "statements": [
                         {
                           "assignments": [
@@ -415,10 +416,10 @@
                               "id": 17049,
                               "mutability": "mutable",
                               "name": "ethSignHash",
-                              "nameLocation": "1601:11:45",
+                              "nameLocation": "1602:11:45",
                               "nodeType": "VariableDeclaration",
                               "scope": 17064,
-                              "src": "1593:19:45",
+                              "src": "1594:19:45",
                               "stateVariable": false,
                               "storageLocation": "default",
                               "typeDescriptions": {
@@ -429,7 +430,7 @@
                                 "id": 17048,
                                 "name": "bytes32",
                                 "nodeType": "ElementaryTypeName",
-                                "src": "1593:7:45",
+                                "src": "1594:7:45",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
                                   "typeString": "bytes32"
@@ -440,12 +441,12 @@
                           ],
                           "id": 17050,
                           "nodeType": "VariableDeclarationStatement",
-                          "src": "1593:19:45"
+                          "src": "1594:19:45"
                         },
                         {
                           "AST": {
                             "nodeType": "YulBlock",
-                            "src": "1635:225:45",
+                            "src": "1636:225:45",
                             "statements": [
                               {
                                 "expression": {
@@ -453,26 +454,26 @@
                                     {
                                       "kind": "number",
                                       "nodeType": "YulLiteral",
-                                      "src": "1697:1:45",
+                                      "src": "1698:1:45",
                                       "type": "",
                                       "value": "0"
                                     },
                                     {
                                       "name": "ETH_SIGN_HASH_PREFIX",
                                       "nodeType": "YulIdentifier",
-                                      "src": "1700:20:45"
+                                      "src": "1701:20:45"
                                     }
                                   ],
                                   "functionName": {
                                     "name": "mstore",
                                     "nodeType": "YulIdentifier",
-                                    "src": "1690:6:45"
+                                    "src": "1691:6:45"
                                   },
                                   "nodeType": "YulFunctionCall",
-                                  "src": "1690:31:45"
+                                  "src": "1691:31:45"
                                 },
                                 "nodeType": "YulExpressionStatement",
-                                "src": "1690:31:45"
+                                "src": "1691:31:45"
                               },
                               {
                                 "expression": {
@@ -480,43 +481,43 @@
                                     {
                                       "kind": "number",
                                       "nodeType": "YulLiteral",
-                                      "src": "1767:2:45",
+                                      "src": "1768:2:45",
                                       "type": "",
                                       "value": "28"
                                     },
                                     {
                                       "name": "hash",
                                       "nodeType": "YulIdentifier",
-                                      "src": "1771:4:45"
+                                      "src": "1772:4:45"
                                     }
                                   ],
                                   "functionName": {
                                     "name": "mstore",
                                     "nodeType": "YulIdentifier",
-                                    "src": "1760:6:45"
+                                    "src": "1761:6:45"
                                   },
                                   "nodeType": "YulFunctionCall",
-                                  "src": "1760:16:45"
+                                  "src": "1761:16:45"
                                 },
                                 "nodeType": "YulExpressionStatement",
-                                "src": "1760:16:45"
+                                "src": "1761:16:45"
                               },
                               {
                                 "nodeType": "YulAssignment",
-                                "src": "1815:31:45",
+                                "src": "1816:31:45",
                                 "value": {
                                   "arguments": [
                                     {
                                       "kind": "number",
                                       "nodeType": "YulLiteral",
-                                      "src": "1840:1:45",
+                                      "src": "1841:1:45",
                                       "type": "",
                                       "value": "0"
                                     },
                                     {
                                       "kind": "number",
                                       "nodeType": "YulLiteral",
-                                      "src": "1843:2:45",
+                                      "src": "1844:2:45",
                                       "type": "",
                                       "value": "60"
                                     }
@@ -524,16 +525,16 @@
                                   "functionName": {
                                     "name": "keccak256",
                                     "nodeType": "YulIdentifier",
-                                    "src": "1830:9:45"
+                                    "src": "1831:9:45"
                                   },
                                   "nodeType": "YulFunctionCall",
-                                  "src": "1830:16:45"
+                                  "src": "1831:16:45"
                                 },
                                 "variableNames": [
                                   {
                                     "name": "ethSignHash",
                                     "nodeType": "YulIdentifier",
-                                    "src": "1815:11:45"
+                                    "src": "1816:11:45"
                                   }
                                 ]
                               }
@@ -545,27 +546,27 @@
                               "declaration": 17001,
                               "isOffset": false,
                               "isSlot": false,
-                              "src": "1700:20:45",
+                              "src": "1701:20:45",
                               "valueSize": 1
                             },
                             {
                               "declaration": 17049,
                               "isOffset": false,
                               "isSlot": false,
-                              "src": "1815:11:45",
+                              "src": "1816:11:45",
                               "valueSize": 1
                             },
                             {
                               "declaration": 17017,
                               "isOffset": false,
                               "isSlot": false,
-                              "src": "1771:4:45",
+                              "src": "1772:4:45",
                               "valueSize": 1
                             }
                           ],
                           "id": 17051,
                           "nodeType": "InlineAssembly",
-                          "src": "1626:234:45"
+                          "src": "1627:234:45"
                         },
                         {
                           "expression": {
@@ -580,7 +581,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 17023,
-                              "src": "1873:9:45",
+                              "src": "1874:9:45",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_address",
                                 "typeString": "address"
@@ -596,7 +597,7 @@
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
                                   "referencedDeclaration": 17049,
-                                  "src": "1912:11:45",
+                                  "src": "1913:11:45",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_bytes32",
                                     "typeString": "bytes32"
@@ -609,7 +610,7 @@
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
                                     "referencedDeclaration": 17020,
-                                    "src": "1941:9:45",
+                                    "src": "1942:9:45",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_struct$_Signature_$17014_memory_ptr",
                                       "typeString": "struct Signatures.Signature memory"
@@ -623,7 +624,7 @@
                                   "memberName": "v",
                                   "nodeType": "MemberAccess",
                                   "referencedDeclaration": 17009,
-                                  "src": "1941:11:45",
+                                  "src": "1942:11:45",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint8",
                                     "typeString": "uint8"
@@ -636,7 +637,7 @@
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
                                     "referencedDeclaration": 17020,
-                                    "src": "1970:9:45",
+                                    "src": "1971:9:45",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_struct$_Signature_$17014_memory_ptr",
                                       "typeString": "struct Signatures.Signature memory"
@@ -650,7 +651,7 @@
                                   "memberName": "r",
                                   "nodeType": "MemberAccess",
                                   "referencedDeclaration": 17011,
-                                  "src": "1970:11:45",
+                                  "src": "1971:11:45",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_bytes32",
                                     "typeString": "bytes32"
@@ -663,7 +664,7 @@
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
                                     "referencedDeclaration": 17020,
-                                    "src": "1999:9:45",
+                                    "src": "2000:9:45",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_struct$_Signature_$17014_memory_ptr",
                                       "typeString": "struct Signatures.Signature memory"
@@ -677,7 +678,7 @@
                                   "memberName": "s",
                                   "nodeType": "MemberAccess",
                                   "referencedDeclaration": 17013,
-                                  "src": "1999:11:45",
+                                  "src": "2000:11:45",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_bytes32",
                                     "typeString": "bytes32"
@@ -708,7 +709,7 @@
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
                                 "referencedDeclaration": -6,
-                                "src": "1885:9:45",
+                                "src": "1886:9:45",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_function_ecrecover_pure$_t_bytes32_$_t_uint8_$_t_bytes32_$_t_bytes32_$returns$_t_address_$",
                                   "typeString": "function (bytes32,uint8,bytes32,bytes32) pure returns (address)"
@@ -722,14 +723,14 @@
                               "lValueRequested": false,
                               "names": [],
                               "nodeType": "FunctionCall",
-                              "src": "1885:139:45",
+                              "src": "1886:139:45",
                               "tryCall": false,
                               "typeDescriptions": {
                                 "typeIdentifier": "t_address",
                                 "typeString": "address"
                               }
                             },
-                            "src": "1873:151:45",
+                            "src": "1874:151:45",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
@@ -737,18 +738,18 @@
                           },
                           "id": 17063,
                           "nodeType": "ExpressionStatement",
-                          "src": "1873:151:45"
+                          "src": "1874:151:45"
                         }
                       ]
                     }
                   },
                   "id": 17066,
                   "nodeType": "IfStatement",
-                  "src": "1106:929:45",
+                  "src": "1107:929:45",
                   "trueBody": {
                     "id": 17042,
                     "nodeType": "Block",
-                    "src": "1159:204:45",
+                    "src": "1160:204:45",
                     "statements": [
                       {
                         "expression": {
@@ -763,7 +764,7 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 17023,
-                            "src": "1208:9:45",
+                            "src": "1209:9:45",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
@@ -779,7 +780,7 @@
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
                                 "referencedDeclaration": 17017,
-                                "src": "1247:4:45",
+                                "src": "1248:4:45",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
                                   "typeString": "bytes32"
@@ -792,7 +793,7 @@
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
                                   "referencedDeclaration": 17020,
-                                  "src": "1269:9:45",
+                                  "src": "1270:9:45",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_struct$_Signature_$17014_memory_ptr",
                                     "typeString": "struct Signatures.Signature memory"
@@ -806,7 +807,7 @@
                                 "memberName": "v",
                                 "nodeType": "MemberAccess",
                                 "referencedDeclaration": 17009,
-                                "src": "1269:11:45",
+                                "src": "1270:11:45",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint8",
                                   "typeString": "uint8"
@@ -819,7 +820,7 @@
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
                                   "referencedDeclaration": 17020,
-                                  "src": "1298:9:45",
+                                  "src": "1299:9:45",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_struct$_Signature_$17014_memory_ptr",
                                     "typeString": "struct Signatures.Signature memory"
@@ -833,7 +834,7 @@
                                 "memberName": "r",
                                 "nodeType": "MemberAccess",
                                 "referencedDeclaration": 17011,
-                                "src": "1298:11:45",
+                                "src": "1299:11:45",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
                                   "typeString": "bytes32"
@@ -846,7 +847,7 @@
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
                                   "referencedDeclaration": 17020,
-                                  "src": "1327:9:45",
+                                  "src": "1328:9:45",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_struct$_Signature_$17014_memory_ptr",
                                     "typeString": "struct Signatures.Signature memory"
@@ -860,7 +861,7 @@
                                 "memberName": "s",
                                 "nodeType": "MemberAccess",
                                 "referencedDeclaration": 17013,
-                                "src": "1327:11:45",
+                                "src": "1328:11:45",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
                                   "typeString": "bytes32"
@@ -891,7 +892,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": -6,
-                              "src": "1220:9:45",
+                              "src": "1221:9:45",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_ecrecover_pure$_t_bytes32_$_t_uint8_$_t_bytes32_$_t_bytes32_$returns$_t_address_$",
                                 "typeString": "function (bytes32,uint8,bytes32,bytes32) pure returns (address)"
@@ -905,14 +906,14 @@
                             "lValueRequested": false,
                             "names": [],
                             "nodeType": "FunctionCall",
-                            "src": "1220:132:45",
+                            "src": "1221:132:45",
                             "tryCall": false,
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
                             }
                           },
-                          "src": "1208:144:45",
+                          "src": "1209:144:45",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -920,7 +921,7 @@
                         },
                         "id": 17041,
                         "nodeType": "ExpressionStatement",
-                        "src": "1208:144:45"
+                        "src": "1209:144:45"
                       }
                     ]
                   }
@@ -944,7 +945,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 17023,
-                          "src": "2129:9:45",
+                          "src": "2130:9:45",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -963,7 +964,7 @@
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "2150:1:45",
+                              "src": "2151:1:45",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_0_by_1",
                                 "typeString": "int_const 0"
@@ -984,7 +985,7 @@
                             "isPure": true,
                             "lValueRequested": false,
                             "nodeType": "ElementaryTypeNameExpression",
-                            "src": "2142:7:45",
+                            "src": "2143:7:45",
                             "typeDescriptions": {
                               "typeIdentifier": "t_type$_t_address_$",
                               "typeString": "type(address)"
@@ -993,7 +994,7 @@
                               "id": 17069,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
-                              "src": "2142:7:45",
+                              "src": "2143:7:45",
                               "typeDescriptions": {}
                             }
                           },
@@ -1005,14 +1006,14 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "2142:10:45",
+                          "src": "2143:10:45",
                           "tryCall": false,
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
                           }
                         },
-                        "src": "2129:23:45",
+                        "src": "2130:23:45",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1027,7 +1028,7 @@
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "2154:27:45",
+                        "src": "2155:27:45",
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_2b3a832970e5978331ff044a53a2b8aea46e11eea8a7bb175cecefb1f69da012",
                           "typeString": "literal_string \"recovered address is null\""
@@ -1054,7 +1055,7 @@
                         -18
                       ],
                       "referencedDeclaration": -18,
-                      "src": "2121:7:45",
+                      "src": "2122:7:45",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
@@ -1068,7 +1069,7 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2121:61:45",
+                    "src": "2122:61:45",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
@@ -1077,14 +1078,14 @@
                   },
                   "id": 17076,
                   "nodeType": "ExpressionStatement",
-                  "src": "2121:61:45"
+                  "src": "2122:61:45"
                 }
               ]
             },
             "documentation": {
               "id": 17015,
               "nodeType": "StructuredDocumentation",
-              "src": "688:243:45",
+              "src": "689:243:45",
               "text": "@dev Retrieve the signer of a signature.\n      Throws if the signature can't be validated.\n @param hash The hash that was signed.\n @param signature The signature.\n @return recovered The recovered signer address."
             },
             "id": 17078,
@@ -1092,7 +1093,7 @@
             "kind": "function",
             "modifiers": [],
             "name": "getSignerOfHash",
-            "nameLocation": "945:15:45",
+            "nameLocation": "946:15:45",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 17021,
@@ -1103,10 +1104,10 @@
                   "id": 17017,
                   "mutability": "mutable",
                   "name": "hash",
-                  "nameLocation": "978:4:45",
+                  "nameLocation": "979:4:45",
                   "nodeType": "VariableDeclaration",
                   "scope": 17078,
-                  "src": "970:12:45",
+                  "src": "971:12:45",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1117,7 +1118,7 @@
                     "id": 17016,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "970:7:45",
+                    "src": "971:7:45",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1130,10 +1131,10 @@
                   "id": 17020,
                   "mutability": "mutable",
                   "name": "signature",
-                  "nameLocation": "1009:9:45",
+                  "nameLocation": "1010:9:45",
                   "nodeType": "VariableDeclaration",
                   "scope": 17078,
-                  "src": "992:26:45",
+                  "src": "993:26:45",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -1148,10 +1149,10 @@
                       "name": "Signature",
                       "nodeType": "IdentifierPath",
                       "referencedDeclaration": 17014,
-                      "src": "992:9:45"
+                      "src": "993:9:45"
                     },
                     "referencedDeclaration": 17014,
-                    "src": "992:9:45",
+                    "src": "993:9:45",
                     "typeDescriptions": {
                       "typeIdentifier": "t_struct$_Signature_$17014_storage_ptr",
                       "typeString": "struct Signatures.Signature"
@@ -1160,7 +1161,7 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "960:64:45"
+              "src": "961:64:45"
             },
             "returnParameters": {
               "id": 17024,
@@ -1171,10 +1172,10 @@
                   "id": 17023,
                   "mutability": "mutable",
                   "name": "recovered",
-                  "nameLocation": "1080:9:45",
+                  "nameLocation": "1081:9:45",
                   "nodeType": "VariableDeclaration",
                   "scope": 17078,
-                  "src": "1072:17:45",
+                  "src": "1073:17:45",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1185,7 +1186,7 @@
                     "id": 17022,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1072:7:45",
+                    "src": "1073:7:45",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1195,20 +1196,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1071:19:45"
+              "src": "1072:19:45"
             },
             "scope": 17079,
-            "src": "936:1253:45",
+            "src": "937:1253:45",
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "internal"
           }
         ],
         "scope": 17080,
-        "src": "82:2109:45",
+        "src": "83:2109:45",
         "usedErrors": []
       }
     ],
-    "src": "0:2193:45"
+    "src": "0:2194:45"
   }
 }
