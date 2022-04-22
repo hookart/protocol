@@ -1793,7 +1793,7 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/HookCoveredCallImplV1.sol": {
-      "lastModificationDate": 1650403772686,
+      "lastModificationDate": 1650647222929,
       "contentHash": "1058d0127a9f76a2ccaf6b003b834d26",
       "sourceName": "src/HookCoveredCallImplV1.sol",
       "solcConfig": {
@@ -1989,7 +1989,7 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/HookERC721VaultImplV1.sol": {
-      "lastModificationDate": 1650403772686,
+      "lastModificationDate": 1650647222929,
       "contentHash": "ee3addfbc5304c35b984500655ab3961",
       "sourceName": "src/HookERC721VaultImplV1.sol",
       "solcConfig": {
@@ -2084,7 +2084,7 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/HookUpgradeableBeacon.sol": {
-      "lastModificationDate": 1650388104282,
+      "lastModificationDate": 1650647222930,
       "contentHash": "c8ad257b436a7ad778c948c83009ad96",
       "sourceName": "src/HookUpgradeableBeacon.sol",
       "solcConfig": {
@@ -2246,8 +2246,8 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/interfaces/IHookERC721VaultFactory.sol": {
-      "lastModificationDate": 1650388104282,
-      "contentHash": "d7f1f0e4ce5869bbc5330670e0971ad1",
+      "lastModificationDate": 1650647218002,
+      "contentHash": "3a6458cb5fe13fd35c33b2cf15b64ea6",
       "sourceName": "src/interfaces/IHookERC721VaultFactory.sol",
       "solcConfig": {
         "settings": {
@@ -2275,7 +2275,7 @@
         }
       },
       "imports": [],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "IHookERC721VaultFactory": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "IHookERC721VaultFactory.sol/IHookERC721VaultFactory.json"
@@ -2283,8 +2283,8 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/interfaces/IHookProtocol.sol": {
-      "lastModificationDate": 1650388104282,
-      "contentHash": "2fb626781186497578ab07271d108a14",
+      "lastModificationDate": 1650647216639,
+      "contentHash": "5b041ea550274a4c6927befb6b07c673",
       "sourceName": "src/interfaces/IHookProtocol.sol",
       "solcConfig": {
         "settings": {
@@ -2314,7 +2314,7 @@
       "imports": [
         "lib/openzepplin-contracts/contracts/access/IAccessControl.sol"
       ],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "IHookProtocol": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "IHookProtocol.sol/IHookProtocol.json"
@@ -2322,8 +2322,8 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/lib/Entitlements.sol": {
-      "lastModificationDate": 1650051827435,
-      "contentHash": "22c979c6d37c38a1268ccaa4d7c834a4",
+      "lastModificationDate": 1650647215904,
+      "contentHash": "5cafdfe31a46778deb1074fea65bfccd",
       "sourceName": "src/lib/Entitlements.sol",
       "solcConfig": {
         "settings": {
@@ -2353,7 +2353,7 @@
       "imports": [
         "src/lib/Signatures.sol"
       ],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "Entitlements": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "Entitlements.sol/Entitlements.json"
@@ -2361,8 +2361,8 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/lib/HookStrings.sol": {
-      "lastModificationDate": 1650051827435,
-      "contentHash": "51e3f22897d9e30bc8fae59d3b3f4be7",
+      "lastModificationDate": 1650647215137,
+      "contentHash": "bea98b97840517e2066a5363928297f5",
       "sourceName": "src/lib/HookStrings.sol",
       "solcConfig": {
         "settings": {
@@ -2390,7 +2390,7 @@
         }
       },
       "imports": [],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "HookStrings": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "HookStrings.sol/HookStrings.json"
@@ -2398,8 +2398,8 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/lib/Signatures.sol": {
-      "lastModificationDate": 1650051827435,
-      "contentHash": "3cf25acf098c6361b2907ea24b4edb76",
+      "lastModificationDate": 1650647214381,
+      "contentHash": "f9fca86336ebf0ffea68bf3312a0dcba",
       "sourceName": "src/lib/Signatures.sol",
       "solcConfig": {
         "settings": {
@@ -2427,7 +2427,7 @@
         }
       },
       "imports": [],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "Signatures": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "Signatures.sol/Signatures.json"
@@ -2509,7 +2509,7 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/test/HookCoveredCallIntegrationTest.sol": {
-      "lastModificationDate": 1650388104283,
+      "lastModificationDate": 1650647222930,
       "contentHash": "07135ccbc54f39c41b765d7f9a3400b4",
       "sourceName": "src/test/HookCoveredCallIntegrationTest.sol",
       "solcConfig": {
@@ -2598,7 +2598,7 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/test/HookCoveredCallTests.sol": {
-      "lastModificationDate": 1650403772743,
+      "lastModificationDate": 1650647222931,
       "contentHash": "d26392491645298eb5dee32f8e9ac90c",
       "sourceName": "src/test/HookCoveredCallTests.sol",
       "solcConfig": {
@@ -2822,7 +2822,7 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/test/utils/base.sol": {
-      "lastModificationDate": 1650403788346,
+      "lastModificationDate": 1650647222932,
       "contentHash": "50355f1b0dda43da5d17cbaabb6aa06c",
       "sourceName": "src/test/utils/base.sol",
       "solcConfig": {
@@ -2958,8 +2958,8 @@
       }
     },
     "/Users/regynald/Code/hook/protocol/src/test/utils/tokens/WETH.sol": {
-      "lastModificationDate": 1649715043599,
-      "contentHash": "4c8303043b048484fc07b4074efa3f91",
+      "lastModificationDate": 1650647294746,
+      "contentHash": "44fbc0160243f267d3e896a4676fa99b",
       "sourceName": "src/test/utils/tokens/WETH.sol",
       "solcConfig": {
         "settings": {
@@ -2987,7 +2987,7 @@
         }
       },
       "imports": [],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "WETH": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "WETH.sol/WETH.json"

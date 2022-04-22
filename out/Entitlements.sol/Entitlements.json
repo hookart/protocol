@@ -1,13 +1,13 @@
 {
   "abi": [],
   "bytecode": {
-    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220bfe2cf3db5ca93d0b91a74058b13c3ce12f238400aa779119e5b9d67ceaf8db964736f6c634300080a0033",
-    "sourceMap": "53:1518:43:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;53:1518:43;;;;;;;;;;;;;;;;;",
+    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220ea79f94cad97988779bbbfcf44dcc7aecf9d4e8a891d8e79e774930be8b44bc264736f6c634300080a0033",
+    "sourceMap": "54:1518:43:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;54:1518:43;;;;;;;;;;;;;;;;;",
     "linkReferences": {}
   },
   "deployedBytecode": {
-    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220bfe2cf3db5ca93d0b91a74058b13c3ce12f238400aa779119e5b9d67ceaf8db964736f6c634300080a0033",
-    "sourceMap": "53:1518:43:-:0;;;;;;;;",
+    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220ea79f94cad97988779bbbfcf44dcc7aecf9d4e8a891d8e79e774930be8b44bc264736f6c634300080a0033",
+    "sourceMap": "54:1518:43:-:0;;;;;;;;",
     "linkReferences": {}
   },
   "ast": {
@@ -27,11 +27,12 @@
         "id": 16707,
         "literals": [
           "solidity",
+          "^",
           "0.8",
           ".10"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:43"
+        "src": "0:24:43"
       },
       {
         "absolutePath": "/Users/regynald/Code/hook/protocol/src/lib/Signatures.sol",
@@ -41,7 +42,7 @@
         "nodeType": "ImportDirective",
         "scope": 16769,
         "sourceUnit": 17080,
-        "src": "25:26:43",
+        "src": "26:26:43",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -57,7 +58,7 @@
           16768
         ],
         "name": "Entitlements",
-        "nameLocation": "61:12:43",
+        "nameLocation": "62:12:43",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
@@ -65,10 +66,10 @@
             "id": 16725,
             "mutability": "constant",
             "name": "_ENTITLEMENT_TYPEHASH",
-            "nameLocation": "215:21:43",
+            "nameLocation": "216:21:43",
             "nodeType": "VariableDeclaration",
             "scope": 16768,
-            "src": "190:292:43",
+            "src": "191:292:43",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -79,7 +80,7 @@
               "id": 16709,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "190:7:43",
+              "src": "191:7:43",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -100,7 +101,7 @@
                           "kind": "string",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "283:14:43",
+                          "src": "284:14:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_stringliteral_aea908b72072576b5c1b66b767a690b0c543a8a3ec3c3a133a1c31c6d3c08244",
                             "typeString": "literal_string \"Entitlement(\""
@@ -116,7 +117,7 @@
                           "kind": "string",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "309:26:43",
+                          "src": "310:26:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_stringliteral_7d7a029740c4e6490356ea26aaa80a2268beae07b2ea1ab2da6e9cd9a99029df",
                             "typeString": "literal_string \"address beneficialOwner,\""
@@ -132,7 +133,7 @@
                           "kind": "string",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "347:19:43",
+                          "src": "348:19:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_stringliteral_ed7b6523255050ee8fa2c37c7877523f28e452d25c96af02e27e6611efd8c700",
                             "typeString": "literal_string \"address operator,\""
@@ -148,7 +149,7 @@
                           "kind": "string",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "378:22:43",
+                          "src": "379:22:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_stringliteral_5916682adb9e7ff774e89360426957506971d58136edbd5a92ab35a0d60a665d",
                             "typeString": "literal_string \"address nftContract,\""
@@ -164,7 +165,7 @@
                           "kind": "string",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "412:21:43",
+                          "src": "413:21:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_stringliteral_4ab494e70f4cf23b7abc418e74bea71fd20b4c37c84ef1eeec9eae582b252fbd",
                             "typeString": "literal_string \"uint256 nftTokenId,\""
@@ -180,7 +181,7 @@
                           "kind": "string",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "445:16:43",
+                          "src": "446:16:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_stringliteral_4d6a2ef6010e37d6ee069b276599c65977a9cc54143724dde11f72619dde6c91",
                             "typeString": "literal_string \"uint256 expiry\""
@@ -196,7 +197,7 @@
                           "kind": "string",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "471:3:43",
+                          "src": "472:3:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_stringliteral_59d76dc3b33357eda30db1508968fbb18f21b9cd2442f1559b20154ddaa4d7ed",
                             "typeString": "literal_string \")\""
@@ -241,7 +242,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": -1,
-                          "src": "257:3:43",
+                          "src": "258:3:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_abi",
                             "typeString": "abi"
@@ -254,7 +255,7 @@
                         "lValueRequested": false,
                         "memberName": "encodePacked",
                         "nodeType": "MemberAccess",
-                        "src": "257:16:43",
+                        "src": "258:16:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_abiencodepacked_pure$__$returns$_t_bytes_memory_ptr_$",
                           "typeString": "function () pure returns (bytes memory)"
@@ -268,7 +269,7 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "257:223:43",
+                      "src": "258:223:43",
                       "tryCall": false,
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -288,7 +289,7 @@
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
                     "referencedDeclaration": -8,
-                    "src": "247:9:43",
+                    "src": "248:9:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
                       "typeString": "function (bytes memory) pure returns (bytes32)"
@@ -302,7 +303,7 @@
                   "lValueRequested": false,
                   "names": [],
                   "nodeType": "FunctionCall",
-                  "src": "247:234:43",
+                  "src": "248:234:43",
                   "tryCall": false,
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
@@ -323,7 +324,7 @@
                 "isPure": true,
                 "lValueRequested": false,
                 "nodeType": "ElementaryTypeNameExpression",
-                "src": "239:7:43",
+                "src": "240:7:43",
                 "typeDescriptions": {
                   "typeIdentifier": "t_type$_t_uint256_$",
                   "typeString": "type(uint256)"
@@ -332,7 +333,7 @@
                   "id": 16710,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "239:7:43",
+                  "src": "240:7:43",
                   "typeDescriptions": {}
                 }
               },
@@ -344,7 +345,7 @@
               "lValueRequested": false,
               "names": [],
               "nodeType": "FunctionCall",
-              "src": "239:243:43",
+              "src": "240:243:43",
               "tryCall": false,
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
@@ -362,10 +363,10 @@
                 "id": 16728,
                 "mutability": "mutable",
                 "name": "beneficialOwner",
-                "nameLocation": "678:15:43",
+                "nameLocation": "679:15:43",
                 "nodeType": "VariableDeclaration",
                 "scope": 16741,
-                "src": "670:23:43",
+                "src": "671:23:43",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -376,7 +377,7 @@
                   "id": 16727,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "670:7:43",
+                  "src": "671:7:43",
                   "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
@@ -390,10 +391,10 @@
                 "id": 16731,
                 "mutability": "mutable",
                 "name": "operator",
-                "nameLocation": "812:8:43",
+                "nameLocation": "813:8:43",
                 "nodeType": "VariableDeclaration",
                 "scope": 16741,
-                "src": "804:16:43",
+                "src": "805:16:43",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -404,7 +405,7 @@
                   "id": 16730,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "804:7:43",
+                  "src": "805:7:43",
                   "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
@@ -418,10 +419,10 @@
                 "id": 16734,
                 "mutability": "mutable",
                 "name": "nftContract",
-                "nameLocation": "899:11:43",
+                "nameLocation": "900:11:43",
                 "nodeType": "VariableDeclaration",
                 "scope": 16741,
-                "src": "891:19:43",
+                "src": "892:19:43",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -432,7 +433,7 @@
                   "id": 16733,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "891:7:43",
+                  "src": "892:7:43",
                   "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
@@ -446,10 +447,10 @@
                 "id": 16737,
                 "mutability": "mutable",
                 "name": "nftTokenId",
-                "nameLocation": "979:10:43",
+                "nameLocation": "980:10:43",
                 "nodeType": "VariableDeclaration",
                 "scope": 16741,
-                "src": "971:18:43",
+                "src": "972:18:43",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -460,7 +461,7 @@
                   "id": 16736,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "971:7:43",
+                  "src": "972:7:43",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -473,10 +474,10 @@
                 "id": 16740,
                 "mutability": "mutable",
                 "name": "expiry",
-                "nameLocation": "1096:6:43",
+                "nameLocation": "1097:6:43",
                 "nodeType": "VariableDeclaration",
                 "scope": 16741,
-                "src": "1088:14:43",
+                "src": "1089:14:43",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -487,7 +488,7 @@
                   "id": 16739,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1088:7:43",
+                  "src": "1089:7:43",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -497,17 +498,17 @@
               }
             ],
             "name": "Entitlement",
-            "nameLocation": "531:11:43",
+            "nameLocation": "532:11:43",
             "nodeType": "StructDefinition",
             "scope": 16768,
-            "src": "524:585:43",
+            "src": "525:585:43",
             "visibility": "public"
           },
           {
             "body": {
               "id": 16766,
               "nodeType": "Block",
-              "src": "1253:315:43",
+              "src": "1254:315:43",
               "statements": [
                 {
                   "expression": {
@@ -520,7 +521,7 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 16725,
-                            "src": "1349:21:43",
+                            "src": "1350:21:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -533,7 +534,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 16744,
-                              "src": "1384:11:43",
+                              "src": "1385:11:43",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
                                 "typeString": "struct Entitlements.Entitlement memory"
@@ -547,7 +548,7 @@
                             "memberName": "beneficialOwner",
                             "nodeType": "MemberAccess",
                             "referencedDeclaration": 16728,
-                            "src": "1384:27:43",
+                            "src": "1385:27:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
@@ -560,7 +561,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 16744,
-                              "src": "1425:11:43",
+                              "src": "1426:11:43",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
                                 "typeString": "struct Entitlements.Entitlement memory"
@@ -574,7 +575,7 @@
                             "memberName": "operator",
                             "nodeType": "MemberAccess",
                             "referencedDeclaration": 16731,
-                            "src": "1425:20:43",
+                            "src": "1426:20:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
@@ -587,7 +588,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 16744,
-                              "src": "1459:11:43",
+                              "src": "1460:11:43",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
                                 "typeString": "struct Entitlements.Entitlement memory"
@@ -601,7 +602,7 @@
                             "memberName": "nftContract",
                             "nodeType": "MemberAccess",
                             "referencedDeclaration": 16734,
-                            "src": "1459:23:43",
+                            "src": "1460:23:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
@@ -614,7 +615,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 16744,
-                              "src": "1496:11:43",
+                              "src": "1497:11:43",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
                                 "typeString": "struct Entitlements.Entitlement memory"
@@ -628,7 +629,7 @@
                             "memberName": "nftTokenId",
                             "nodeType": "MemberAccess",
                             "referencedDeclaration": 16737,
-                            "src": "1496:22:43",
+                            "src": "1497:22:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -641,7 +642,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 16744,
-                              "src": "1532:11:43",
+                              "src": "1533:11:43",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_struct$_Entitlement_$16741_memory_ptr",
                                 "typeString": "struct Entitlements.Entitlement memory"
@@ -655,7 +656,7 @@
                             "memberName": "expiry",
                             "nodeType": "MemberAccess",
                             "referencedDeclaration": 16740,
-                            "src": "1532:18:43",
+                            "src": "1533:18:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -695,7 +696,7 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": -1,
-                            "src": "1325:3:43",
+                            "src": "1326:3:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_abi",
                               "typeString": "abi"
@@ -708,7 +709,7 @@
                           "lValueRequested": false,
                           "memberName": "encode",
                           "nodeType": "MemberAccess",
-                          "src": "1325:10:43",
+                          "src": "1326:10:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_abiencode_pure$__$returns$_t_bytes_memory_ptr_$",
                             "typeString": "function () pure returns (bytes memory)"
@@ -722,7 +723,7 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "1325:235:43",
+                        "src": "1326:235:43",
                         "tryCall": false,
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_memory_ptr",
@@ -742,7 +743,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": -8,
-                      "src": "1315:9:43",
+                      "src": "1316:9:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
                         "typeString": "function (bytes memory) pure returns (bytes32)"
@@ -756,7 +757,7 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1315:246:43",
+                    "src": "1316:246:43",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
@@ -766,7 +767,7 @@
                   "functionReturnParameters": 16748,
                   "id": 16765,
                   "nodeType": "Return",
-                  "src": "1308:253:43"
+                  "src": "1309:253:43"
                 }
               ]
             },
@@ -775,7 +776,7 @@
             "kind": "function",
             "modifiers": [],
             "name": "getEntitlementStructHash",
-            "nameLocation": "1124:24:43",
+            "nameLocation": "1125:24:43",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 16745,
@@ -786,10 +787,10 @@
                   "id": 16744,
                   "mutability": "mutable",
                   "name": "entitlement",
-                  "nameLocation": "1168:11:43",
+                  "nameLocation": "1169:11:43",
                   "nodeType": "VariableDeclaration",
                   "scope": 16767,
-                  "src": "1149:30:43",
+                  "src": "1150:30:43",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -804,10 +805,10 @@
                       "name": "Entitlement",
                       "nodeType": "IdentifierPath",
                       "referencedDeclaration": 16741,
-                      "src": "1149:11:43"
+                      "src": "1150:11:43"
                     },
                     "referencedDeclaration": 16741,
-                    "src": "1149:11:43",
+                    "src": "1150:11:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_struct$_Entitlement_$16741_storage_ptr",
                       "typeString": "struct Entitlements.Entitlement"
@@ -816,7 +817,7 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1148:32:43"
+              "src": "1149:32:43"
             },
             "returnParameters": {
               "id": 16748,
@@ -827,10 +828,10 @@
                   "id": 16747,
                   "mutability": "mutable",
                   "name": "structHash",
-                  "nameLocation": "1237:10:43",
+                  "nameLocation": "1238:10:43",
                   "nodeType": "VariableDeclaration",
                   "scope": 16767,
-                  "src": "1229:18:43",
+                  "src": "1230:18:43",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -841,7 +842,7 @@
                     "id": 16746,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1229:7:43",
+                    "src": "1230:7:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -850,20 +851,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1228:20:43"
+              "src": "1229:20:43"
             },
             "scope": 16768,
-            "src": "1115:453:43",
+            "src": "1116:453:43",
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "internal"
           }
         ],
         "scope": 16769,
-        "src": "53:1518:43",
+        "src": "54:1518:43",
         "usedErrors": []
       }
     ],
-    "src": "0:1571:43"
+    "src": "0:1572:43"
   }
 }

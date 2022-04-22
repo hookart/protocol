@@ -233,11 +233,12 @@
         "id": 16688,
         "literals": [
           "solidity",
+          "^",
           "0.8",
           ".10"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:42"
+        "src": "0:24:42"
       },
       {
         "absolutePath": "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/access/IAccessControl.sol",
@@ -247,7 +248,7 @@
         "nodeType": "ImportDirective",
         "scope": 16706,
         "sourceUnit": 11812,
-        "src": "25:59:42",
+        "src": "26:59:42",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -260,11 +261,11 @@
               "name": "IAccessControl",
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 11811,
-              "src": "113:14:42"
+              "src": "114:14:42"
             },
             "id": 16691,
             "nodeType": "InheritanceSpecifier",
-            "src": "113:14:42"
+            "src": "114:14:42"
           }
         ],
         "canonicalName": "IHookProtocol",
@@ -277,7 +278,7 @@
           11811
         ],
         "name": "IHookProtocol",
-        "nameLocation": "96:13:42",
+        "nameLocation": "97:13:42",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
@@ -287,13 +288,13 @@
             "kind": "function",
             "modifiers": [],
             "name": "coveredCallContract",
-            "nameLocation": "256:19:42",
+            "nameLocation": "257:19:42",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 16692,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "275:2:42"
+              "src": "276:2:42"
             },
             "returnParameters": {
               "id": 16695,
@@ -307,7 +308,7 @@
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
                   "scope": 16696,
-                  "src": "301:7:42",
+                  "src": "302:7:42",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -318,7 +319,7 @@
                     "id": 16693,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "301:7:42",
+                    "src": "302:7:42",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -328,10 +329,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "300:9:42"
+              "src": "301:9:42"
             },
             "scope": 16705,
-            "src": "247:63:42",
+            "src": "248:63:42",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -343,13 +344,13 @@
             "kind": "function",
             "modifiers": [],
             "name": "vaultContract",
-            "nameLocation": "325:13:42",
+            "nameLocation": "326:13:42",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 16697,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "338:2:42"
+              "src": "339:2:42"
             },
             "returnParameters": {
               "id": 16700,
@@ -363,7 +364,7 @@
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
                   "scope": 16701,
-                  "src": "364:7:42",
+                  "src": "365:7:42",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -374,7 +375,7 @@
                     "id": 16698,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "364:7:42",
+                    "src": "365:7:42",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -384,10 +385,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "363:9:42"
+              "src": "364:9:42"
             },
             "scope": 16705,
-            "src": "316:57:42",
+            "src": "317:57:42",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -399,32 +400,32 @@
             "kind": "function",
             "modifiers": [],
             "name": "throwWhenPaused",
-            "nameLocation": "388:15:42",
+            "nameLocation": "389:15:42",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 16702,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "403:2:42"
+              "src": "404:2:42"
             },
             "returnParameters": {
               "id": 16703,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "414:0:42"
+              "src": "415:0:42"
             },
             "scope": 16705,
-            "src": "379:36:42",
+            "src": "380:36:42",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
         "scope": 16706,
-        "src": "86:331:42",
+        "src": "87:331:42",
         "usedErrors": []
       }
     ],
-    "src": "0:418:42"
+    "src": "0:419:42"
   }
 }
