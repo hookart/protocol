@@ -12,8 +12,9 @@ import "./interfaces/IHookProtocol.sol";
  * implementation contract, which is where they will delegate all function calls.
  *
  * An owner is able to change the implementation the beacon points to, thus upgrading the proxies that use this beacon.
- * Ownership is managed centrally on the Hook protocol level, where the owner is the holder of a specific permission. This permission
- * should be used only for the purpose of upgrading the particular contract (i.e., the permissions should not be reused).
+ * Ownership is managed centrally on the Hook protocol level, where the owner is the holder of a specific permission. 
+ * This permission should be used only for the purpose of upgrading the particular contract (i.e., the permissions 
+ * should not be reused).
  *
  * This contract is deliberately simple and only has one non-view
  * method - `upgrade`. Timelocks or other upgrade conditions will be managed by

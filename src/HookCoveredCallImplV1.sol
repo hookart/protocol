@@ -113,8 +113,8 @@ contract HookCoveredCallImplV1 is
          *
          * ************** NOT YET IMPLEMENTED **************
          * TODO(HOOK-798) Create a mint call option based on existing vaults.
-         * SCOPE: Implement this method, create an interface for abstract vaults that reveals which assets are within the vault
-         * update the signed entitlements to account for both generic assets and specific vault addresses.
+         * SCOPE: Implement this method, create an interface for abstract vaults that reveals which assets are within 
+         * the vault update the signed entitlements to account for both generic assets and specific vault addresses.
          *
          */
         return 0;
@@ -122,7 +122,8 @@ contract HookCoveredCallImplV1 is
 
     /**
      * @dev Mints a new call option for a particular "underlying" ERC-721 NFT with a given strike price and expiration.
-     * @param _tokenAddress the contract address of the ERC-721 token that serves as the underlying asset for the call option
+     * @param _tokenAddress the contract address of the ERC-721 token that serves as the underlying asset for the call 
+     * option
      * @param _tokenId the tokenId of the underlying ERC-721 token
      * @param _strikePrice the strike price for the call option being written
      * @param _expirationTime time the timestamp after which the option will be expired
@@ -166,8 +167,9 @@ contract HookCoveredCallImplV1 is
             vault = _erc721VaultFactory.makeVault(_tokenAddress, _tokenId);
         }
 
-        /// IMPORTANT: the entitlement entitles the user to this contract address. That means that even if this implementation code
-        // were upgraded, the contract at this address (i.e. with the new implementation) would retain the entitlement.
+        /// IMPORTANT: the entitlement entitles the user to this contract address. That means that even if this 
+        // implementation code were upgraded, the contract at this address (i.e. with the new implementation) would 
+        // retain the entitlement.
         Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
             beneficialOwner: tokenOwner,
             operator: address(this),
@@ -290,7 +292,8 @@ contract HookCoveredCallImplV1 is
     }
 
     /**
-     * @dev view function to get the current high bidder for an option settlement auction, or the null address if no high bidder exists
+     * @dev view function to get the current high bidder for an option settlement auction, or the null address if no 
+     * high bidder exists
      * @param optionId of the option to check
      */
     function currentBidder(uint256 optionId) external view returns (address) {
@@ -359,8 +362,8 @@ contract HookCoveredCallImplV1 is
     }
 
     /**
-     * @notice Allows the writer to reclaim an entitled asset. This is possible both if they are also the holder of the option NFT
-     * or if the option expired early.
+     * @notice Allows the writer to reclaim an entitled asset. This is possible both if they are also the holder of the 
+     * option NFT or if the option expired early.
      * @dev Allows the writer to reclaim a NFT, either if the option expired OTM or if they also hold the option NFT.
      * @param optionId the asset to reclaim after the auction.
      * @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
@@ -426,11 +429,13 @@ contract HookCoveredCallImplV1 is
 
         /**
             WARNING: 
-            Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on the protocol. Bidders could bid in this settlement auction, 
-            and in the middle of the auction the writer could call this reclaim method. If they do that, they'll get their nft back 
-            _however_ there is no way for the current bidder to reclaim their money.
+            Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on 
+            the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer 
+            could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for 
+            the current bidder to reclaim their money.
 
-            TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that there are not patterns we need to watch here.   
+            TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that 
+            there are not patterns we need to watch here.   
          */
     }
 
@@ -458,7 +463,9 @@ contract HookCoveredCallImplV1 is
         string[5] memory parts;
         parts[
             0
-        ] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" /><text x="10" y="20" class="base">';
+        ] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>'
+        '.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill='
+        '"black" /><text x="10" y="20" class="base">';
 
         parts[1] = HookStrings.toAsciiString(
             optionParams[tokenId].tokenAddress
@@ -480,7 +487,8 @@ contract HookCoveredCallImplV1 is
                     abi.encodePacked(
                         '{"name": "Option Id',
                         HookStrings.toString(tokenId),
-                        '", "description": "Hook powers fully on-chain covered call options", "image": "data:image/svg+xml;base64,',
+                        '", "description": "Hook powers fully on-chain covered call options", "image": '
+                        '"data:image/svg+xml;base64,',
                         Base64.encode(bytes(output)),
                         '"}'
                     )

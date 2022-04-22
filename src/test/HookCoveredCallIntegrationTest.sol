@@ -191,7 +191,6 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     function test_NoSettlemetBidAssetReclaim() public {
         // create the call option
         vm.prank(address(writer));
-        uint256 writerStartBalance = writer.balance;
         uint256 baseTime = block.timestamp;
         uint256 expiration = baseTime + 3 days;
         uint256 optionId = calls.mint(
@@ -222,7 +221,6 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     function test_NoSettlemetBidAssetEarlyReclaim() public {
         // create the call option
         vm.prank(address(writer));
-        uint256 writerStartBalance = writer.balance;
         uint256 baseTime = block.timestamp;
         uint256 expiration = baseTime + 3 days;
         uint256 optionId = calls.mint(
@@ -247,7 +245,6 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     function test_NoSettlemetBidAssetRecaimFailRandomClaimer() public {
         // create the call option
         vm.prank(address(writer));
-        uint256 writerStartBalance = writer.balance;
         uint256 baseTime = block.timestamp;
         uint256 expiration = baseTime + 3 days;
         uint256 optionId = calls.mint(
@@ -275,7 +272,6 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     function test_WriterCannotStealBackAssetAfterExpiration() public {
         // create the call option
         vm.prank(address(writer));
-        uint256 writerStartBalance = writer.balance;
         uint256 baseTime = block.timestamp;
         uint256 expiration = baseTime + 3 days;
         uint256 optionId = calls.mint(
@@ -312,7 +308,6 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     function test_ActiveSettlementBidAssetRecaimFail() public {
         // create the call option
         vm.prank(address(writer));
-        uint256 writerStartBalance = writer.balance;
         uint256 baseTime = block.timestamp;
         uint256 expiration = baseTime + 3 days;
         uint256 optionId = calls.mint(

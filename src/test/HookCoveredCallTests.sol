@@ -298,7 +298,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
             1000,
             expiration
         );
-        uint256 optionId = calls.mint(
+        calls.mint(
             address(token),
             underlyingTokenId,
             1000,
@@ -308,7 +308,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
         // Vault is now owner of the underlying token so this fails.
         vm.expectRevert("mint -- caller must be token owner or operator");
-        uint256 secondOptionId = calls.mint(
+        calls.mint(
             address(token),
             underlyingTokenId,
             1000,
@@ -337,7 +337,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
             1000,
             expiration
         );
-        uint256 optionId = calls.mint(
+        calls.mint(
             address(token),
             underlyingTokenId,
             1000,
@@ -351,7 +351,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
         // Vault is now owner of the underlying token so this fails.
         vm.expectRevert("mint -- caller must be token owner or operator");
-        uint256 secondOptionId = calls.mint(
+        calls.mint(
             address(token),
             underlyingTokenId,
             1000,
@@ -493,7 +493,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
         startHoax(operator);
         uint256 expiration = block.timestamp + 3 days;
 
-        uint256 optionId = calls.mint(
+        calls.mint(
             address(token),
             underlyingTokenId2,
             1000,

@@ -78,7 +78,8 @@ contract HookERC721VaultImplV1 is
     }
 
     /// @notice Add an entitlement claim to the asset held within the contract
-    /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the entitlement
+    /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the 
+    /// entitlement
     /// @param entitlement The entitlement to impose onto the contract
     /// @param signature an EIP-712 signauture of the entitlement struct signed by the beneficial owner
     function imposeEntitlement(
@@ -94,8 +95,9 @@ contract HookERC721VaultImplV1 is
         // as long as it has not already been committed to someone else.
         _verifyAndRegisterEntitlement(entitlement, signature, beneficialOwner);
 
-        /// TODO(HOOK-800): Evaluate if we should require the msg.sender to be the contract gaining the entitlement to prevent
-        /// phishing attacks where people accidentally entitle random contracts while interacting with a valid one.
+        /// TODO(HOOK-800): Evaluate if we should require the msg.sender to be the contract gaining the entitlement to 
+        /// prevent phishing attacks where people accidentally entitle random contracts while interacting with a valid 
+        /// one.
     }
 
     /**
