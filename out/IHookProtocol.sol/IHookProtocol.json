@@ -1,0 +1,431 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "coveredCallContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "throwWhenPaused",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "vaultContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/regynald/Code/hook/protocol/src/interfaces/IHookProtocol.sol",
+    "exportedSymbols": {
+      "IAccessControl": [
+        11811
+      ],
+      "IHookProtocol": [
+        16705
+      ]
+    },
+    "id": 16706,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 16688,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".10"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:42"
+      },
+      {
+        "absolutePath": "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/access/IAccessControl.sol",
+        "file": "@openzeppelin/contracts/access/IAccessControl.sol",
+        "id": 16689,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 16706,
+        "sourceUnit": 11812,
+        "src": "26:59:42",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 16690,
+              "name": "IAccessControl",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 11811,
+              "src": "114:14:42"
+            },
+            "id": 16691,
+            "nodeType": "InheritanceSpecifier",
+            "src": "114:14:42"
+          }
+        ],
+        "canonicalName": "IHookProtocol",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 16705,
+        "linearizedBaseContracts": [
+          16705,
+          11811
+        ],
+        "name": "IHookProtocol",
+        "nameLocation": "97:13:42",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "624c7801",
+            "id": 16696,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "coveredCallContract",
+            "nameLocation": "257:19:42",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 16692,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "276:2:42"
+            },
+            "returnParameters": {
+              "id": 16695,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16694,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16696,
+                  "src": "302:7:42",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16693,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "302:7:42",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "301:9:42"
+            },
+            "scope": 16705,
+            "src": "248:63:42",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "2274346b",
+            "id": 16701,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "vaultContract",
+            "nameLocation": "326:13:42",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 16697,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "339:2:42"
+            },
+            "returnParameters": {
+              "id": 16700,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16699,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16701,
+                  "src": "365:7:42",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16698,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "365:7:42",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "364:9:42"
+            },
+            "scope": 16705,
+            "src": "317:57:42",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "5b67d9ab",
+            "id": 16704,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "throwWhenPaused",
+            "nameLocation": "389:15:42",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 16702,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "404:2:42"
+            },
+            "returnParameters": {
+              "id": 16703,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "415:0:42"
+            },
+            "scope": 16705,
+            "src": "380:36:42",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 16706,
+        "src": "87:331:42",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:419:42"
+  }
+}
