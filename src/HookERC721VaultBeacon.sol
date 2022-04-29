@@ -7,9 +7,9 @@ import "./HookUpgradeableBeacon.sol";
 /// @notice The beacon broadcasts the address which contains the existing implementation of the ERC721 Vault contract
 /// @dev Permissions for who can upgrade are contained within the protocol contract.
 contract HookERC721VaultBeacon is HookUpgradeableBeacon {
-    constructor(
-        address implementation,
-        address hookProtocol,
-        bytes32 upgraderRole
-    ) HookUpgradeableBeacon(implementation, hookProtocol, upgraderRole) {}
+  constructor(
+    address implementation,
+    address hookProtocol,
+    bytes32 upgraderRole
+  ) HookUpgradeableBeacon(implementation, hookProtocol, upgraderRole) {}
 }

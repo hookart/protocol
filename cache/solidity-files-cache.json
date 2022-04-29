@@ -1,564 +1,8 @@
 {
   "_format": "ethers-rs-sol-cache-3",
-  "paths": {
-    "artifacts": "out",
-    "sources": "src",
-    "tests": "test",
-    "libraries": [
-      "lib"
-    ]
-  },
   "files": {
-    "/Users/regynald/Code/hook/hook-main/protocol/lib/forge-std/src/Console.sol": {
-      "lastModificationDate": 1650296915212,
-      "contentHash": "907ccc8c5df3f256f3e4c4a215f521a1",
-      "sourceName": "lib/forge-std/src/Console.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [],
-      "versionRequirement": ">=0.4.22, <0.9.0",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/lib/forge-std/src/Test.sol": {
-      "lastModificationDate": 1650296915212,
-      "contentHash": "c24fa818cefb82d78e5ce65eceb85fd6",
-      "sourceName": "lib/forge-std/src/Test.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "lib/ds-test/src/test.sol",
-        "lib/forge-std/src/Vm.sol",
-        "lib/forge-std/src/console.sol"
-      ],
-      "versionRequirement": ">=0.6.0, <0.9.0",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/lib/forge-std/src/Vm.sol": {
-      "lastModificationDate": 1650296915212,
-      "contentHash": "5e242d192cc1a77ac825a45b4c89ef29",
-      "sourceName": "lib/forge-std/src/Vm.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [],
-      "versionRequirement": ">=0.6.0",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/lib/forge-std/src/console.sol": {
-      "lastModificationDate": 1650296915212,
-      "contentHash": "907ccc8c5df3f256f3e4c4a215f521a1",
-      "sourceName": "lib/forge-std/src/console.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [],
-      "versionRequirement": ">=0.4.22, <0.9.0",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/HookCoveredCallBeacon.sol": {
-      "lastModificationDate": 1650387827443,
-      "contentHash": "8aa623f327775671d433f7bb79c53840",
-      "sourceName": "src/HookCoveredCallBeacon.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "lib/openzepplin-contracts/contracts/access/IAccessControl.sol",
-        "lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol",
-        "lib/openzepplin-contracts/contracts/utils/Address.sol",
-        "src/HookUpgradeableBeacon.sol",
-        "src/interfaces/IHookProtocol.sol",
-        "src/mixin/PermissionConstants.sol"
-      ],
-      "versionRequirement": "^0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/HookCoveredCallFactory.sol": {
-      "lastModificationDate": 1650387827443,
-      "contentHash": "802dd9888999730ba1385c5c8215f8c7",
-      "sourceName": "src/HookCoveredCallFactory.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "lib/openzepplin-contracts/contracts/access/IAccessControl.sol",
-        "lib/openzepplin-contracts/contracts/interfaces/draft-IERC1822.sol",
-        "lib/openzepplin-contracts/contracts/proxy/ERC1967/ERC1967Upgrade.sol",
-        "lib/openzepplin-contracts/contracts/proxy/Proxy.sol",
-        "lib/openzepplin-contracts/contracts/proxy/beacon/BeaconProxy.sol",
-        "lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol",
-        "lib/openzepplin-contracts/contracts/utils/Address.sol",
-        "lib/openzepplin-contracts/contracts/utils/StorageSlot.sol",
-        "src/HookCoveredCall.sol",
-        "src/interfaces/IHookCoveredCallFactory.sol",
-        "src/interfaces/IHookProtocol.sol",
-        "src/mixin/PermissionConstants.sol"
-      ],
-      "versionRequirement": "^0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/HookERC721VaultBeacon.sol": {
-      "lastModificationDate": 1650387827443,
-      "contentHash": "e812caf8646d2a8914993c814730d757",
-      "sourceName": "src/HookERC721VaultBeacon.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "lib/openzepplin-contracts/contracts/access/IAccessControl.sol",
-        "lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol",
-        "lib/openzepplin-contracts/contracts/utils/Address.sol",
-        "src/HookUpgradeableBeacon.sol",
-        "src/interfaces/IHookProtocol.sol",
-        "src/mixin/PermissionConstants.sol"
-      ],
-      "versionRequirement": "^0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/HookERC721VaultFactory.sol": {
-      "lastModificationDate": 1650296744587,
-      "contentHash": "a1251f4e362eca2f4a75854bd3e90de3",
-      "sourceName": "src/HookERC721VaultFactory.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "lib/openzepplin-contracts/contracts/interfaces/draft-IERC1822.sol",
-        "lib/openzepplin-contracts/contracts/proxy/ERC1967/ERC1967Upgrade.sol",
-        "lib/openzepplin-contracts/contracts/proxy/Proxy.sol",
-        "lib/openzepplin-contracts/contracts/proxy/beacon/BeaconProxy.sol",
-        "lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol",
-        "lib/openzepplin-contracts/contracts/utils/Address.sol",
-        "lib/openzepplin-contracts/contracts/utils/StorageSlot.sol",
-        "src/HookERC721Vault.sol",
-        "src/interfaces/IHookERC721VaultFactory.sol"
-      ],
-      "versionRequirement": "^0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/HookUpgradeableBeacon.sol": {
-      "lastModificationDate": 1650387827444,
-      "contentHash": "c8ad257b436a7ad778c948c83009ad96",
-      "sourceName": "src/HookUpgradeableBeacon.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "lib/openzepplin-contracts/contracts/access/IAccessControl.sol",
-        "lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol",
-        "lib/openzepplin-contracts/contracts/utils/Address.sol",
-        "src/interfaces/IHookProtocol.sol",
-        "src/mixin/PermissionConstants.sol"
-      ],
-      "versionRequirement": "^0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/interfaces/IHookCoveredCall.sol": {
-      "lastModificationDate": 1650387827444,
-      "contentHash": "31660d1e71bd611e4c6e5f4930fd0b3b",
-      "sourceName": "src/interfaces/IHookCoveredCall.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "lib/openzepplin-contracts/contracts/token/ERC721/IERC721.sol",
-        "lib/openzepplin-contracts/contracts/utils/introspection/IERC165.sol",
-        "src/lib/Signatures.sol"
-      ],
-      "versionRequirement": "=0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/interfaces/IHookCoveredCallFactory.sol": {
-      "lastModificationDate": 1650387827444,
-      "contentHash": "6f9d8f3852009a9fee603600e4908bcb",
-      "sourceName": "src/interfaces/IHookCoveredCallFactory.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/interfaces/IHookERC721VaultFactory.sol": {
-      "lastModificationDate": 1650387827444,
-      "contentHash": "d7f1f0e4ce5869bbc5330670e0971ad1",
-      "sourceName": "src/interfaces/IHookERC721VaultFactory.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/interfaces/IHookProtocol.sol": {
-      "lastModificationDate": 1650387827444,
-      "contentHash": "2fb626781186497578ab07271d108a14",
-      "sourceName": "src/interfaces/IHookProtocol.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "lib/openzepplin-contracts/contracts/access/IAccessControl.sol"
-      ],
-      "versionRequirement": "=0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/mixin/EIP712.sol": {
-      "lastModificationDate": 1650387827445,
-      "contentHash": "e8aa6e8d2cca43eb86cee8256a690fc9",
-      "sourceName": "src/mixin/EIP712.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/hook-main/protocol/src/mixin/PermissionConstants.sol": {
-      "lastModificationDate": 1650387827445,
-      "contentHash": "864a30a7ebaf5e0b7a0a51d2daaa604e",
-      "sourceName": "src/mixin/PermissionConstants.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.10",
-      "artifacts": {}
-    },
-    "/Users/regynald/Code/hook/protocol/lib/ds-test/src/test.sol": {
-      "lastModificationDate": 1649715075623,
+    "/Users/jake/code/protocol/lib/ds-test/src/test.sol": {
+      "lastModificationDate": 1651072708636,
       "contentHash": "5d45a46528eaf8a26f0a8d93669f3148",
       "sourceName": "lib/ds-test/src/test.sol",
       "solcConfig": {
@@ -566,9 +10,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -594,8 +35,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/forge-std/src/Test.sol": {
-      "lastModificationDate": 1650296915212,
+    "/Users/jake/code/protocol/lib/forge-std/src/Test.sol": {
+      "lastModificationDate": 1651072708637,
       "contentHash": "c24fa818cefb82d78e5ce65eceb85fd6",
       "sourceName": "lib/forge-std/src/Test.sol",
       "solcConfig": {
@@ -603,9 +44,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -641,8 +79,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/forge-std/src/Vm.sol": {
-      "lastModificationDate": 1650296915212,
+    "/Users/jake/code/protocol/lib/forge-std/src/Vm.sol": {
+      "lastModificationDate": 1651072708637,
       "contentHash": "5e242d192cc1a77ac825a45b4c89ef29",
       "sourceName": "lib/forge-std/src/Vm.sol",
       "solcConfig": {
@@ -650,9 +88,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -678,8 +113,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/forge-std/src/console.sol": {
-      "lastModificationDate": 1650296915212,
+    "/Users/jake/code/protocol/lib/forge-std/src/console.sol": {
+      "lastModificationDate": 1651072708638,
       "contentHash": "907ccc8c5df3f256f3e4c4a215f521a1",
       "sourceName": "lib/forge-std/src/console.sol",
       "solcConfig": {
@@ -687,9 +122,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -715,8 +147,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/access/AccessControl.sol": {
-      "lastModificationDate": 1650052495086,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/access/AccessControl.sol": {
+      "lastModificationDate": 1651072708645,
       "contentHash": "7417dede8545422ae9c3bb52b6776d61",
       "sourceName": "lib/openzepplin-contracts/contracts/access/AccessControl.sol",
       "solcConfig": {
@@ -724,9 +156,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -758,8 +187,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/access/IAccessControl.sol": {
-      "lastModificationDate": 1650052495086,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/access/IAccessControl.sol": {
+      "lastModificationDate": 1651072708645,
       "contentHash": "57c84298234411cea19c7c284d86be8b",
       "sourceName": "lib/openzepplin-contracts/contracts/access/IAccessControl.sol",
       "solcConfig": {
@@ -767,9 +196,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -795,8 +221,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/access/Ownable.sol": {
-      "lastModificationDate": 1650052495086,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1651072708646,
       "contentHash": "8398972af73b4e9e5ff3b31cad86234f",
       "sourceName": "lib/openzepplin-contracts/contracts/access/Ownable.sol",
       "solcConfig": {
@@ -804,9 +230,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -834,8 +257,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/interfaces/draft-IERC1822.sol": {
-      "lastModificationDate": 1650052495089,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/interfaces/draft-IERC1822.sol": {
+      "lastModificationDate": 1651072708649,
       "contentHash": "2858d98e74e67987ec81b39605230b74",
       "sourceName": "lib/openzepplin-contracts/contracts/interfaces/draft-IERC1822.sol",
       "solcConfig": {
@@ -843,9 +266,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -871,8 +291,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/proxy/ERC1967/ERC1967Upgrade.sol": {
-      "lastModificationDate": 1650052495096,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/proxy/ERC1967/ERC1967Upgrade.sol": {
+      "lastModificationDate": 1651072708656,
       "contentHash": "6baa887a798e95b14f34e093f117e9b2",
       "sourceName": "lib/openzepplin-contracts/contracts/proxy/ERC1967/ERC1967Upgrade.sol",
       "solcConfig": {
@@ -880,9 +300,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -913,8 +330,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/proxy/Proxy.sol": {
-      "lastModificationDate": 1650052495096,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/proxy/Proxy.sol": {
+      "lastModificationDate": 1651072708657,
       "contentHash": "138f3b0ab82dcb14bea53dda28567b5a",
       "sourceName": "lib/openzepplin-contracts/contracts/proxy/Proxy.sol",
       "solcConfig": {
@@ -922,9 +339,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -950,8 +364,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/proxy/beacon/BeaconProxy.sol": {
-      "lastModificationDate": 1650052495097,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/proxy/beacon/BeaconProxy.sol": {
+      "lastModificationDate": 1651072708657,
       "contentHash": "0d71075819600720f2c99ed4b31d88e0",
       "sourceName": "lib/openzepplin-contracts/contracts/proxy/beacon/BeaconProxy.sol",
       "solcConfig": {
@@ -959,9 +373,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -994,8 +405,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol": {
-      "lastModificationDate": 1650052495097,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol": {
+      "lastModificationDate": 1651072708657,
       "contentHash": "b6bd23bf19e90b771337037706470933",
       "sourceName": "lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol",
       "solcConfig": {
@@ -1003,9 +414,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1031,8 +439,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/proxy/utils/Initializable.sol": {
-      "lastModificationDate": 1650052495097,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/proxy/utils/Initializable.sol": {
+      "lastModificationDate": 1651072708657,
       "contentHash": "d304f8404c63fda396371feb908cf34f",
       "sourceName": "lib/openzepplin-contracts/contracts/proxy/utils/Initializable.sol",
       "solcConfig": {
@@ -1040,9 +448,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1070,8 +475,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/security/Pausable.sol": {
-      "lastModificationDate": 1650052495097,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/security/Pausable.sol": {
+      "lastModificationDate": 1651072708657,
       "contentHash": "9c2dccab8e3a43a18c41e358763fe4d8",
       "sourceName": "lib/openzepplin-contracts/contracts/security/Pausable.sol",
       "solcConfig": {
@@ -1079,9 +484,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1109,8 +511,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/security/ReentrancyGuard.sol": {
-      "lastModificationDate": 1650052495098,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/security/ReentrancyGuard.sol": {
+      "lastModificationDate": 1651072708658,
       "contentHash": "92f9448b23a90ea3bb932ee55cc3ccce",
       "sourceName": "lib/openzepplin-contracts/contracts/security/ReentrancyGuard.sol",
       "solcConfig": {
@@ -1118,9 +520,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1146,8 +545,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/token/ERC721/ERC721.sol": {
-      "lastModificationDate": 1650052495100,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/token/ERC721/ERC721.sol": {
+      "lastModificationDate": 1651072708661,
       "contentHash": "cb81ac3cf170b0a6ab137495b2094f10",
       "sourceName": "lib/openzepplin-contracts/contracts/token/ERC721/ERC721.sol",
       "solcConfig": {
@@ -1155,9 +554,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1192,8 +588,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/token/ERC721/IERC721.sol": {
-      "lastModificationDate": 1650052495100,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/token/ERC721/IERC721.sol": {
+      "lastModificationDate": 1651072708661,
       "contentHash": "27d219ec6f69478d065fdbfa7931da68",
       "sourceName": "lib/openzepplin-contracts/contracts/token/ERC721/IERC721.sol",
       "solcConfig": {
@@ -1201,9 +597,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1231,8 +624,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/token/ERC721/IERC721Receiver.sol": {
-      "lastModificationDate": 1650052495101,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/token/ERC721/IERC721Receiver.sol": {
+      "lastModificationDate": 1651072708661,
       "contentHash": "4a42975c8e0c64414a9462122137e990",
       "sourceName": "lib/openzepplin-contracts/contracts/token/ERC721/IERC721Receiver.sol",
       "solcConfig": {
@@ -1240,9 +633,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1268,8 +658,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/token/ERC721/extensions/ERC721Burnable.sol": {
-      "lastModificationDate": 1650052495101,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/token/ERC721/extensions/ERC721Burnable.sol": {
+      "lastModificationDate": 1651072708661,
       "contentHash": "7bbd5ca6e396f0ad628cfbf0031d9e32",
       "sourceName": "lib/openzepplin-contracts/contracts/token/ERC721/extensions/ERC721Burnable.sol",
       "solcConfig": {
@@ -1277,9 +667,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1315,8 +702,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol": {
-      "lastModificationDate": 1650052495101,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol": {
+      "lastModificationDate": 1651072708661,
       "contentHash": "efbc0d15b80a74e34dbe8da0f3e879bb",
       "sourceName": "lib/openzepplin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol",
       "solcConfig": {
@@ -1324,9 +711,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1355,8 +739,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/utils/Address.sol": {
-      "lastModificationDate": 1650052495102,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/utils/Address.sol": {
+      "lastModificationDate": 1651072708663,
       "contentHash": "ad714a6368ee7d43cded6bbe8af0b155",
       "sourceName": "lib/openzepplin-contracts/contracts/utils/Address.sol",
       "solcConfig": {
@@ -1364,9 +748,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1392,8 +773,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/utils/Base64.sol": {
-      "lastModificationDate": 1650052495102,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/utils/Base64.sol": {
+      "lastModificationDate": 1651072708663,
       "contentHash": "077d9664b0b4a2fd2033cea2663530f4",
       "sourceName": "lib/openzepplin-contracts/contracts/utils/Base64.sol",
       "solcConfig": {
@@ -1401,9 +782,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1429,8 +807,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/utils/Context.sol": {
-      "lastModificationDate": 1650052495103,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/utils/Context.sol": {
+      "lastModificationDate": 1651072708663,
       "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "lib/openzepplin-contracts/contracts/utils/Context.sol",
       "solcConfig": {
@@ -1438,9 +816,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1466,8 +841,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/utils/Counters.sol": {
-      "lastModificationDate": 1650052495103,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/utils/Counters.sol": {
+      "lastModificationDate": 1651072708663,
       "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
       "sourceName": "lib/openzepplin-contracts/contracts/utils/Counters.sol",
       "solcConfig": {
@@ -1475,9 +850,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1503,8 +875,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/utils/StorageSlot.sol": {
-      "lastModificationDate": 1650052495103,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/utils/StorageSlot.sol": {
+      "lastModificationDate": 1651072708663,
       "contentHash": "187a01c1e4e638014509dfee3ac6faa9",
       "sourceName": "lib/openzepplin-contracts/contracts/utils/StorageSlot.sol",
       "solcConfig": {
@@ -1512,9 +884,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1540,8 +909,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/utils/Strings.sol": {
-      "lastModificationDate": 1650052495103,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/utils/Strings.sol": {
+      "lastModificationDate": 1651072708663,
       "contentHash": "9c54c6c065d9e590fdcdd72c451425b9",
       "sourceName": "lib/openzepplin-contracts/contracts/utils/Strings.sol",
       "solcConfig": {
@@ -1549,9 +918,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1577,8 +943,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/utils/introspection/ERC165.sol": {
-      "lastModificationDate": 1650052495104,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/utils/introspection/ERC165.sol": {
+      "lastModificationDate": 1651072708664,
       "contentHash": "0e7db055ce108f9da7bb6686a00287c0",
       "sourceName": "lib/openzepplin-contracts/contracts/utils/introspection/ERC165.sol",
       "solcConfig": {
@@ -1586,9 +952,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1616,8 +979,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/lib/openzepplin-contracts/contracts/utils/introspection/IERC165.sol": {
-      "lastModificationDate": 1650052495104,
+    "/Users/jake/code/protocol/lib/openzepplin-contracts/contracts/utils/introspection/IERC165.sol": {
+      "lastModificationDate": 1651072708664,
       "contentHash": "03e6768535ac4da0e9756f1d8a4a018a",
       "sourceName": "lib/openzepplin-contracts/contracts/utils/introspection/IERC165.sol",
       "solcConfig": {
@@ -1625,9 +988,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1653,18 +1013,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookCoveredCall.sol": {
-      "lastModificationDate": 1650051827433,
-      "contentHash": "249f2d5bef7f2604958c5e91749df7b3",
+    "/Users/jake/code/protocol/src/HookCoveredCall.sol": {
+      "lastModificationDate": 1651072708700,
+      "contentHash": "815b69ab460f9d8802a2a857c982f29d",
       "sourceName": "src/HookCoveredCall.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1698,8 +1055,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookCoveredCallBeacon.sol": {
-      "lastModificationDate": 1650388104280,
+    "/Users/jake/code/protocol/src/HookCoveredCallBeacon.sol": {
+      "lastModificationDate": 1651072708700,
       "contentHash": "8aa623f327775671d433f7bb79c53840",
       "sourceName": "src/HookCoveredCallBeacon.sol",
       "solcConfig": {
@@ -1707,9 +1064,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1742,8 +1096,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookCoveredCallFactory.sol": {
-      "lastModificationDate": 1650388104280,
+    "/Users/jake/code/protocol/src/HookCoveredCallFactory.sol": {
+      "lastModificationDate": 1651072708700,
       "contentHash": "802dd9888999730ba1385c5c8215f8c7",
       "sourceName": "src/HookCoveredCallFactory.sol",
       "solcConfig": {
@@ -1751,9 +1105,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1792,18 +1143,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookCoveredCallImplV1.sol": {
-      "lastModificationDate": 1650647222929,
-      "contentHash": "1058d0127a9f76a2ccaf6b003b834d26",
+    "/Users/jake/code/protocol/src/HookCoveredCallImplV1.sol": {
+      "lastModificationDate": 1651174047390,
+      "contentHash": "9a48bd4d1c7e3c90d894dc32f1783bb7",
       "sourceName": "src/HookCoveredCallImplV1.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1841,6 +1189,7 @@
         "src/interfaces/IHookERC721Vault.sol",
         "src/interfaces/IHookERC721VaultFactory.sol",
         "src/interfaces/IHookProtocol.sol",
+        "src/interfaces/IWETH.sol",
         "src/lib/Entitlements.sol",
         "src/lib/HookStrings.sol",
         "src/lib/Signatures.sol"
@@ -1852,8 +1201,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookERC721Vault.sol": {
-      "lastModificationDate": 1650296747937,
+    "/Users/jake/code/protocol/src/HookERC721Vault.sol": {
+      "lastModificationDate": 1651072708700,
       "contentHash": "d3ca2f6bf9a6472d5322adc00518e6fa",
       "sourceName": "src/HookERC721Vault.sol",
       "solcConfig": {
@@ -1861,9 +1210,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1897,8 +1243,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookERC721VaultBeacon.sol": {
-      "lastModificationDate": 1650388104280,
+    "/Users/jake/code/protocol/src/HookERC721VaultBeacon.sol": {
+      "lastModificationDate": 1651072708700,
       "contentHash": "e812caf8646d2a8914993c814730d757",
       "sourceName": "src/HookERC721VaultBeacon.sol",
       "solcConfig": {
@@ -1906,9 +1252,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1941,8 +1284,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookERC721VaultFactory.sol": {
-      "lastModificationDate": 1650296744587,
+    "/Users/jake/code/protocol/src/HookERC721VaultFactory.sol": {
+      "lastModificationDate": 1651072708700,
       "contentHash": "a1251f4e362eca2f4a75854bd3e90de3",
       "sourceName": "src/HookERC721VaultFactory.sol",
       "solcConfig": {
@@ -1950,9 +1293,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -1988,18 +1328,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookERC721VaultImplV1.sol": {
-      "lastModificationDate": 1650647222929,
-      "contentHash": "ee3addfbc5304c35b984500655ab3961",
+    "/Users/jake/code/protocol/src/HookERC721VaultImplV1.sol": {
+      "lastModificationDate": 1651072708701,
+      "contentHash": "e7bd954c3e398afa9b0946dff8cf27ca",
       "sourceName": "src/HookERC721VaultImplV1.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2036,18 +1373,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookProtocol.sol": {
-      "lastModificationDate": 1650388104281,
-      "contentHash": "92931b7c4ee9264bf69d188e92900529",
+    "/Users/jake/code/protocol/src/HookProtocol.sol": {
+      "lastModificationDate": 1651174431592,
+      "contentHash": "6137715b3df60e28ba9355e42099167c",
       "sourceName": "src/HookProtocol.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2083,18 +1417,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/HookUpgradeableBeacon.sol": {
-      "lastModificationDate": 1650647222930,
-      "contentHash": "c8ad257b436a7ad778c948c83009ad96",
+    "/Users/jake/code/protocol/src/HookUpgradeableBeacon.sol": {
+      "lastModificationDate": 1651072708701,
+      "contentHash": "d0f95fbd6a8c50466cd846b91356f881",
       "sourceName": "src/HookUpgradeableBeacon.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2126,18 +1457,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/interfaces/IHookCoveredCall.sol": {
-      "lastModificationDate": 1650388104282,
-      "contentHash": "31660d1e71bd611e4c6e5f4930fd0b3b",
+    "/Users/jake/code/protocol/src/interfaces/IHookCoveredCall.sol": {
+      "lastModificationDate": 1651072708701,
+      "contentHash": "78fb9c7a476d32319e7ef84ccfa696af",
       "sourceName": "src/interfaces/IHookCoveredCall.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2160,25 +1488,22 @@
         "lib/openzepplin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/lib/Signatures.sol"
       ],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "IHookCoveredCall": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "IHookCoveredCall.sol/IHookCoveredCall.json"
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/interfaces/IHookCoveredCallFactory.sol": {
-      "lastModificationDate": 1650388104282,
-      "contentHash": "6f9d8f3852009a9fee603600e4908bcb",
+    "/Users/jake/code/protocol/src/interfaces/IHookCoveredCallFactory.sol": {
+      "lastModificationDate": 1651072708701,
+      "contentHash": "5db0ed85cb8430e63dbd1182db140175",
       "sourceName": "src/interfaces/IHookCoveredCallFactory.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2197,15 +1522,15 @@
         }
       },
       "imports": [],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "IHookCoveredCallFactory": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "IHookCoveredCallFactory.sol/IHookCoveredCallFactory.json"
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/interfaces/IHookERC721Vault.sol": {
-      "lastModificationDate": 1650403772687,
+    "/Users/jake/code/protocol/src/interfaces/IHookERC721Vault.sol": {
+      "lastModificationDate": 1651072708701,
       "contentHash": "206431053a475e8c86bda551f5ff1ecc",
       "sourceName": "src/interfaces/IHookERC721Vault.sol",
       "solcConfig": {
@@ -2213,9 +1538,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2245,8 +1567,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/interfaces/IHookERC721VaultFactory.sol": {
-      "lastModificationDate": 1650647218002,
+    "/Users/jake/code/protocol/src/interfaces/IHookERC721VaultFactory.sol": {
+      "lastModificationDate": 1651072708701,
       "contentHash": "3a6458cb5fe13fd35c33b2cf15b64ea6",
       "sourceName": "src/interfaces/IHookERC721VaultFactory.sol",
       "solcConfig": {
@@ -2254,9 +1576,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2282,18 +1601,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/interfaces/IHookProtocol.sol": {
-      "lastModificationDate": 1650647216639,
-      "contentHash": "5b041ea550274a4c6927befb6b07c673",
+    "/Users/jake/code/protocol/src/interfaces/IHookProtocol.sol": {
+      "lastModificationDate": 1651174268027,
+      "contentHash": "5a368a421af2a84e2c52eaaf3b2bf9a1",
       "sourceName": "src/interfaces/IHookProtocol.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2321,8 +1637,42 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/lib/Entitlements.sol": {
-      "lastModificationDate": 1650647215904,
+    "/Users/jake/code/protocol/src/interfaces/IWETH.sol": {
+      "lastModificationDate": 1651171951797,
+      "contentHash": "bb570f1fe9602dc577ea83ba06ac8dd0",
+      "sourceName": "src/interfaces/IWETH.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.10",
+      "artifacts": {
+        "IWETH": {
+          "0.8.10+commit.fc410830.Darwin.appleclang": "IWETH.sol/IWETH.json"
+        }
+      }
+    },
+    "/Users/jake/code/protocol/src/lib/Entitlements.sol": {
+      "lastModificationDate": 1651072708701,
       "contentHash": "5cafdfe31a46778deb1074fea65bfccd",
       "sourceName": "src/lib/Entitlements.sol",
       "solcConfig": {
@@ -2330,9 +1680,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2360,8 +1707,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/lib/HookStrings.sol": {
-      "lastModificationDate": 1650647215137,
+    "/Users/jake/code/protocol/src/lib/HookStrings.sol": {
+      "lastModificationDate": 1651072708701,
       "contentHash": "bea98b97840517e2066a5363928297f5",
       "sourceName": "src/lib/HookStrings.sol",
       "solcConfig": {
@@ -2369,9 +1716,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2397,8 +1741,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/lib/Signatures.sol": {
-      "lastModificationDate": 1650647214381,
+    "/Users/jake/code/protocol/src/lib/Signatures.sol": {
+      "lastModificationDate": 1651072708701,
       "contentHash": "f9fca86336ebf0ffea68bf3312a0dcba",
       "sourceName": "src/lib/Signatures.sol",
       "solcConfig": {
@@ -2406,9 +1750,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2434,8 +1775,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/mixin/EIP712.sol": {
-      "lastModificationDate": 1650388104282,
+    "/Users/jake/code/protocol/src/mixin/EIP712.sol": {
+      "lastModificationDate": 1651072708701,
       "contentHash": "e8aa6e8d2cca43eb86cee8256a690fc9",
       "sourceName": "src/mixin/EIP712.sol",
       "solcConfig": {
@@ -2443,9 +1784,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2471,8 +1809,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/mixin/PermissionConstants.sol": {
-      "lastModificationDate": 1650388104283,
+    "/Users/jake/code/protocol/src/mixin/PermissionConstants.sol": {
+      "lastModificationDate": 1651072708701,
       "contentHash": "864a30a7ebaf5e0b7a0a51d2daaa604e",
       "sourceName": "src/mixin/PermissionConstants.sol",
       "solcConfig": {
@@ -2480,9 +1818,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2508,18 +1843,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/test/HookCoveredCallIntegrationTest.sol": {
-      "lastModificationDate": 1650647222930,
-      "contentHash": "07135ccbc54f39c41b765d7f9a3400b4",
-      "sourceName": "src/test/HookCoveredCallIntegrationTest.sol",
+    "/Users/jake/code/protocol/src/test/HookCoveredCallBiddingRevertTests.sol": {
+      "lastModificationDate": 1651080478711,
+      "contentHash": "4baa253b5f05ce3ae598fe5359696e5b",
+      "sourceName": "src/test/HookCoveredCallBiddingRevertTests.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2581,6 +1913,95 @@
         "src/interfaces/IHookERC721Vault.sol",
         "src/interfaces/IHookERC721VaultFactory.sol",
         "src/interfaces/IHookProtocol.sol",
+        "src/interfaces/IWETH.sol",
+        "src/lib/Entitlements.sol",
+        "src/lib/HookStrings.sol",
+        "src/lib/Signatures.sol",
+        "src/mixin/EIP712.sol",
+        "src/mixin/PermissionConstants.sol",
+        "src/test/utils/base.sol",
+        "src/test/utils/mocks/MaliciousBidder.sol",
+        "src/test/utils/tokens/TestERC721.sol",
+        "src/test/utils/tokens/WETH.sol"
+      ],
+      "versionRequirement": "^0.8.10",
+      "artifacts": {
+        "HookCoveredCallBiddingReverTests": {
+          "0.8.10+commit.fc410830.Darwin.appleclang": "HookCoveredCallBiddingRevertTests.sol/HookCoveredCallBiddingReverTests.json"
+        }
+      }
+    },
+    "/Users/jake/code/protocol/src/test/HookCoveredCallIntegrationTest.sol": {
+      "lastModificationDate": 1651072708702,
+      "contentHash": "1fa1aa28e9c327a852ff7c7fd8f1564e",
+      "sourceName": "src/test/HookCoveredCallIntegrationTest.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [
+        "lib/ds-test/src/test.sol",
+        "lib/forge-std/src/Test.sol",
+        "lib/forge-std/src/Vm.sol",
+        "lib/forge-std/src/console.sol",
+        "lib/openzepplin-contracts/contracts/access/AccessControl.sol",
+        "lib/openzepplin-contracts/contracts/access/IAccessControl.sol",
+        "lib/openzepplin-contracts/contracts/access/Ownable.sol",
+        "lib/openzepplin-contracts/contracts/interfaces/draft-IERC1822.sol",
+        "lib/openzepplin-contracts/contracts/proxy/ERC1967/ERC1967Upgrade.sol",
+        "lib/openzepplin-contracts/contracts/proxy/Proxy.sol",
+        "lib/openzepplin-contracts/contracts/proxy/beacon/BeaconProxy.sol",
+        "lib/openzepplin-contracts/contracts/proxy/beacon/IBeacon.sol",
+        "lib/openzepplin-contracts/contracts/proxy/utils/Initializable.sol",
+        "lib/openzepplin-contracts/contracts/security/Pausable.sol",
+        "lib/openzepplin-contracts/contracts/security/ReentrancyGuard.sol",
+        "lib/openzepplin-contracts/contracts/token/ERC721/ERC721.sol",
+        "lib/openzepplin-contracts/contracts/token/ERC721/IERC721.sol",
+        "lib/openzepplin-contracts/contracts/token/ERC721/IERC721Receiver.sol",
+        "lib/openzepplin-contracts/contracts/token/ERC721/extensions/ERC721Burnable.sol",
+        "lib/openzepplin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+        "lib/openzepplin-contracts/contracts/utils/Address.sol",
+        "lib/openzepplin-contracts/contracts/utils/Base64.sol",
+        "lib/openzepplin-contracts/contracts/utils/Context.sol",
+        "lib/openzepplin-contracts/contracts/utils/Counters.sol",
+        "lib/openzepplin-contracts/contracts/utils/StorageSlot.sol",
+        "lib/openzepplin-contracts/contracts/utils/Strings.sol",
+        "lib/openzepplin-contracts/contracts/utils/introspection/ERC165.sol",
+        "lib/openzepplin-contracts/contracts/utils/introspection/IERC165.sol",
+        "src/HookCoveredCall.sol",
+        "src/HookCoveredCallBeacon.sol",
+        "src/HookCoveredCallFactory.sol",
+        "src/HookCoveredCallImplV1.sol",
+        "src/HookERC721Vault.sol",
+        "src/HookERC721VaultBeacon.sol",
+        "src/HookERC721VaultFactory.sol",
+        "src/HookERC721VaultImplV1.sol",
+        "src/HookProtocol.sol",
+        "src/HookUpgradeableBeacon.sol",
+        "src/interfaces/IHookCoveredCall.sol",
+        "src/interfaces/IHookCoveredCallFactory.sol",
+        "src/interfaces/IHookERC721Vault.sol",
+        "src/interfaces/IHookERC721VaultFactory.sol",
+        "src/interfaces/IHookProtocol.sol",
+        "src/interfaces/IWETH.sol",
         "src/lib/Entitlements.sol",
         "src/lib/HookStrings.sol",
         "src/lib/Signatures.sol",
@@ -2597,18 +2018,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/test/HookCoveredCallTests.sol": {
-      "lastModificationDate": 1650647222931,
-      "contentHash": "d26392491645298eb5dee32f8e9ac90c",
+    "/Users/jake/code/protocol/src/test/HookCoveredCallTests.sol": {
+      "lastModificationDate": 1651072708702,
+      "contentHash": "66d31a6b95ba8f8a51e97e4faae8796e",
       "sourceName": "src/test/HookCoveredCallTests.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2670,6 +2088,7 @@
         "src/interfaces/IHookERC721Vault.sol",
         "src/interfaces/IHookERC721VaultFactory.sol",
         "src/interfaces/IHookProtocol.sol",
+        "src/interfaces/IWETH.sol",
         "src/lib/Entitlements.sol",
         "src/lib/HookStrings.sol",
         "src/lib/Signatures.sol",
@@ -2695,8 +2114,8 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/test/HookVaultTests.sol": {
-      "lastModificationDate": 1650403772687,
+    "/Users/jake/code/protocol/src/test/HookVaultTests.sol": {
+      "lastModificationDate": 1651072708702,
       "contentHash": "8de1047c3b1bab5e81b3be6d709181d5",
       "sourceName": "src/test/HookVaultTests.sol",
       "solcConfig": {
@@ -2704,9 +2123,6 @@
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2768,6 +2184,7 @@
         "src/interfaces/IHookERC721Vault.sol",
         "src/interfaces/IHookERC721VaultFactory.sol",
         "src/interfaces/IHookProtocol.sol",
+        "src/interfaces/IWETH.sol",
         "src/lib/Entitlements.sol",
         "src/lib/HookStrings.sol",
         "src/lib/Signatures.sol",
@@ -2784,55 +2201,15 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/test/utils/VM.sol": {
-      "lastModificationDate": 1649715043599,
-      "contentHash": "6a9d3f371067d3b82b873a7516a25301",
-      "sourceName": "src/test/utils/VM.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.10",
-      "artifacts": {
-        "VM": {
-          "0.8.10+commit.fc410830.Darwin.appleclang": "VM.sol/VM.json"
-        }
-      }
-    },
-    "/Users/regynald/Code/hook/protocol/src/test/utils/base.sol": {
-      "lastModificationDate": 1650647222932,
-      "contentHash": "50355f1b0dda43da5d17cbaabb6aa06c",
+    "/Users/jake/code/protocol/src/test/utils/base.sol": {
+      "lastModificationDate": 1651174466000,
+      "contentHash": "ab94e6e9300ae7eca974acecac982c3d",
       "sourceName": "src/test/utils/base.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {
@@ -2894,6 +2271,7 @@
         "src/interfaces/IHookERC721Vault.sol",
         "src/interfaces/IHookERC721VaultFactory.sol",
         "src/interfaces/IHookProtocol.sol",
+        "src/interfaces/IWETH.sol",
         "src/lib/Entitlements.sol",
         "src/lib/HookStrings.sol",
         "src/lib/Signatures.sol",
@@ -2909,18 +2287,54 @@
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/test/utils/tokens/TestERC721.sol": {
-      "lastModificationDate": 1649715043599,
-      "contentHash": "fa388707efb5d26a7b96f0d77ccadb0c",
-      "sourceName": "src/test/utils/tokens/TestERC721.sol",
+    "/Users/jake/code/protocol/src/test/utils/mocks/MaliciousBidder.sol": {
+      "lastModificationDate": 1651079578295,
+      "contentHash": "d8e5ce9e5b37f437a656ae60f0296092",
+      "sourceName": "src/test/utils/mocks/MaliciousBidder.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
           },
-          "metadata": {
-            "bytecodeHash": "ipfs"
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [
+        "lib/openzepplin-contracts/contracts/token/ERC721/IERC721.sol",
+        "lib/openzepplin-contracts/contracts/utils/introspection/IERC165.sol",
+        "src/interfaces/IHookCoveredCall.sol",
+        "src/lib/Signatures.sol"
+      ],
+      "versionRequirement": "^0.8.10",
+      "artifacts": {
+        "MaliciousBidder": {
+          "0.8.10+commit.fc410830.Darwin.appleclang": "MaliciousBidder.sol/MaliciousBidder.json"
+        }
+      }
+    },
+    "/Users/jake/code/protocol/src/test/utils/tokens/TestERC721.sol": {
+      "lastModificationDate": 1651072708702,
+      "contentHash": "46dbe38fd02026b16a44c375631da5aa",
+      "sourceName": "src/test/utils/tokens/TestERC721.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
           },
           "outputSelection": {
             "*": {
@@ -2950,25 +2364,22 @@
         "lib/openzepplin-contracts/contracts/utils/introspection/ERC165.sol",
         "lib/openzepplin-contracts/contracts/utils/introspection/IERC165.sol"
       ],
-      "versionRequirement": "=0.8.10",
+      "versionRequirement": "^0.8.10",
       "artifacts": {
         "TestERC721": {
           "0.8.10+commit.fc410830.Darwin.appleclang": "TestERC721.sol/TestERC721.json"
         }
       }
     },
-    "/Users/regynald/Code/hook/protocol/src/test/utils/tokens/WETH.sol": {
-      "lastModificationDate": 1650647294746,
-      "contentHash": "44fbc0160243f267d3e896a4676fa99b",
+    "/Users/jake/code/protocol/src/test/utils/tokens/WETH.sol": {
+      "lastModificationDate": 1651072708702,
+      "contentHash": "778a0cd3d780fc45e52c27305ce94a22",
       "sourceName": "src/test/utils/tokens/WETH.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
           },
           "outputSelection": {
             "*": {

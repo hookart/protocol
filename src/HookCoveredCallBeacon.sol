@@ -7,9 +7,9 @@ import "./HookUpgradeableBeacon.sol";
 /// @notice The beacon broadcasts the address which contains the existing implementation of the CoveredCall contract
 /// @dev Permissions for who can upgrade are contained within the protocol contract.
 contract HookCoveredCallBeacon is HookUpgradeableBeacon {
-    constructor(
-        address implementation,
-        address hookProtocol,
-        bytes32 upgraderRole
-    ) HookUpgradeableBeacon(implementation, hookProtocol, upgraderRole) {}
+  constructor(
+    address implementation,
+    address hookProtocol,
+    bytes32 upgraderRole
+  ) HookUpgradeableBeacon(implementation, hookProtocol, upgraderRole) {}
 }
