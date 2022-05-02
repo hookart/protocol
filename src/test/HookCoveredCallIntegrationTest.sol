@@ -73,7 +73,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   {
     vm.prank(address(writer));
     vm.expectRevert(
-      "mint -- _expirationTime must be more than one day in the future time"
+      "mint -- expirationTime must be more than one day in the future time"
     );
     calls.mint(
       address(token),
