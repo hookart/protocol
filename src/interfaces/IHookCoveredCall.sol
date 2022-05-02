@@ -20,10 +20,10 @@ interface IHookCoveredCall is IERC721 {
   event Bid(uint256 optionId, uint256 bidAmount, address bidder);
 
   function mint(
-    address _tokenAddress,
-    uint256 _tokenId,
-    uint256 _strikePriceWei,
-    uint256 _expirationTime,
+    address tokenAddress,
+    uint256 tokenId,
+    uint256 strikePriceWei,
+    uint256 expirationTime,
     Signatures.Signature memory signature
   ) external returns (uint256);
 

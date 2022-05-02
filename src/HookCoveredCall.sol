@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
@@ -15,7 +16,7 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 ///
 /// (1) WRITING:
 /// The owner of the NFT can mint an option by calling the "mint" function using the parameters of the subject ERC-721;
-/// specifying additionally their preferred strike price and expiration. An "insturment nft" is minted to the writer's
+/// specifying additionally their preferred strike price and expiration. An "instrument nft" is minted to the writer's
 /// address, where the holder of this ERC-721 will recieve the economic benefit of holding the option.
 ///
 /// (2) SALE:
@@ -26,7 +27,7 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 /// (3) SETTLEMENT:
 /// One day prior to the expiration, and auction begins. People are able to call bid() for more than the strike price to
 /// place a bid. If, at settlement, the high bid is greater than the strike, (bid - strike) is transferred to the holder
-/// of the insturment NFT, the strike price is transferred to the writer. The high bid is transferred to the holder of
+/// of the instrument NFT, the strike price is transferred to the writer. The high bid is transferred to the holder of
 /// the option.
 ///
 /// @dev The HookCoveredCall is a BeaconProxy, which allows the implemenation of the protocol to be upgraded in the

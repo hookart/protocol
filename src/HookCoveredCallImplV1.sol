@@ -72,7 +72,7 @@ contract HookCoveredCallImplV1 is
   mapping(uint256 => CallOption) public optionParams;
 
   /// @dev the address of the ERC-721 contract that can serve as underlying assets for this
-  /// insturment.
+  /// instrument.
   address public allowedNftContract;
 
   /// @dev the address of WETH on the chain where this contract is deployed
@@ -82,21 +82,21 @@ contract HookCoveredCallImplV1 is
   // the constructor cannot have arugments in proxied contracts.
   constructor() ERC721("CallOption", "CALL") {}
 
-  /// @notice Initializes the specific instance of the insturment contract.
+  /// @notice Initializes the specific instance of the instrument contract.
   /// @dev Because the deployed contract is proxied, arguments unique to each deployment
   /// must be passed in an individual initializer. This function is like a consturctor.
   /// @param protocol the address of the Hook protocol (which contains configurations)
-  /// @param _allowedNftContract the address for the ERC-721 contract that can serve as underlying insturments
+  /// @param nftContract the address for the ERC-721 contract that can serve as underlying instruments
   /// @param hookVaultFactory the address of the ERC-721 vault registry
   function initialize(
     address protocol,
-    address _allowedNftContract,
+    address nftContract,
     address hookVaultFactory
   ) public initializer {
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();
-    allowedNftContract = _allowedNftContract;
+    allowedNftContract = nftContract;
   }
 
   /// ---- Option Writer Functions ---- //
@@ -113,7 +113,7 @@ contract HookCoveredCallImplV1 is
     uint256 _strikePrice,
     uint256 _expirationTime,
     Signatures.Signature memory signature
-  ) public whenNotPaused returns (uint256) {
+  ) external whenNotPaused returns (uint256) {
     /**
      *
      * ************** NOT YET IMPLEMENTED **************
@@ -127,23 +127,23 @@ contract HookCoveredCallImplV1 is
 
   /**
    * @dev Mints a new call option for a particular "underlying" ERC-721 NFT with a given strike price and expiration.
-   * @param _tokenAddress the contract address of the ERC-721 token that serves as the underlying asset for the call
+   * @param tokenAddress the contract address of the ERC-721 token that serves as the underlying asset for the call
    * option
-   * @param _tokenId the tokenId of the underlying ERC-721 token
-   * @param _strikePrice the strike price for the call option being written
-   * @param _expirationTime time the timestamp after which the option will be expired
+   * @param tokenId the tokenId of the underlying ERC-721 token
+   * @param strikePrice the strike price for the call option being written
+   * @param expirationTime time the timestamp after which the option will be expired
    * @param signature the signature used to place the entitlement onto the vault
    */
   function mint(
-    address _tokenAddress,
-    uint256 _tokenId,
-    uint256 _strikePrice,
-    uint256 _expirationTime,
+    address tokenAddress,
+    uint256 tokenId,
+    uint256 strikePrice,
+    uint256 expirationTime,
     Signatures.Signature memory signature
-  ) public whenNotPaused returns (uint256) {
-    address tokenOwner = IERC721(_tokenAddress).ownerOf(_tokenId);
+  ) external whenNotPaused returns (uint256) {
+    address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
-      allowedNftContract == _tokenAddress,
+      allowedNftContract == tokenAddress,
       "mint -- token must be on the project allowlist"
     );
 
@@ -151,25 +151,25 @@ contract HookCoveredCallImplV1 is
     // this is to ensure additionally that the msg.sender isn't a unexpected address
     require(
       msg.sender == tokenOwner ||
-        IERC721(_tokenAddress).isApprovedForAll(tokenOwner, msg.sender),
+        IERC721(tokenAddress).isApprovedForAll(tokenOwner, msg.sender),
       "mint -- caller must be token owner or operator"
     );
     require(
-      IERC721(_tokenAddress).isApprovedForAll(tokenOwner, address(this)),
+      IERC721(tokenAddress).isApprovedForAll(tokenOwner, address(this)),
       "mint -- HookCoveredCall must be operator"
     );
 
     // NOTE: The settlement auction always occurs one day before expiration
     require(
-      _expirationTime > block.timestamp + 1 days,
-      "mint -- _expirationTime must be more than one day in the future time"
+      expirationTime > block.timestamp + 1 days,
+      "mint -- expirationTime must be more than one day in the future time"
     );
     _optionIds.increment();
 
     // FIND OR CREATE HOOK VAULT, SET AN ENTITLEMENT
-    address vault = _erc721VaultFactory.getVault(_tokenAddress, _tokenId);
+    address vault = _erc721VaultFactory.getVault(tokenAddress, tokenId);
     if (vault == address(0)) {
-      vault = _erc721VaultFactory.makeVault(_tokenAddress, _tokenId);
+      vault = _erc721VaultFactory.makeVault(tokenAddress, tokenId);
     }
 
     /// IMPORTANT: the entitlement entitles the user to this contract address. That means that even if this
@@ -178,9 +178,9 @@ contract HookCoveredCallImplV1 is
     Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
       beneficialOwner: tokenOwner,
       operator: address(this),
-      nftContract: _tokenAddress,
-      nftTokenId: _tokenId,
-      expiry: _expirationTime
+      nftContract: tokenAddress,
+      nftTokenId: tokenId,
+      expiry: expirationTime
     });
 
     // generate the next optionId
@@ -189,11 +189,11 @@ contract HookCoveredCallImplV1 is
     // save the option metadata
     optionParams[newOptionId] = CallOption({
       writer: tokenOwner,
-      tokenAddress: _tokenAddress,
-      tokenId: _tokenId,
+      tokenAddress: tokenAddress,
+      tokenId: tokenId,
       vaultAddress: vault,
-      strike: _strikePrice,
-      expiration: _expirationTime,
+      strike: strikePrice,
+      expiration: expirationTime,
       bid: 0,
       highBidder: address(0),
       settled: false
@@ -201,10 +201,10 @@ contract HookCoveredCallImplV1 is
 
     // transfer the underlying asset into our vault, passing along the entitlement and signature that allows us
     // to control the token in the vault.
-    IERC721(_tokenAddress).safeTransferFrom(
+    IERC721(tokenAddress).safeTransferFrom(
       tokenOwner,
       vault,
-      _tokenId,
+      tokenId,
       abi.encode(entitlement, signature)
     );
 
@@ -219,11 +219,11 @@ contract HookCoveredCallImplV1 is
 
     emit CallCreated(
       tokenOwner,
-      _tokenAddress,
-      _tokenId,
+      tokenAddress,
+      tokenId,
       newOptionId,
-      _strikePrice,
-      _expirationTime
+      strikePrice,
+      expirationTime
     );
 
     return newOptionId;
@@ -242,7 +242,7 @@ contract HookCoveredCallImplV1 is
       "biddingEnabled -- bidding starts on last day"
     );
     require(
-      call.settled == false,
+      !call.settled,
       "biddingEnabled -- the owner has already settled the call option"
     );
     _;
@@ -332,7 +332,7 @@ contract HookCoveredCallImplV1 is
       "settle -- option must be expired"
     );
     require(
-      call.settled == false,
+      !call.settled,
       "settle -- the call cannot already be settled"
     );
 
@@ -374,7 +374,7 @@ contract HookCoveredCallImplV1 is
       "reclaimAsset -- asset can only be reclaimed by the writer"
     );
     require(
-      call.settled == false,
+      !call.settled,
       "reclaimAsset -- the option has already been settled"
     );
 
@@ -446,7 +446,7 @@ contract HookCoveredCallImplV1 is
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ///
 
-  //TODO(HOOK-801) Migrate Insturment NFT to an abstract contract
+  //TODO(HOOK-801) Migrate Instrument NFT to an abstract contract
   /**
    * @dev this is a basic token URI that will show the underlying contract address as well as the
    * token ID in an svg (ripped off from LOOT PROJECT)
