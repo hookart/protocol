@@ -181,7 +181,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     uint256 expiration = block.timestamp + 1 hours;
 
     vm.expectRevert(
-      "mint -- _expirationTime must be more than one day in the future time"
+      "mint -- expirationTime must be more than one day in the future time"
     );
     calls.mint(
       address(token),

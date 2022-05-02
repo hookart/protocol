@@ -60,17 +60,17 @@ contract HookProtocol is
     _;
   }
 
-  function throwWhenPaused() public view whenNotPaused {
+  function throwWhenPaused() external view whenNotPaused {
     // depend on the modifier to throw.
     return;
   }
 
-  function unpause() public {
+  function unpause() external {
     require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an admin");
     _unpause();
   }
 
-  function pause() public {
+  function pause() external {
     require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an admin");
     _pause();
   }
@@ -78,19 +78,19 @@ contract HookProtocol is
   /// @notice Allows an admin to set the address of the deployed covered call factory
   /// @dev This address is used by other protocols searching for the registry of
   /// protocols.
-  /// @param _coveredCallContract the address of the deployed covered call contract
-  function setCoveredCallFactory(address _coveredCallContract)
-    public
+  /// @param coveredCallFactoryContract the address of the deployed covered call contract
+  function setCoveredCallFactory(address coveredCallFactoryContract)
+    external
     adminOnly
   {
-    coveredCallContract = _coveredCallContract;
+    coveredCallContract = coveredCallFactoryContract;
   }
 
   /// @notice Allows an admin to set the address of the deployed vault factory
   /// @dev allows all protocol components, including the call factory, to look up the
   /// vault factory.
-  /// @param _vaultFactoryContract the deployed vault factory
-  function setVaultFactory(address _vaultFactoryContract) public adminOnly {
-    vaultContract = _vaultFactoryContract;
+  /// @param vaultFactoryContract the deployed vault factory
+  function setVaultFactory(address vaultFactoryContract) external adminOnly {
+    vaultContract = vaultFactoryContract;
   }
 }

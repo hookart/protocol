@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -61,7 +62,7 @@ contract HookERC721VaultImplV1 is
 
   /// @notice Withdrawl an unencumbered asset from this vault
   /// @dev withdrawals can only be performed by the beneficial owner if there are no entitlements
-  function withdrawalAsset() public {
+  function withdrawalAsset() external {
     // require(msg.sender == beneficialOwner, "the beneficial owner is the only one able to withdrawl");
     require(
       !hasActiveEntitlement(),
@@ -74,7 +75,7 @@ contract HookERC721VaultImplV1 is
       _tokenId
     );
 
-    emit assetWithdrawn(msg.sender, beneficialOwner);
+    emit AssetWithdrawn(msg.sender, beneficialOwner);
   }
 
   /// @notice Add an entitlement claim to the asset held within the contract
@@ -85,7 +86,7 @@ contract HookERC721VaultImplV1 is
   function imposeEntitlement(
     Entitlements.Entitlement memory entitlement,
     Signatures.Signature memory signature
-  ) public {
+  ) external {
     require(
       beneficialOwner != address(0),
       "imposeEntitlement -- beneficial owner must be set to impose an entitlement"
@@ -110,7 +111,7 @@ contract HookERC721VaultImplV1 is
     address from,
     uint256 tokenId,
     bytes calldata data
-  ) public virtual override returns (bytes4) {
+  ) external virtual override returns (bytes4) {
     /// We should make sure that the owner of an asset never changes simply as a result of someone sending
     /// a NFT into this contract.
     ///
@@ -152,7 +153,7 @@ contract HookERC721VaultImplV1 is
         "onERC721Received -- non-escrow asset returned when airdrops are disabled"
       );
     }
-    emit assetReceived(from, operator, msg.sender, tokenId);
+    emit AssetReceived(from, operator, msg.sender, tokenId);
     return this.onERC721Received.selector;
   }
 
@@ -162,7 +163,7 @@ contract HookERC721VaultImplV1 is
   /// @param data Data payload of transaction.
   /// @return success if the call was successful.
   function execTransaction(address to, bytes memory data)
-    public
+    external
     payable
     virtual
     returns (bool success)
@@ -200,7 +201,7 @@ contract HookERC721VaultImplV1 is
   /// @notice Looks up the address of the currently entitled operator
   /// @dev returns the null address if there is no active entitlement
   /// @return operator the address of the current operator
-  function entitledOperatorContract() public view returns (address operator) {
+  function entitledOperatorContract() external view returns (address operator) {
     if (!hasActiveEntitlement()) {
       return address(0);
     } else {
@@ -211,7 +212,7 @@ contract HookERC721VaultImplV1 is
   /// @notice Looks up the expiration timestamp of the current entitlement
   /// @dev returns the 0 if no entitlement is set
   /// @return expiry the block timestamp after which the entitlement expires
-  function entitlementExpiration() public view returns (uint256 expiry) {
+  function entitlementExpiration() external view returns (uint256 expiry) {
     if (!hasActiveEntitlement()) {
       return 0;
     } else {
@@ -220,19 +221,19 @@ contract HookERC721VaultImplV1 is
   }
 
   /// @notice looks up the current beneficial owner of the underlying asset
-  function getBeneficialOwner() public view returns (address) {
+  function getBeneficialOwner() external view returns (address) {
     return beneficialOwner;
   }
 
   /// @notice checks if the asset is currently stored in the vault
-  function holdsAsset() public view returns (bool holdsAsset) {
+  function getHoldsAsset() external view returns (bool holdsAsset) {
     return IERC721(_nftContract).ownerOf(_tokenId) == address(this);
   }
 
   /// @notice setBeneficialOwner updates the current address that can claim the asset when it is free of entitlements.
   /// @dev setBeneficialOwner can only be called by the entitlementContract if there is an activeEntitlement.
-  /// @param _newBeneficialOwner the account of the person who is able to withdrawl when there are no entitlements.
-  function setBeneficialOwner(address _newBeneficialOwner) public {
+  /// @param newBeneficialOwner the account of the person who is able to withdrawl when there are no entitlements.
+  function setBeneficialOwner(address newBeneficialOwner) external {
     if (hasActiveEntitlement()) {
       require(
         msg.sender == _currentEntitlement.operator,
@@ -244,7 +245,7 @@ contract HookERC721VaultImplV1 is
         "setBeneficialOwner -- only the current owner can update the beneficial owner"
       );
     }
-    _setBeneficialOwner(_newBeneficialOwner);
+    _setBeneficialOwner(newBeneficialOwner);
   }
 
   /// @notice Allowes the entitled address to release their claim on the asset
@@ -266,14 +267,14 @@ contract HookERC721VaultImplV1 is
   /// intended reciever, which should match the beneficialOwner. The function will throw if
   /// the reciever and owner do not match.
   /// @param reciever the intended reciever of the asset
-  function clearEntitlementAndDistribute(address reciever) public nonReentrant {
+  function clearEntitlementAndDistribute(address reciever) external nonReentrant {
     require(
       beneficialOwner == reciever,
       "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
     );
     clearEntitlement();
     IERC721(_nftContract).safeTransferFrom(address(this), reciever, _tokenId);
-    emit assetWithdrawn(msg.sender, beneficialOwner);
+    emit AssetWithdrawn(msg.sender, beneficialOwner);
   }
 
   /// @dev Get the EIP-712 hash of an Entitlement.
@@ -330,7 +331,7 @@ contract HookERC721VaultImplV1 is
     );
     _currentEntitlement = entitlement;
     _hasEntitlement = true;
-    emit entitlementImposed(
+    emit EntitlementImposed(
       entitlement.operator,
       entitlement.expiry,
       beneficialOwner
@@ -346,16 +347,16 @@ contract HookERC721VaultImplV1 is
       0
     );
     _hasEntitlement = false;
-    emit entitlementCleared(beneficialOwner);
+    emit EntitlementCleared(beneficialOwner);
   }
 
   function hasActiveEntitlement() public view returns (bool) {
     return
-      block.timestamp < _currentEntitlement.expiry && _hasEntitlement == true;
+      block.timestamp < _currentEntitlement.expiry && _hasEntitlement;
   }
 
-  function _setBeneficialOwner(address _newBeneficialOwner) private {
-    beneficialOwner = _newBeneficialOwner;
-    emit beneficialOwnerSet(_newBeneficialOwner, msg.sender);
+  function _setBeneficialOwner(address newBeneficialOwner) private {
+    beneficialOwner = newBeneficialOwner;
+    emit BeneficialOwnerSet(newBeneficialOwner, msg.sender);
   }
 }
