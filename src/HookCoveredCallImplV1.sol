@@ -18,6 +18,7 @@ import "./interfaces/IHookERC721VaultFactory.sol";
 import "./interfaces/IHookERC721Vault.sol";
 import "./interfaces/IHookCoveredCall.sol";
 import "./interfaces/IHookProtocol.sol";
+import "./interfaces/IWETH.sol";
 
 /// @title HookCoveredCallImplV1 an implementation of covered calls on Hook
 /// @author Jake Nyquist -- j@hook.xyz
@@ -74,6 +75,9 @@ contract HookCoveredCallImplV1 is
   /// insturment.
   address public allowedNftContract;
 
+  /// @dev the address of WETH on the chain where this contract is deployed
+  address public weth;
+
   /// --- Constructor
   // the constructor cannot have arugments in proxied contracts.
   constructor() ERC721("CallOption", "CALL") {}
@@ -91,6 +95,7 @@ contract HookCoveredCallImplV1 is
   ) public initializer {
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
+    weth = _protocol.getWETHAddress();
     allowedNftContract = _allowedNftContract;
   }
 
@@ -264,8 +269,7 @@ contract HookCoveredCallImplV1 is
     require(bidAmt > call.strike, "bid - bid is lower than the strike price");
 
     // return current bidder's money
-    (bool sent, ) = call.highBidder.call{value: call.bid}("");
-    require(sent, "Failed to send Ether");
+    _safeTransferETHWithFallback(call.highBidder, call.bid);
 
     // set the new bidder
     call.bid = bidAmt;
@@ -335,15 +339,10 @@ contract HookCoveredCallImplV1 is
     uint256 spread = call.bid - call.strike;
 
     // return send option holder their earnings
-    (bool sent, ) = ownerOf(optionId).call{value: spread}("");
-    require(sent, "Failed to send Ether to option holder");
+    _safeTransferETHWithFallback(ownerOf(optionId), spread);
 
-    // return send option holder their earnings
-    (
-      bool writerSent, /* bytes memory writerData */
-
-    ) = call.writer.call{value: call.strike}("");
-    require(writerSent, "Failed to send Ether to option writer");
+    // send option writer the strike price
+    _safeTransferETHWithFallback(call.writer, call.strike);
 
     if (returnNft) {
       IHookERC721Vault(call.vaultAddress).withdrawalAsset();
@@ -401,8 +400,8 @@ contract HookCoveredCallImplV1 is
 
     if (call.highBidder != address(0)) {
       // return current bidder's money
-      (bool sent, ) = call.highBidder.call{value: call.bid}("");
-      require(sent, "Failed to send Ether");
+      _safeTransferETHWithFallback(call.highBidder, call.bid);
+
       // if we have a bid, we may have set the bidder, so make sure to revert it here.
       IHookERC721Vault(call.vaultAddress).setBeneficialOwner(call.writer);
     }
@@ -494,5 +493,26 @@ contract HookCoveredCallImplV1 is
     output = string(abi.encodePacked("data:application/json;base64,", json));
 
     return output;
+  }
+
+  /**
+   * @notice Transfer ETH. If the ETH transfer fails, wrap the ETH and try send it as WETH.
+   * @dev this transfer failure could occur if the transferee is a malicious contract
+   * so limiting the gas and persisting on fail helps prevent the impace of these calls.
+   */
+  function _safeTransferETHWithFallback(address to, uint256 amount) internal {
+    if (!_safeTransferETH(to, amount)) {
+      IWETH(weth).deposit{value: amount}();
+      IWETH(weth).transfer(to, amount);
+    }
+  }
+
+  /**
+   * @notice Transfer ETH and return the success status.
+   * @dev This function only forwards 30,000 gas to the callee.
+   */
+  function _safeTransferETH(address to, uint256 value) internal returns (bool) {
+    (bool success, ) = to.call{value: value, gas: 30_000}(new bytes(0));
+    return success;
   }
 }

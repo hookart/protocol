@@ -65,7 +65,8 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   }
 
   function setUpFullProtocol() public {
-    protocol = new HookProtocol(admin);
+    weth = new WETH();
+    protocol = new HookProtocol(admin, address(weth));
     protocolAddress = address(protocol);
     setAddressForEipDomain(protocolAddress);
 
