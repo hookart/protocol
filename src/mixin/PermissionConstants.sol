@@ -6,7 +6,7 @@ abstract contract PermissionConstants {
   /// @notice The Hook protocol admin can make any changes to the protocol
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-  /// @notice the allowlister is able to enable and disable projects to mint insturments
+  /// @notice the allowlister is able to enable and disable projects to mint instruments
   bytes32 public constant ALLOWLISTER_ROLE = keccak256("ALLOWLISTER_ROLE");
 
   /// @notice the paueser is able to start and pause various components of the protocol

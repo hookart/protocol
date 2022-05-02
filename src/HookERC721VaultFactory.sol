@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
 import "./HookERC721Vault.sol";
@@ -23,17 +24,17 @@ contract HookERC721VaultFactory is IHookERC721VaultFactory {
   }
 
   function makeVault(address nftAddress, uint256 tokenId)
-    public
+    external
     returns (address vault)
   {
     require(
       getVault[nftAddress][tokenId] == address(0),
-      "a vault cannot already exist"
+      "makeVault -- a vault cannot already exist"
     );
 
     // use the salt here to attempt to pre-compute the address where the vault will live.
     // we don't leverage this predictability for now.
-    vault = address(
+    getVault[nftAddress][tokenId] = address(
       new HookERC721Vault{salt: keccak256(abi.encode(nftAddress, tokenId))}(
         _beacon,
         nftAddress,
@@ -41,6 +42,7 @@ contract HookERC721VaultFactory is IHookERC721VaultFactory {
         _hookProtocol
       )
     );
-    getVault[nftAddress][tokenId] = vault;
+    
+    return getVault[nftAddress][tokenId];
   }
 }

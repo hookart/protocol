@@ -9,15 +9,15 @@ import "./mixin/PermissionConstants.sol";
 
 /// @title HookCoveredCallFactory -- factory for instances of the Covered Call contract
 /// @author Jake Nyquist -- j@hook.xyz
-/// @notice The Factory creates covered call insturments that support specific ERC-721 contracts, and
+/// @notice The Factory creates covered call instruments that support specific ERC-721 contracts, and
 /// also tracks all of the existing active markets.
 /// @dev Operating the factory requires specific permissions within the protocol.
 contract HookCoveredCallFactory is
   PermissionConstants,
   IHookCoveredCallFactory
 {
-  /// @notice Registry of all of the active markets projects with supported call insturments
-  mapping(address => address) public override getCallInsturment;
+  /// @notice Registry of all of the active markets projects with supported call instruments
+  mapping(address => address) public override getCallInstrument;
 
   address private _beacon;
   IHookProtocol private _protocol;
@@ -30,29 +30,25 @@ contract HookCoveredCallFactory is
     _protocol = IHookProtocol(hookProtocolAddress);
   }
 
-  /// @notice Create a call option insturment for a specific underlying asset address
+  /// @notice Create a call option instrument for a specific underlying asset address
   /// @dev Only the admin can create these addresses.
   /// @param assetAddress the address for the underling asset
-  /// @return calls the address of the call option insturment contract (upgradeable)
-  function makeCallInsturment(address assetAddress)
-    public
+  /// @return calls the address of the call option instrument contract (upgradeable)
+  function makeCallInstrument(address assetAddress)
+    external
     returns (address calls)
   {
     require(
-      getCallInsturment[assetAddress] == address(0),
-      "a call insturment already exists"
+      getCallInstrument[assetAddress] == address(0),
+      "makeCallInstrument -- a call instrument already exists"
     );
-
-    // make sure new instrments created by admins.
+    // make sure new instruments created by admins.
     require(
       _protocol.hasRole(ALLOWLISTER_ROLE, msg.sender),
-      "Only admins can make insturments"
+      "makeCallInstrument -- Only admins can make instruments"
     );
 
-    // There is re-entrancy risk on this call; however, we trust the
-    // code located in the initializer of the covered call, so we do
-    // not have a guard here.
-    calls = address(
+    getCallInstrument[assetAddress] = address(
       new HookCoveredCall{salt: keccak256(abi.encode(assetAddress))}(
         _beacon,
         assetAddress,
@@ -60,6 +56,7 @@ contract HookCoveredCallFactory is
         _protocol.vaultContract()
       )
     );
-    getCallInsturment[assetAddress] = calls;
+
+    return getCallInstrument[assetAddress];
   }
 }

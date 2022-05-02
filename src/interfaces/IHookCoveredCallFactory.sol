@@ -1,13 +1,14 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
 interface IHookCoveredCallFactory {
   // TODO(HOOK-802) Migrate natspec docs to interfaces instead of implementations, inherit on implementations
-  function getCallInsturment(address nftAddress)
+  function getCallInstrument(address nftAddress)
     external
     view
     returns (address calls);
 
-  function makeCallInsturment(address nftAddress)
+  function makeCallInstrument(address nftAddress)
     external
     returns (address calls);
 }

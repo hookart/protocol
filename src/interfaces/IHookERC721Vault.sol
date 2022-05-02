@@ -6,19 +6,19 @@ import "../lib/Entitlements.sol";
 
 interface IHookERC721Vault is IERC721Receiver {
   // TODO(HOOK-802) Migrate natspec docs to interfaces instead of implementations, inherit on implementations
-  event entitlementImposed(
+  event EntitlementImposed(
     address entitledAccout,
     uint256 expiry,
     address beneficialOwner
   );
 
-  event entitlementCleared(address beneficialOwner);
+  event EntitlementCleared(address beneficialOwner);
 
-  event beneficialOwnerSet(address beneficialOwner, address setBy);
+  event BeneficialOwnerSet(address beneficialOwner, address setBy);
 
-  event assetWithdrawn(address caller, address assetReceiver);
+  event AssetWithdrawn(address caller, address assetReceiver);
 
-  event assetReceived(
+  event AssetReceived(
     address owner,
     address sender,
     address contractAddress,
@@ -45,5 +45,5 @@ interface IHookERC721Vault is IERC721Receiver {
 
   function getBeneficialOwner() external view returns (address);
 
-  function holdsAsset() external view returns (bool);
+  function getHoldsAsset() external view returns (bool);
 }

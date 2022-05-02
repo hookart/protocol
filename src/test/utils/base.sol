@@ -100,7 +100,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     vm.prank(address(admin));
 
     // make a call factory for our token
-    calls = IHookCoveredCall(callFactory.makeCallInsturment(address(token)));
+    calls = IHookCoveredCall(callFactory.makeCallInstrument(address(token)));
   }
 
   function setUpMintOption() public {
