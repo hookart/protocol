@@ -31,7 +31,15 @@ contract HookProtocol is
   /// @notice the address of the deployed VaultFactory used by the protocol
   address public override vaultContract;
 
-  constructor(address admin) {
+  /// @notice the standard weth address on this chain
+  /// @dev these are values for popular chains:
+  /// mainnet: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+  /// kovan: 0xd0a1e359811322d97991e03f863a0c30c2cf029c
+  /// ropsten: 0xc778417e063141139fce010982780140aa0cd5ab
+  /// rinkeby: 0xc778417e063141139fce010982780140aa0cd5ab
+  address public override getWETHAddress;
+
+  constructor(address admin, address weth) {
     _setupRole(ALLOWLISTER_ROLE, admin);
     _setupRole(PAUSER_ROLE, admin);
     _setupRole(VAULT_UPGRADER, admin);
@@ -42,6 +50,9 @@ contract HookProtocol is
     _setRoleAdmin(ALLOWLISTER_ROLE, ADMIN_ROLE);
     _setRoleAdmin(PAUSER_ROLE, ADMIN_ROLE);
     _setRoleAdmin(VAULT_UPGRADER, ADMIN_ROLE);
+
+    // set weth
+    getWETHAddress = weth;
   }
 
   modifier adminOnly() {

@@ -10,4 +10,6 @@ interface IHookProtocol is IAccessControl {
   function vaultContract() external view returns (address);
 
   function throwWhenPaused() external;
+
+  function getWETHAddress() external view returns (address);
 }
