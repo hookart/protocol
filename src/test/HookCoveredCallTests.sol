@@ -828,7 +828,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     assertTrue(writerStartBalance - 1 == writer.balance, "option writer only loses spread (1 wei)");
   }
 
-  function testSettleOptionWhenWriterHighBidderThenOutbid() public {
+  function testSettleOptionWhenWriterBidFirst() public {
     vm.startPrank(writer);
     uint256 underlyingTokenId2 = 1;
     token.mint(writer, underlyingTokenId2);
@@ -862,8 +862,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.stopPrank();
 
     vm.prank(firstBidder);
-    calls.bid{value: 2000 wei}(optionTokenId);
-
+    calls.bid{value: 2000 wei}(optionId);
 
     vm.warp(block.timestamp + 1 days);
 
@@ -872,6 +871,103 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     assertTrue(buyerStartBalance + 1000 wei == buyer.balance, "buyer gets the spread (2000 wei - 1000 wei strike)");
     assertTrue(writerStartBalance + 1000 wei == writer.balance, "option writer only gets strike (1000 wei)");
+  }
+
+  function testSettleOptionWhenWriterBidLast() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+    vm.deal(firstBidder, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    uint256 optionId = calls.mint(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration,
+      makeSignature(underlyingTokenId2, expiration, writer)
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    vm.stopPrank();
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 1001 wei}(optionId);
+
+    vm.prank(writer);
+    calls.bid{value: 2 wei}(optionId);
+
+    vm.warp(block.timestamp + 1 days);
+
+    vm.prank(writer);
+    calls.settleOption(optionId, false);
+
+    assertTrue(buyerStartBalance + 2 wei == buyer.balance, "buyer gets the spread (10002 wei - 1000 wei strike)");
+    assertTrue(writerStartBalance - 2 wei == writer.balance, "option writer bid on strike");
+  }
+
+  function testSettleOptionWhenWriterOutbid() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+    vm.deal(firstBidder, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    uint256 optionId = calls.mint(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration,
+      makeSignature(underlyingTokenId2, expiration, writer)
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    vm.stopPrank();
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 1001 wei}(optionId);
+
+    vm.prank(writer);
+    calls.bid{value: 2 wei}(optionId);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 1003 wei}(optionId);
+
+    vm.warp(block.timestamp + 1 days);
+
+    vm.prank(writer);
+    calls.settleOption(optionId, false);
+
+    assertTrue(buyerStartBalance + 3 wei == buyer.balance, "buyer gets the spread (10002 wei - 1000 wei strike)");
+    assertTrue(writerStartBalance + 1000 == writer.balance, "option writer gets strike (1000 wei)");
   }
 }
 
@@ -953,6 +1049,155 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.expectRevert(
       "reclaimAsset -- the option must expired unless writer-owned"
     );
+    calls.reclaimAsset(optionTokenId, true);
+  }
+
+  function testReclaimAssetWriterBidFirst() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+    vm.deal(firstBidder, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    uint256 optionId = calls.mint(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration,
+      makeSignature(underlyingTokenId2, expiration, writer)
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+    
+    calls.bid{value: 1 wei}(optionId);
+    vm.stopPrank();
+
+    vm.prank(firstBidder);
+    calls.bid{value: 2000 wei}(optionId);
+
+    vm.warp(block.timestamp + 1 days);
+
+    vm.startPrank(writer);
+
+    address vaultAddress = vaultFactory.getVault(
+      address(token),
+      underlyingTokenId
+    );
+    vm.expectCall(vaultAddress, abi.encodeWithSignature("withdrawalAsset()"));
+    calls.reclaimAsset(optionTokenId, true);
+  }
+
+  function testReclaimAssetWriterBidLast() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+    vm.deal(firstBidder, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    uint256 optionId = calls.mint(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration,
+      makeSignature(underlyingTokenId2, expiration, writer)
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    vm.stopPrank();
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 1001 wei}(optionId);
+
+    vm.prank(writer);
+    calls.bid{value: 2 wei}(optionId);
+
+    vm.warp(block.timestamp + 1 days);
+
+    vm.startPrank(writer);
+    address vaultAddress = vaultFactory.getVault(
+      address(token),
+      underlyingTokenId
+    );
+    vm.expectCall(vaultAddress, abi.encodeWithSignature("withdrawalAsset()"));
+    calls.reclaimAsset(optionTokenId, true);
+  }
+
+  function testReclaimAssetWriterBidMultiple() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+    vm.deal(firstBidder, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    uint256 optionId = calls.mint(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration,
+      makeSignature(underlyingTokenId2, expiration, writer)
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    vm.stopPrank();
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 1001 wei}(optionId);
+
+    vm.prank(writer);
+    calls.bid{value: 2 wei}(optionId);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 1003 wei}(optionId);
+
+    vm.warp(block.timestamp + 1 days);
+
+    vm.startPrank(writer);
+    address vaultAddress = vaultFactory.getVault(
+      address(token),
+      underlyingTokenId
+    );
+    vm.expectCall(vaultAddress, abi.encodeWithSignature("withdrawalAsset()"));
     calls.reclaimAsset(optionTokenId, true);
   }
 }
