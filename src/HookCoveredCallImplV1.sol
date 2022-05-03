@@ -20,8 +20,6 @@ import "./interfaces/IHookCoveredCall.sol";
 import "./interfaces/IHookProtocol.sol";
 import "./interfaces/IWETH.sol";
 
-import "forge-std/Test.sol";
-
 /// @title HookCoveredCallImplV1 an implementation of covered calls on Hook
 /// @author Jake Nyquist -- j@hook.xyz
 /// @notice Covered call options use this logic to
@@ -30,8 +28,7 @@ contract HookCoveredCallImplV1 is
   IHookCoveredCall,
   ERC721Burnable,
   ReentrancyGuard,
-  Initializable,
-  Test
+  Initializable
 {
   using Counters for Counters.Counter;
 
