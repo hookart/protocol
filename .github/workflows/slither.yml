@@ -1,14 +1,17 @@
 name: Slither Analysis
+
 on: 
  push:
     branches: [ main ]
  pull_request:
     branches: [ main ]
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -17,4 +20,14 @@ jobs:
         with:
           version: nightly
 
-      - uses: crytic/slither-action@v0.1.1
+      - name: Run Slither
+        uses: crytic/slither-action@v0.1.1 
+        continue-on-error: true
+        id: slither
+        with:
+          sarif: results.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ steps.slither.outputs.sarif }}
