@@ -596,6 +596,74 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     vm.expectRevert("bid - bid is lower than the current bid");
     calls.bid{value: 0.09 ether}(optionTokenId);
   }
+
+  function testWriterCanBidOnSpread() public {
+    vm.deal(writer, 1 ether);
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(writer);
+    calls.bid{value: 1}(optionTokenId);
+
+    assertTrue(calls.currentBid(optionTokenId) == 1001, "bid 1 wei over strike price");
+    assertTrue(calls.currentBidder(optionTokenId) == writer, "writer should be highest bidder");
+    assertTrue(writer.balance == 1 ether - 1, "writer should have only used 1 wei to bid");
+  }
+
+  function testWriterCanOutbidOnSpread() public {
+    address firstBidder = address(37);
+    vm.label(firstBidder, "First option bidder");
+    vm.deal(firstBidder, 1 ether);
+    vm.deal(writer, 1 ether);
+
+    uint256 firstBidderStartBalance = firstBidder.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 0.1 ether}(optionTokenId);
+
+    uint256 strike = 1000;
+    uint256 bidAmount = 0.1 ether - strike + 1;
+
+    vm.prank(writer);
+    calls.bid{value: bidAmount}(optionTokenId);
+
+    assertTrue(calls.currentBid(optionTokenId) == 0.1 ether + 1, "high bid should be 0.1 ether + 1 wei");
+    assertTrue(calls.currentBidder(optionTokenId) == writer, "writer should be highest bidder");
+    assertTrue(firstBidderStartBalance == firstBidder.balance, "first bidder should have been refunded their bid");
+    assertTrue(writer.balance == 1 ether - bidAmount, "writer should have only used 0.1 ether + 1 wei to bid");
+  }
+
+  function testWriterCanOutbidSelfOnSpread() public {
+    address firstBidder = address(37);
+    vm.label(firstBidder, "First option bidder");
+    vm.deal(firstBidder, 1 ether);
+    vm.deal(writer, 1 ether);
+
+    uint256 firstBidderStartBalance = firstBidder.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 0.1 ether}(optionTokenId);
+
+    uint256 strike = 1000;
+    uint256 bidAmount = 0.1 ether - strike + 1;
+
+    vm.prank(writer);
+    calls.bid{value: bidAmount}(optionTokenId);
+
+    uint256 secondBidAmount = 0.1 ether - strike + 2;
+    vm.prank(writer);
+    calls.bid{value: secondBidAmount}(optionTokenId);
+
+    assertTrue(calls.currentBid(optionTokenId) == 0.1 ether + 2, "high bid should be 0.1 ether + 1 wei");
+    assertTrue(calls.currentBidder(optionTokenId) == writer, "writer should be highest bidder");
+    assertTrue(firstBidderStartBalance == firstBidder.balance, "first bidder should have been refunded their bid");
+    assertTrue(writer.balance == 1 ether - secondBidAmount, "writer should have only used 0.1 ether + 1 wei to bid");
+  }
 }
 
 /// Settlement ///
@@ -717,6 +785,93 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     vm.expectRevert("settle -- the call cannot already be settled");
     calls.settleOption(optionTokenId, true);
+  }
+
+  function testSettleOptionWhenWriterHighBidder() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    uint256 optionId = calls.mint(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration,
+      makeSignature(underlyingTokenId2, expiration, writer)
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+    calls.bid{value: 1 wei}(optionId);
+    vm.warp(block.timestamp + 1 days);
+
+    calls.settleOption(optionId, false);
+
+    assertTrue(
+      buyerStartBalance + 1 wei == buyer.balance, 
+      "buyer gets the option spread (winning bid of 1001 wei - strike price of 1000)"
+    );
+
+    assertTrue(writerStartBalance - 1 == writer.balance, "option writer only loses spread (1 wei)");
+  }
+
+  function testSettleOptionWhenWriterHighBidderThenOutbid() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+    vm.deal(firstBidder, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    uint256 optionId = calls.mint(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration,
+      makeSignature(underlyingTokenId2, expiration, writer)
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+    
+    calls.bid{value: 1 wei}(optionId);
+    vm.stopPrank();
+
+    vm.prank(firstBidder);
+    calls.bid{value: 2000 wei}(optionTokenId);
+
+
+    vm.warp(block.timestamp + 1 days);
+
+    vm.prank(writer);
+    calls.settleOption(optionId, false);
+
+    assertTrue(buyerStartBalance + 1000 wei == buyer.balance, "buyer gets the spread (2000 wei - 1000 wei strike)");
+    assertTrue(writerStartBalance + 1000 wei == writer.balance, "option writer only gets strike (1000 wei)");
   }
 }
 

@@ -367,11 +367,14 @@ contract HookCoveredCallImplV1 is
 
     uint256 spread = call.bid - call.strike;
 
+    // If the option writer is the high bidder they don't recieve the strike because they bid on the spread.
+    if (call.highBidder != call.writer) {
+      // send option writer the strike price
+      _safeTransferETHWithFallback(call.writer, call.strike);
+    }
+
     // return send option holder their earnings
     _safeTransferETHWithFallback(ownerOf(optionId), spread);
-
-    // send option writer the strike price
-    _safeTransferETHWithFallback(call.writer, call.strike);
 
     if (returnNft) {
       IHookERC721Vault(call.vaultAddress).withdrawalAsset();
