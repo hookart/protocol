@@ -17,7 +17,7 @@ jobs:
 
       - name: Run Slither
         uses: crytic/slither-action@dev-install-foundry
-        # continue-on-error: true
+        continue-on-error: true
         # id: slither
         # with:
         #   sarif: results.sarif
