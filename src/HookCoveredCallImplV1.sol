@@ -262,18 +262,11 @@ contract HookCoveredCallImplV1 is
     uint256 bidAmt = msg.value;
     CallOption storage call = optionParams[optionId];
 
-    // TODO(HOOK-805) allow option writer to make a bid with an deposited amount equal
-    // to the spread between the their bid and the option's strike price.
-
-    require(bidAmt > call.bid, "bid - bid is lower than the current bid");
-    require(bidAmt > call.strike, "bid - bid is lower than the strike price");
-
-    // return current bidder's money
-    _safeTransferETHWithFallback(call.highBidder, call.bid);
-
-    // set the new bidder
-    call.bid = bidAmt;
-    call.highBidder = msg.sender;
+    if (msg.sender == call.writer) {
+      _writerBid(call, optionId);
+    } else {
+      _generalBid(call);
+    }
 
     // the new high bidder is the beneficial owner of the asset.
     // The beneficial owner must be set here instead of with a final bid
@@ -282,6 +275,42 @@ contract HookCoveredCallImplV1 is
 
     // emit event
     emit Bid(optionId, bidAmt, msg.sender);
+  }
+
+  function _writerBid(CallOption storage call, uint256 optionId) internal {
+    uint256 bidAmt = msg.value + call.strike;
+
+    require(bidAmt > call.bid, "bid - bid is lower than the current bid");
+    require(bidAmt > call.strike, "bid - bid is lower than the strike price");
+
+    _returnBidToPreviousBidder(call);
+
+    // set the new bidder
+    call.bid = bidAmt;
+    call.highBidder = msg.sender;
+  }
+
+  function _generalBid(CallOption storage call) internal {
+    uint256 bidAmt = msg.value;
+
+    require(bidAmt > call.bid, "bid - bid is lower than the current bid");
+    require(bidAmt > call.strike, "bid - bid is lower than the strike price");
+
+    _returnBidToPreviousBidder(call);
+
+    // set the new bidder
+    call.bid = bidAmt;
+    call.highBidder = msg.sender;
+  }
+
+  function _returnBidToPreviousBidder(CallOption storage call) internal {
+    uint256 unnormalizedHighBid = call.bid;
+    if (call.highBidder == call.writer) {
+        unnormalizedHighBid -= call.strike;
+    }
+
+    // return current bidder's money
+    _safeTransferETHWithFallback(call.highBidder, unnormalizedHighBid);
   }
 
   /**
