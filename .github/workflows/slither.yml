@@ -15,11 +15,27 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: forge install
+
+      - name: Build project
+        run: forge build --extra-output abi --extra-output userdoc --extra-output devdoc --extra-output evm.methodIdentifiers --force
+
+      - name: Run Slither
+        uses: crytic/slither-action@v0.1.1 
+        with:
+          ignore-compile: true
+
       # [TODO]: Change "uses" back to crytic/slither-action@v0.1.1 (whatever new version) 
       # once https://github.com/crytic/slither-action/pull/8 gets merged
-      - name: Run Slither
-        uses: crytic/slither-action@dev-install-foundry 
-        continue-on-error: true
+      # - name: Run Slither
+      #   uses: crytic/slither-action@dev-install-foundry 
+      #   continue-on-error: true
       # [TODO]: configure repo to allow us using SARIF or wait to be public
       # so we get proper visual report of the analysis
         # id: slither
