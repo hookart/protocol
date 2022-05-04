@@ -323,12 +323,8 @@ contract HookERC721VaultImplV1 is
       "_verifyAndRegisterEntitlement -- beneficialOwner does not match the entitlement"
     );
     require(
-      entitlement.nftContract == _nftContract,
+      entitlement.vaultAddress == address(this),
       "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
-    );
-    require(
-      entitlement.nftTokenId == _tokenId,
-      "_verifyAndRegisterEntitlement -- the entitlement tokenId must match the vault tokenId"
     );
     _currentEntitlement = entitlement;
     _hasEntitlement = true;
@@ -344,7 +340,6 @@ contract HookERC721VaultImplV1 is
       address(0),
       address(0),
       address(0),
-      0,
       0
     );
     _hasEntitlement = false;

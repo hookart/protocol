@@ -30,11 +30,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
@@ -61,11 +60,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
@@ -86,11 +84,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     uint256 secondUnderlyingTokenId = 1;
     token.mint(address(writer), secondUnderlyingTokenId);
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      secondUnderlyingTokenId,
       2, // This would be the second option id.
       1000,
       expiration
@@ -124,11 +121,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
@@ -246,11 +242,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
@@ -292,11 +287,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.startPrank(operator);
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
@@ -331,11 +325,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
@@ -371,11 +364,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
@@ -417,11 +409,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration

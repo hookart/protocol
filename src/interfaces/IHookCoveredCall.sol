@@ -33,8 +33,7 @@ import "../lib/Signatures.sol";
 interface IHookCoveredCall is IERC721 {
   event CallCreated(
     address writer,
-    address tokenContract,
-    uint256 tokenId,
+    address vaultAddress,
     uint256 optionId,
     uint256 strikePrice,
     uint256 expiration

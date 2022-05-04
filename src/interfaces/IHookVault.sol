@@ -76,4 +76,6 @@ interface IHookVault {
 
   /// @notice checks if the asset is currently stored in the vault
   function getHoldsAsset() external view returns (bool);
+
+  function assetAddress() external view returns (address);
 }

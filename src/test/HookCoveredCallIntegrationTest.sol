@@ -34,11 +34,10 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.prank(address(writer));
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
