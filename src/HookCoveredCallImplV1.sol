@@ -15,7 +15,7 @@ import "./lib/HookStrings.sol";
 import "./lib/Entitlements.sol";
 
 import "./interfaces/IHookERC721VaultFactory.sol";
-import "./interfaces/IHookERC721Vault.sol";
+import "./interfaces/IHookVault.sol";
 import "./interfaces/IHookCoveredCall.sol";
 import "./interfaces/IHookProtocol.sol";
 import "./interfaces/IWETH.sol";
@@ -248,7 +248,7 @@ contract HookCoveredCallImplV1 is
     // the new high bidder is the beneficial owner of the asset.
     // The beneficial owner must be set here instead of with a final bid
     // because the ability to
-    IHookERC721Vault(call.vaultAddress).setBeneficialOwner(msg.sender);
+    IHookVault(call.vaultAddress).setBeneficialOwner(msg.sender);
 
     // emit event
     emit Bid(optionId, bidAmt, msg.sender);
@@ -283,7 +283,7 @@ contract HookCoveredCallImplV1 is
   function _returnBidToPreviousBidder(CallOption storage call) internal {
     uint256 unnormalizedHighBid = call.bid;
     if (call.highBidder == call.writer) {
-        unnormalizedHighBid -= call.strike;
+      unnormalizedHighBid -= call.strike;
     }
 
     // return current bidder's money
@@ -316,10 +316,7 @@ contract HookCoveredCallImplV1 is
       call.expiration < block.timestamp,
       "settle -- option must be expired"
     );
-    require(
-      !call.settled,
-      "settle -- the call cannot already be settled"
-    );
+    require(!call.settled, "settle -- the call cannot already be settled");
 
     uint256 spread = call.bid - call.strike;
 
@@ -333,7 +330,7 @@ contract HookCoveredCallImplV1 is
     _safeTransferETHWithFallback(ownerOf(optionId), spread);
 
     if (returnNft) {
-      IHookERC721Vault(call.vaultAddress).withdrawalAsset();
+      IHookVault(call.vaultAddress).withdrawalAsset();
     }
 
     // burn nft
@@ -385,17 +382,17 @@ contract HookCoveredCallImplV1 is
       _safeTransferETHWithFallback(call.highBidder, call.bid);
 
       // if we have a bid, we may have set the bidder, so make sure to revert it here.
-      IHookERC721Vault(call.vaultAddress).setBeneficialOwner(call.writer);
+      IHookVault(call.vaultAddress).setBeneficialOwner(call.writer);
     }
 
     if (returnNft) {
       // Because the call is not expired, we should be able to reclaim the asset from the vault
       if (call.expiration > block.timestamp) {
-        IHookERC721Vault(call.vaultAddress).clearEntitlementAndDistribute(
+        IHookVault(call.vaultAddress).clearEntitlementAndDistribute(
           call.writer
         );
       } else {
-        IHookERC721Vault(call.vaultAddress).withdrawalAsset();
+        IHookVault(call.vaultAddress).withdrawalAsset();
       }
     }
 
