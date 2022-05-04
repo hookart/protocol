@@ -60,6 +60,7 @@ contract HookERC721VaultImplV1 is
 
   /// ---------------- PUBLIC FUNCTIONS ---------------- ///
 
+  /// @dev See {IHookERC721Vault-withdrawalAsset}.
   /// @dev withdrawals can only be performed by the beneficial owner if there are no entitlements
   function withdrawalAsset() external {
     // require(msg.sender == beneficialOwner, "the beneficial owner is the only one able to withdrawl");
@@ -77,6 +78,7 @@ contract HookERC721VaultImplV1 is
     emit AssetWithdrawn(msg.sender, beneficialOwner);
   }
 
+  /// @dev See {IHookERC721Vault-imposeEntitlement}.
   /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
   /// entitlement
   function imposeEntitlement(
@@ -151,6 +153,7 @@ contract HookERC721VaultImplV1 is
     return this.onERC721Received.selector;
   }
 
+  /// @dev See {IHookERC721Vault-execTransaction}.
   /// @dev Allows a beneficial owner to send an arbitrary call from this wallet as long as the underlying NFT
   /// is still owned by us after the transaction. The ether value sent is forwarded. Return value is suppressed.
   function execTransaction(address to, bytes memory data)
@@ -207,15 +210,17 @@ contract HookERC721VaultImplV1 is
     }
   }
 
+  /// @dev See {IHookERC721Vault-getBeneficialOwner}.
   function getBeneficialOwner() external view returns (address) {
     return beneficialOwner;
   }
 
-  /// @notice checks if the asset is currently stored in the vault
+  /// @dev See {IHookERC721Vault-getHoldsAsset}.
   function getHoldsAsset() external view returns (bool holdsAsset) {
     return IERC721(_nftContract).ownerOf(_tokenId) == address(this);
   }
 
+  /// @dev See {IHookERC721Vault-setBeneficialOwner}.
   /// @dev setBeneficialOwner can only be called by the entitlementContract if there is an activeEntitlement.
   function setBeneficialOwner(address newBeneficialOwner) external {
     if (hasActiveEntitlement()) {
@@ -232,6 +237,7 @@ contract HookERC721VaultImplV1 is
     _setBeneficialOwner(newBeneficialOwner);
   }
 
+  /// @dev See {IHookERC721Vault-clearEntitlement}.
   /// @dev This can only be called if an entitlement currently exists, otherwise it would be a no-op
   function clearEntitlement() public {
     require(
@@ -245,6 +251,7 @@ contract HookERC721VaultImplV1 is
     _clearEntitlement();
   }
 
+  /// @dev See {IHookERC721Vault-clearEntitlementAndDistribute}.
   /// @dev The entitlement must be exist, and must be called by the {operator}. The operator can specify a
   /// intended reciever, which should match the beneficialOwner. The function will throw if
   /// the reciever and owner do not match.

@@ -99,6 +99,8 @@ contract HookCoveredCallImplV1 is
 
   /// ---- Option Writer Functions ---- //
 
+  /// @dev See {IHookCoveredCall-mintWithVault}.
+
   function mintWithVault(
     address _vaultAddress,
     uint256 _strikePrice,
@@ -112,6 +114,7 @@ contract HookCoveredCallImplV1 is
     return 0;
   }
 
+  /// @dev See {IHookCoveredCall-mint}.
   function mint(
     address tokenAddress,
     uint256 tokenId,
@@ -226,6 +229,7 @@ contract HookCoveredCallImplV1 is
     _;
   }
 
+  /// @dev See {IHookCoveredCall-bid}.
   function bid(uint256 optionId)
     external
     payable
@@ -286,16 +290,19 @@ contract HookCoveredCallImplV1 is
     _safeTransferETHWithFallback(call.highBidder, unnormalizedHighBid);
   }
 
+  /// @dev See {IHookCoveredCall-currentBid}.
   function currentBid(uint256 optionId) external view returns (uint256) {
     return optionParams[optionId].bid;
   }
 
+  /// @dev See {IHookCoveredCall-currentBidder}.
   function currentBidder(uint256 optionId) external view returns (address) {
     return optionParams[optionId].highBidder;
   }
 
   // ----- END OF OPTION FUNCTIONS ---------//
 
+  /// @dev See {IHookCoveredCall-settleOption}.
   function settleOption(uint256 optionId, bool returnNft)
     external
     nonReentrant
@@ -338,6 +345,7 @@ contract HookCoveredCallImplV1 is
     emit CallDestroyed(optionId);
   }
 
+  /// @dev See {IHookCoveredCall-reclaimAsset}.
   function reclaimAsset(uint256 optionId, bool returnNft)
     external
     nonReentrant

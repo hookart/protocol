@@ -7,6 +7,7 @@ import "./interfaces/IHookProtocol.sol";
 
 import "./mixin/PermissionConstants.sol";
 
+/// @dev See {IHookCoveredCallFactory}.
 /// @dev Operating the factory requires specific permissions within the protocol.
 contract HookCoveredCallFactory is
   PermissionConstants,
@@ -26,6 +27,7 @@ contract HookCoveredCallFactory is
     _protocol = IHookProtocol(hookProtocolAddress);
   }
 
+  /// @dev See {IHookCoveredCallFactory-makeCallInstrument}.
   /// @dev Only the admin can create these addresses.
   function makeCallInstrument(address assetAddress)
     external
