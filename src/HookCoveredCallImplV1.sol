@@ -114,8 +114,8 @@ contract HookCoveredCallImplV1 is
     return 0;
   }
 
-  /// @dev See {IHookCoveredCall-mint}.
-  function mint(
+  /// @dev See {IHookCoveredCall-mintWithErc721}.
+  function mintWithErc721(
     address tokenAddress,
     uint256 tokenId,
     uint256 strikePrice,
@@ -125,7 +125,7 @@ contract HookCoveredCallImplV1 is
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
       allowedNftContract == tokenAddress,
-      "mint -- token must be on the project allowlist"
+      "mintWithErc721 -- token must be on the project allowlist"
     );
 
     // NOTE: we can mint the option since our contract is approved
@@ -133,19 +133,18 @@ contract HookCoveredCallImplV1 is
     require(
       msg.sender == tokenOwner ||
         IERC721(tokenAddress).isApprovedForAll(tokenOwner, msg.sender),
-      "mint -- caller must be token owner or operator"
+      "mintWithErc721 -- caller must be token owner or operator"
     );
     require(
       IERC721(tokenAddress).isApprovedForAll(tokenOwner, address(this)),
-      "mint -- HookCoveredCall must be operator"
+      "mintWithErc721 -- HookCoveredCall must be operator"
     );
 
     // NOTE: The settlement auction always occurs one day before expiration
     require(
       expirationTime > block.timestamp + 1 days,
-      "mint -- expirationTime must be more than one day in the future time"
+      "mintWithErc721 -- expirationTime must be more than one day in the future time"
     );
-    _optionIds.increment();
 
     // FIND OR CREATE HOOK VAULT, SET AN ENTITLEMENT
     address vault = _erc721VaultFactory.getVault(tokenAddress, tokenId);
@@ -164,7 +163,23 @@ contract HookCoveredCallImplV1 is
       expiry: expirationTime
     });
 
+    // transfer the underlying asset into our vault, passing along the entitlement and signature that allows us
+    // to control the token in the vault.
+    IERC721(tokenAddress).safeTransferFrom(
+      tokenOwner,
+      vault,
+      tokenId,
+      abi.encode(entitlement, signature)
+    );
+
+    // make sure that the vault actually has the asset.
+    require(
+      IHookVault(vault).getHoldsAsset(),
+      "mintWithErc712 -- asset must be in vault"
+    );
+
     // generate the next optionId
+    _optionIds.increment();
     uint256 newOptionId = _optionIds.current();
 
     // save the option metadata
@@ -179,15 +194,6 @@ contract HookCoveredCallImplV1 is
       highBidder: address(0),
       settled: false
     });
-
-    // transfer the underlying asset into our vault, passing along the entitlement and signature that allows us
-    // to control the token in the vault.
-    IERC721(tokenAddress).safeTransferFrom(
-      tokenOwner,
-      vault,
-      tokenId,
-      abi.encode(entitlement, signature)
-    );
 
     // send the option NFT to the underlying token owner.
     _safeMint(tokenOwner, newOptionId);
@@ -403,14 +409,14 @@ contract HookCoveredCallImplV1 is
     call.settled = true;
     emit CallDestroyed(optionId);
 
-    /// WARNING: 
-    /// Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on 
-    /// the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer 
-    /// could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for 
+    /// WARNING:
+    /// Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on
+    /// the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer
+    /// could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for
     /// the current bidder to reclaim their money.
     ///
-    /// TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that 
-    /// there are not patterns we need to watch here.   
+    /// TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that
+    /// there are not patterns we need to watch here.
   }
 
   //// ---- Administrative Fns.

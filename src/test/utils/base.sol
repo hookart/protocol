@@ -120,7 +120,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
       1000,
       expiration
     );
-    optionTokenId = calls.mint(
+    optionTokenId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,

@@ -39,7 +39,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -70,7 +70,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -95,7 +95,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    uint256 secondOptionId = calls.mint(
+    uint256 secondOptionId = calls.mintWithErc721(
       address(token),
       secondUnderlyingTokenId,
       1000,
@@ -133,7 +133,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -163,7 +163,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.expectRevert(
       "validateEntitlementSignature --- not signed by beneficialOwner"
     );
-    calls.mint(
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -181,9 +181,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     uint256 expiration = block.timestamp + 1 hours;
 
     vm.expectRevert(
-      "mint -- expirationTime must be more than one day in the future time"
+      "mintWithErc721 -- expirationTime must be more than one day in the future time"
     );
-    calls.mint(
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -199,7 +199,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     uint256 expiration = block.timestamp + 3 days;
 
     vm.expectRevert("Pausable: paused");
-    calls.mint(
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -213,8 +213,8 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectRevert("mint -- HookCoveredCall must be operator");
-    calls.mint(
+    vm.expectRevert("mintWithErc721 -- HookCoveredCall must be operator");
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -228,8 +228,8 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectRevert("mint -- caller must be token owner or operator");
-    calls.mint(
+    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -255,7 +255,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -269,8 +269,8 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     // Vault is now owner of the underlying token so this fails.
-    vm.expectRevert("mint -- caller must be token owner or operator");
-    calls.mint(
+    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -301,7 +301,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    calls.mint(
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -310,8 +310,8 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     // Vault is now owner of the underlying token so this fails.
-    vm.expectRevert("mint -- caller must be token owner or operator");
-    calls.mint(
+    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -340,7 +340,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    calls.mint(
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -353,8 +353,8 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.startPrank(operator);
 
     // Vault is now owner of the underlying token so this fails.
-    vm.expectRevert("mint -- caller must be token owner or operator");
-    calls.mint(
+    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -380,7 +380,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -389,8 +389,8 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     // Minting should only work for TestERC721
-    vm.expectRevert("mint -- token must be on the project allowlist");
-    calls.mint(
+    vm.expectRevert("mintWithErc721 -- token must be on the project allowlist");
+    calls.mintWithErc721(
       address(calls),
       optionId,
       1000,
@@ -426,7 +426,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
-    calls.mint(
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -493,7 +493,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     startHoax(operator);
     uint256 expiration = block.timestamp + 3 days;
 
-    calls.mint(
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -604,9 +604,18 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     vm.prank(writer);
     calls.bid{value: 1}(optionTokenId);
 
-    assertTrue(calls.currentBid(optionTokenId) == 1001, "bid 1 wei over strike price");
-    assertTrue(calls.currentBidder(optionTokenId) == writer, "writer should be highest bidder");
-    assertTrue(writer.balance == 1 ether - 1, "writer should have only used 1 wei to bid");
+    assertTrue(
+      calls.currentBid(optionTokenId) == 1001,
+      "bid 1 wei over strike price"
+    );
+    assertTrue(
+      calls.currentBidder(optionTokenId) == writer,
+      "writer should be highest bidder"
+    );
+    assertTrue(
+      writer.balance == 1 ether - 1,
+      "writer should have only used 1 wei to bid"
+    );
   }
 
   function testWriterCanOutbidOnSpread() public {
@@ -629,10 +638,22 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     vm.prank(writer);
     calls.bid{value: bidAmount}(optionTokenId);
 
-    assertTrue(calls.currentBid(optionTokenId) == 0.1 ether + 1, "high bid should be 0.1 ether + 1 wei");
-    assertTrue(calls.currentBidder(optionTokenId) == writer, "writer should be highest bidder");
-    assertTrue(firstBidderStartBalance == firstBidder.balance, "first bidder should have been refunded their bid");
-    assertTrue(writer.balance == 1 ether - bidAmount, "writer should have only used 0.1 ether + 1 wei to bid");
+    assertTrue(
+      calls.currentBid(optionTokenId) == 0.1 ether + 1,
+      "high bid should be 0.1 ether + 1 wei"
+    );
+    assertTrue(
+      calls.currentBidder(optionTokenId) == writer,
+      "writer should be highest bidder"
+    );
+    assertTrue(
+      firstBidderStartBalance == firstBidder.balance,
+      "first bidder should have been refunded their bid"
+    );
+    assertTrue(
+      writer.balance == 1 ether - bidAmount,
+      "writer should have only used 0.1 ether + 1 wei to bid"
+    );
   }
 
   function testWriterCanOutbidSelfOnSpread() public {
@@ -659,10 +680,22 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     vm.prank(writer);
     calls.bid{value: secondBidAmount}(optionTokenId);
 
-    assertTrue(calls.currentBid(optionTokenId) == 0.1 ether + 2, "high bid should be 0.1 ether + 1 wei");
-    assertTrue(calls.currentBidder(optionTokenId) == writer, "writer should be highest bidder");
-    assertTrue(firstBidderStartBalance == firstBidder.balance, "first bidder should have been refunded their bid");
-    assertTrue(writer.balance == 1 ether - secondBidAmount, "writer should have only used 0.1 ether + 1 wei to bid");
+    assertTrue(
+      calls.currentBid(optionTokenId) == 0.1 ether + 2,
+      "high bid should be 0.1 ether + 1 wei"
+    );
+    assertTrue(
+      calls.currentBidder(optionTokenId) == writer,
+      "writer should be highest bidder"
+    );
+    assertTrue(
+      firstBidderStartBalance == firstBidder.balance,
+      "first bidder should have been refunded their bid"
+    );
+    assertTrue(
+      writer.balance == 1 ether - secondBidAmount,
+      "writer should have only used 0.1 ether + 1 wei to bid"
+    );
   }
 }
 
@@ -739,7 +772,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -763,7 +796,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -801,7 +834,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -821,11 +854,14 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.settleOption(optionId, false);
 
     assertTrue(
-      buyerStartBalance + 1 wei == buyer.balance, 
+      buyerStartBalance + 1 wei == buyer.balance,
       "buyer gets the option spread (winning bid of 1001 wei - strike price of 1000)"
     );
 
-    assertTrue(writerStartBalance - 1 == writer.balance, "option writer only loses spread (1 wei)");
+    assertTrue(
+      writerStartBalance - 1 == writer.balance,
+      "option writer only loses spread (1 wei)"
+    );
   }
 
   function testSettleOptionWhenWriterBidFirst() public {
@@ -843,7 +879,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -857,7 +893,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     // Option expires in 3 days from current block; bidding starts in 2 days.
     vm.warp(block.timestamp + 2.1 days);
-    
+
     calls.bid{value: 1 wei}(optionId);
     vm.stopPrank();
 
@@ -869,8 +905,14 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.prank(writer);
     calls.settleOption(optionId, false);
 
-    assertTrue(buyerStartBalance + 1000 wei == buyer.balance, "buyer gets the spread (2000 wei - 1000 wei strike)");
-    assertTrue(writerStartBalance + 1000 wei == writer.balance, "option writer only gets strike (1000 wei)");
+    assertTrue(
+      buyerStartBalance + 1000 wei == buyer.balance,
+      "buyer gets the spread (2000 wei - 1000 wei strike)"
+    );
+    assertTrue(
+      writerStartBalance + 1000 wei == writer.balance,
+      "option writer only gets strike (1000 wei)"
+    );
   }
 
   function testSettleOptionWhenWriterBidLast() public {
@@ -888,7 +930,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -916,8 +958,14 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.prank(writer);
     calls.settleOption(optionId, false);
 
-    assertTrue(buyerStartBalance + 2 wei == buyer.balance, "buyer gets the spread (10002 wei - 1000 wei strike)");
-    assertTrue(writerStartBalance - 2 wei == writer.balance, "option writer bid on strike");
+    assertTrue(
+      buyerStartBalance + 2 wei == buyer.balance,
+      "buyer gets the spread (10002 wei - 1000 wei strike)"
+    );
+    assertTrue(
+      writerStartBalance - 2 wei == writer.balance,
+      "option writer bid on strike"
+    );
   }
 
   function testSettleOptionWhenWriterOutbid() public {
@@ -935,7 +983,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -966,8 +1014,14 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.prank(writer);
     calls.settleOption(optionId, false);
 
-    assertTrue(buyerStartBalance + 3 wei == buyer.balance, "buyer gets the spread (10002 wei - 1000 wei strike)");
-    assertTrue(writerStartBalance + 1000 == writer.balance, "option writer gets strike (1000 wei)");
+    assertTrue(
+      buyerStartBalance + 3 wei == buyer.balance,
+      "buyer gets the spread (10002 wei - 1000 wei strike)"
+    );
+    assertTrue(
+      writerStartBalance + 1000 == writer.balance,
+      "option writer gets strike (1000 wei)"
+    );
   }
 }
 
@@ -1067,7 +1121,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -1081,7 +1135,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
 
     // Option expires in 3 days from current block; bidding starts in 2 days.
     vm.warp(block.timestamp + 2.1 days);
-    
+
     calls.bid{value: 1 wei}(optionId);
     vm.stopPrank();
 
@@ -1115,7 +1169,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,
@@ -1164,7 +1218,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId2,
       1000,

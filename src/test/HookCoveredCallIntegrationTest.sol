@@ -43,7 +43,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       1000,
       expiration
     );
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -58,8 +58,8 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   }
 
   function testRevert_MintOptionMustBeOwnerOrOperator() public {
-    vm.expectRevert("mint -- caller must be token owner or operator");
-    calls.mint(
+    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -73,9 +73,9 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   {
     vm.prank(address(writer));
     vm.expectRevert(
-      "mint -- expirationTime must be more than one day in the future time"
+      "mintWithErc721 -- expirationTime must be more than one day in the future time"
     );
-    calls.mint(
+    calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -90,7 +90,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     uint256 writerStartBalance = writer.balance;
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -188,7 +188,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.prank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -218,7 +218,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.prank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -242,7 +242,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.prank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -269,7 +269,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.prank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -305,7 +305,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.prank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
-    uint256 optionId = calls.mint(
+    uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,

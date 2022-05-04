@@ -51,7 +51,7 @@ interface IHookCoveredCall is IERC721 {
   /// @param strikePrice the strike price for the call option being written
   /// @param expirationTime time the timestamp after which the option will be expired
   /// @param signature the signature used to place the entitlement onto the vault
-  function mint(
+  function mintWithErc721(
     address tokenAddress,
     uint256 tokenId,
     uint256 strikePrice,
