@@ -78,4 +78,9 @@ interface IHookVault {
   function getHoldsAsset() external view returns (bool);
 
   function assetAddress() external view returns (address);
+
+  function getCurrentEntitlementOperator()
+    external
+    view
+    returns (bool isActive, address operator);
 }

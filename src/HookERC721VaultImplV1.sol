@@ -350,6 +350,15 @@ contract HookERC721VaultImplV1 is
     return block.timestamp < _currentEntitlement.expiry && _hasEntitlement;
   }
 
+  function getCurrentEntitlementOperator()
+    external
+    view
+    returns (bool isActive, address operator)
+  {
+    isActive = hasActiveEntitlement();
+    operator = _currentEntitlement.operator;
+  }
+
   function _setBeneficialOwner(address newBeneficialOwner) private {
     beneficialOwner = newBeneficialOwner;
     emit BeneficialOwnerSet(newBeneficialOwner, msg.sender);

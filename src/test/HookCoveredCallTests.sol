@@ -52,6 +52,127 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
   }
 
+  function test_MintOptionWithVault() public {
+    vm.startPrank(address(writer));
+    try vaultFactory.makeVault(address(token), underlyingTokenId) {} catch {}
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.getVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 1, 1000, expiration);
+
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      1000,
+      expiration,
+      sig
+    );
+
+    assertTrue(
+      calls.ownerOf(optionId) == address(writer),
+      "owner should own the option"
+    );
+
+    (bool isActive, address operator) = vault.getCurrentEntitlementOperator();
+    assertTrue(isActive, "there should be an active entitlement");
+    assertTrue(
+      operator == address(calls),
+      "the call options should be the operator"
+    );
+  }
+
+  function test_MintOptionWithVaultFailsExpiration() public {
+    vm.startPrank(address(writer));
+    try vaultFactory.makeVault(address(token), underlyingTokenId) {} catch {}
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.getVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+
+    uint256 expiration = block.timestamp + 1 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+
+    vm.expectRevert(
+      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
+    );
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      1000,
+      expiration,
+      sig
+    );
+  }
+
+  function test_MintOptionWithVaultFailsEmptyVault() public {
+    vm.startPrank(address(writer));
+    try vaultFactory.makeVault(address(token), underlyingTokenId) {} catch {}
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.getVault(address(token), underlyingTokenId)
+    );
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+
+    vm.expectRevert("mintWithVault-- asset must be in vault");
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      1000,
+      expiration,
+      sig
+    );
+  }
+
+  function test_MintOptionWithVaultFailsUnsupportedCollection() public {
+    vm.startPrank(address(writer));
+    try vaultFactory.makeVault(address(calls), underlyingTokenId) {} catch {}
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.getVault(address(calls), underlyingTokenId)
+    );
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+
+    vm.expectRevert("mintWithVault -- token must be on the project allowlist");
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      1000,
+      expiration,
+      sig
+    );
+  }
+
   function testMintMultipleOptions() public {
     vm.startPrank(address(writer));
 
@@ -186,7 +307,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
     vm.expectRevert(
-      "mintWithErc721 -- expirationTime must be more than one day in the future time"
+      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
     calls.mintWithErc721(
       address(token),

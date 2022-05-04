@@ -174,7 +174,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
       writerpkey,
       _getEIP712Hash(structHash)
     );
-    Signatures.Signature memory sig = Signatures.Signature({
+    sig = Signatures.Signature({
       signatureType: Signatures.SignatureType.EIP712,
       v: v,
       r: r,

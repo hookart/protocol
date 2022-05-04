@@ -205,7 +205,7 @@ contract HookCoveredCallImplV1 is
     // NOTE: The settlement auction always occurs one day before expiration
     require(
       expirationTime > block.timestamp + 1 days,
-      "mintWithErc721 -- expirationTime must be more than one day in the future time"
+      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
 
     // generate the next optionId
