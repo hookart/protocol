@@ -60,8 +60,6 @@ contract HookERC721VaultImplV1 is
 
   /// ---------------- PUBLIC FUNCTIONS ---------------- ///
 
-  /// @notice Withdrawl an unencumbered asset from this vault
-  /// @dev withdrawals can only be performed by the beneficial owner if there are no entitlements
   function withdrawalAsset() external {
     // require(msg.sender == beneficialOwner, "the beneficial owner is the only one able to withdrawl");
     require(
@@ -78,11 +76,6 @@ contract HookERC721VaultImplV1 is
     emit AssetWithdrawn(msg.sender, beneficialOwner);
   }
 
-  /// @notice Add an entitlement claim to the asset held within the contract
-  /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
-  /// entitlement
-  /// @param entitlement The entitlement to impose onto the contract
-  /// @param signature an EIP-712 signauture of the entitlement struct signed by the beneficial owner
   function imposeEntitlement(
     Entitlements.Entitlement memory entitlement,
     Signatures.Signature memory signature
@@ -157,11 +150,6 @@ contract HookERC721VaultImplV1 is
     return this.onERC721Received.selector;
   }
 
-  /// @dev Allows a beneficial owner to send an arbitrary call from this wallet as long as the underlying NFT
-  /// is still owned by us after the transaction. The ether value sent is forwarded. Return value is suppressed.
-  /// @param to Destination address of transaction.
-  /// @param data Data payload of transaction.
-  /// @return success if the call was successful.
   function execTransaction(address to, bytes memory data)
     external
     payable
@@ -220,7 +208,6 @@ contract HookERC721VaultImplV1 is
     }
   }
 
-  /// @notice looks up the current beneficial owner of the underlying asset
   function getBeneficialOwner() external view returns (address) {
     return beneficialOwner;
   }
@@ -230,9 +217,6 @@ contract HookERC721VaultImplV1 is
     return IERC721(_nftContract).ownerOf(_tokenId) == address(this);
   }
 
-  /// @notice setBeneficialOwner updates the current address that can claim the asset when it is free of entitlements.
-  /// @dev setBeneficialOwner can only be called by the entitlementContract if there is an activeEntitlement.
-  /// @param newBeneficialOwner the account of the person who is able to withdrawl when there are no entitlements.
   function setBeneficialOwner(address newBeneficialOwner) external {
     if (hasActiveEntitlement()) {
       require(
@@ -248,8 +232,6 @@ contract HookERC721VaultImplV1 is
     _setBeneficialOwner(newBeneficialOwner);
   }
 
-  /// @notice Allowes the entitled address to release their claim on the asset
-  /// @dev This can only be called if an entitlement currently exists, otherwise it would be a no-op
   function clearEntitlement() public {
     require(
       hasActiveEntitlement(),
@@ -262,11 +244,6 @@ contract HookERC721VaultImplV1 is
     _clearEntitlement();
   }
 
-  /// @notice Removes the active entitlement from a vault and returns the asset to the beneficial owner
-  /// @dev The entitlement must be exist, and must be called by the {operator}. The operator can specify a
-  /// intended reciever, which should match the beneficialOwner. The function will throw if
-  /// the reciever and owner do not match.
-  /// @param reciever the intended reciever of the asset
   function clearEntitlementAndDistribute(address reciever) external nonReentrant {
     require(
       beneficialOwner == reciever,

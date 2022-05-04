@@ -101,13 +101,6 @@ contract HookCoveredCallImplV1 is
 
   /// ---- Option Writer Functions ---- //
 
-  /**
-   * @dev Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
-   * @param _vaultAddress the contract address of the vault currently holding the call option
-   * @param _strikePrice the strike price for the call option being written
-   * @param _expirationTime time the timestamp after which the option will be expired
-   * @param signature the signature used to place the entitlement onto the vault
-   */
   function mintWithVault(
     address _vaultAddress,
     uint256 _strikePrice,
@@ -125,15 +118,6 @@ contract HookCoveredCallImplV1 is
     return 0;
   }
 
-  /**
-   * @dev Mints a new call option for a particular "underlying" ERC-721 NFT with a given strike price and expiration.
-   * @param tokenAddress the contract address of the ERC-721 token that serves as the underlying asset for the call
-   * option
-   * @param tokenId the tokenId of the underlying ERC-721 token
-   * @param strikePrice the strike price for the call option being written
-   * @param expirationTime time the timestamp after which the option will be expired
-   * @param signature the signature used to place the entitlement onto the vault
-   */
   function mint(
     address tokenAddress,
     uint256 tokenId,
@@ -248,11 +232,6 @@ contract HookCoveredCallImplV1 is
     _;
   }
 
-  /**
-   * @dev bid in the settlement auction for an option. The paid amount is the bid,
-   * and the bidder is required to escrow this amount until either the auction ends or another bidder bids higher
-   * @param optionId the optionId corresponding to the settlement to bid on.
-   */
   function bid(uint256 optionId)
     external
     payable
@@ -313,40 +292,16 @@ contract HookCoveredCallImplV1 is
     _safeTransferETHWithFallback(call.highBidder, unnormalizedHighBid);
   }
 
-  /**
-   * @dev view function to get the current high settlement bid of an option, or 0 if there is no high bid
-   * @param optionId of the option to check
-   */
   function currentBid(uint256 optionId) external view returns (uint256) {
     return optionParams[optionId].bid;
   }
 
-  /**
-   * @dev view function to get the current high bidder for an option settlement auction, or the null address if no
-   * high bidder exists
-   * @param optionId of the option to check
-   */
   function currentBidder(uint256 optionId) external view returns (address) {
     return optionParams[optionId].highBidder;
   }
 
   // ----- END OF OPTION FUNCTIONS ---------//
 
-  /**
-   * @notice Permissionlessly settle an expired option when the option expires in the money, distributing
-   * the proceeds to the Writer, Holder, and Bidder as follows:
-   *
-   * WRITER (who originally called mint() and owned underlying asset) - recieves the `strike`
-   * HOLDER (ownerOf(optionId)) - recieves `bid - strike`
-   * HIGH BIDDER (call.highBidder) - becomes ownerOf NFT, pays `bid`.
-   *
-   * @dev the return nft param allows the underlying asset to remain in its vault. This saves gas
-   * compared to first distributing it and then re-depositing it. No royalities or other payments
-   * are subtracted from the distribtion amounts.
-   *
-   * @param optionId of the option to settle.
-   * @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
-   */
   function settleOption(uint256 optionId, bool returnNft)
     external
     nonReentrant
@@ -389,13 +344,6 @@ contract HookCoveredCallImplV1 is
     emit CallDestroyed(optionId);
   }
 
-  /**
-   * @notice Allows the writer to reclaim an entitled asset. This is possible both if they are also the holder of the
-   * option NFT or if the option expired early.
-   * @dev Allows the writer to reclaim a NFT, either if the option expired OTM or if they also hold the option NFT.
-   * @param optionId the asset to reclaim after the auction.
-   * @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
-   */
   function reclaimAsset(uint256 optionId, bool returnNft)
     external
     nonReentrant
