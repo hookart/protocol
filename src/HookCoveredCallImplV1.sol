@@ -32,18 +32,16 @@ contract HookCoveredCallImplV1 is
 {
   using Counters for Counters.Counter;
 
-  /**
-   * @notice The metadata for each covered call option
-   * @param writer The address of the writer that created the call option
-   * @param owner The address of the current owner of the underlying, updated as bidding occurs
-   * @param tokenAddress The address of the NFT that the option is on
-   * @param tokenId The tokenId of the NFT that the option is on
-   * @param strike The strike price to exercise the call option
-   * @param expiration The expiration time of the call option
-   * @param settled a flag that marks when a settlement action has taken place successfully
-   * @param bid is the current high bid in the settlement auction
-   * @param highBidder is the address that made the current winning bid in the settlement auction
-   */
+  /// @notice The metadata for each covered call option
+  /// @param writer The address of the writer that created the call option
+  /// @param owner The address of the current owner of the underlying, updated as bidding occurs
+  /// @param tokenAddress The address of the NFT that the option is on
+  /// @param tokenId The tokenId of the NFT that the option is on
+  /// @param strike The strike price to exercise the call option
+  /// @param expiration The expiration time of the call option
+  /// @param settled a flag that marks when a settlement action has taken place successfully
+  /// @param bid is the current high bid in the settlement auction
+  /// @param highBidder is the address that made the current winning bid in the settlement auction
   struct CallOption {
     address writer;
     address tokenAddress;
@@ -107,14 +105,10 @@ contract HookCoveredCallImplV1 is
     uint256 _expirationTime,
     Signatures.Signature memory signature
   ) external whenNotPaused returns (uint256) {
-    /**
-     *
-     * ************** NOT YET IMPLEMENTED **************
-     * TODO(HOOK-798) Create a mint call option based on existing vaults.
-     * SCOPE: Implement this method, create an interface for abstract vaults that reveals which assets are within
-     * the vault update the signed entitlements to account for both generic assets and specific vault addresses.
-     *
-     */
+    /// ************** NOT YET IMPLEMENTED **************
+    /// TODO(HOOK-798) Create a mint call option based on existing vaults.
+    /// SCOPE: Implement this method, create an interface for abstract vaults that reveals which assets are within
+    /// the vault update the signed entitlements to account for both generic assets and specific vault addresses.
     return 0;
   }
 
@@ -404,16 +398,14 @@ contract HookCoveredCallImplV1 is
     call.settled = true;
     emit CallDestroyed(optionId);
 
-    /**
-            WARNING: 
-            Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on 
-            the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer 
-            could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for 
-            the current bidder to reclaim their money.
-
-            TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that 
-            there are not patterns we need to watch here.   
-         */
+    /// WARNING: 
+    /// Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on 
+    /// the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer 
+    /// could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for 
+    /// the current bidder to reclaim their money.
+    ///
+    /// TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that 
+    /// there are not patterns we need to watch here.   
   }
 
   //// ---- Administrative Fns.
@@ -426,11 +418,9 @@ contract HookCoveredCallImplV1 is
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ///
 
-  //TODO(HOOK-801) Migrate Instrument NFT to an abstract contract
-  /**
-   * @dev this is a basic token URI that will show the underlying contract address as well as the
-   * token ID in an svg (ripped off from LOOT PROJECT)
-   */
+  /// TODO(HOOK-801) Migrate Instrument NFT to an abstract contract
+  /// @dev this is a basic token URI that will show the underlying contract address as well as the
+  /// token ID in an svg (ripped off from LOOT PROJECT)
   function tokenURI(uint256 tokenId)
     public
     view
@@ -475,11 +465,9 @@ contract HookCoveredCallImplV1 is
     return output;
   }
 
-  /**
-   * @notice Transfer ETH. If the ETH transfer fails, wrap the ETH and try send it as WETH.
-   * @dev this transfer failure could occur if the transferee is a malicious contract
-   * so limiting the gas and persisting on fail helps prevent the impace of these calls.
-   */
+  /// @notice Transfer ETH. If the ETH transfer fails, wrap the ETH and try send it as WETH.
+  /// @dev this transfer failure could occur if the transferee is a malicious contract
+  /// so limiting the gas and persisting on fail helps prevent the impace of these calls.
   function _safeTransferETHWithFallback(address to, uint256 amount) internal {
     if (!_safeTransferETH(to, amount)) {
       IWETH(weth).deposit{value: amount}();
@@ -487,10 +475,8 @@ contract HookCoveredCallImplV1 is
     }
   }
 
-  /**
-   * @notice Transfer ETH and return the success status.
-   * @dev This function only forwards 30,000 gas to the callee.
-   */
+  /// @notice Transfer ETH and return the success status.
+  /// @dev This function only forwards 30,000 gas to the callee.
   function _safeTransferETH(address to, uint256 value) internal returns (bool) {
     (bool success, ) = to.call{value: value, gas: 30_000}(new bytes(0));
     return success;

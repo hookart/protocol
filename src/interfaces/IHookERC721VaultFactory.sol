@@ -3,8 +3,6 @@ pragma solidity ^0.8.10;
 /// @title HookERC721Factory -- factory for instances of the hook vault
 /// @author Jake Nyquist -- j@hook.xyz
 /// @notice The Factory creates a specific vault for ERC721s.
-/// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
-/// created by this factory can be upgraded at one time via the beacon pattern.
 interface IHookERC721VaultFactory {
   function getVault(address nftAddress, uint256 tokenId)
     external

@@ -8,6 +8,14 @@ import "./interfaces/IHookProtocol.sol";
 
 import "./mixin/PermissionConstants.sol";
 
+/// @dev Other contracts in the protocol refer to this one to get configuration and pausing issues.
+/// to reduce attack surface area, this contract cannot be upgraded; however, additional roles can be
+/// added.
+///
+/// This contract does not implement any specific timelocks or other safety measures. The roles are granted
+/// with the principal of least privildge. As the protocol matures, these additional measures can be layered
+/// by granting these roles to other contracts. In the extreme, the upgrade and other roles can be burned,
+/// which would effectively make the protocol static and non-upgradeable.
 contract HookProtocol is
   PermissionConstants,
   AccessControl,

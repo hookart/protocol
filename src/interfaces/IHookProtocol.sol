@@ -6,14 +6,6 @@ import "@openzeppelin/contracts/access/IAccessControl.sol";
 /// @author Jake Nyquist -- j@hook.xyz
 /// @notice This contract contains the addresses of currently deployed Hook protocol
 /// contract and contains the centralized Access Control and protocol pausing functions
-/// @dev Other contracts in the protocol refer to this one to get configuration and pausing issues.
-/// to reduce attack surface area, this contract cannot be upgraded; however, additional roles can be
-/// added.
-///
-/// This contract does not implement any specific timelocks or other safety measures. The roles are granted
-/// with the principal of least privildge. As the protocol matures, these additional measures can be layered
-/// by granting these roles to other contracts. In the extreme, the upgrade and other roles can be burned,
-/// which would effectively make the protocol static and non-upgradeable.
 interface IHookProtocol is IAccessControl {
   /// @notice the address of the deployed CoveredCallFactory used by the protocol
   function coveredCallContract() external view returns (address);

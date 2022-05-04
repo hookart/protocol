@@ -4,6 +4,8 @@ pragma solidity ^0.8.10;
 import "./HookERC721Vault.sol";
 import "./interfaces/IHookERC721VaultFactory.sol";
 
+/// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
+/// created by this factory can be upgraded at one time via the beacon pattern.
 contract HookERC721VaultFactory is IHookERC721VaultFactory {
   /// @notice Registry of all of the active vaults within the protocol, allowing users to find vaults by
   /// project address and tokenId;
