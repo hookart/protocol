@@ -110,11 +110,10 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, false, true, true);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
@@ -159,12 +158,14 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     uint256 expiry,
     address writer
   ) internal returns (Signatures.Signature memory sig) {
+    try vaultFactory.makeVault(address(token), tokenId) {} catch {}
+    address va = vaultFactory.getVault(address(token), tokenId);
+
     bytes32 structHash = Entitlements.getEntitlementStructHash(
       Entitlements.Entitlement({
         beneficialOwner: address(writer),
         operator: address(calls),
-        nftContract: address(token),
-        nftTokenId: tokenId,
+        vaultAddress: va,
         expiry: expiry
       })
     );

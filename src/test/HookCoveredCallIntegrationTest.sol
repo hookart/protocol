@@ -31,7 +31,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   }
 
   function test_MintOption() public {
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
     uint256 expiration = block.timestamp + 3 days;
 
     vm.expectEmit(true, false, true, true);
@@ -54,23 +54,34 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       calls.ownerOf(optionId) == address(writer),
       "owner should own the option"
     );
+    vm.stopPrank();
   }
 
   function testRevert_MintOptionMustBeOwnerOrOperator() public {
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      block.timestamp + 3 days,
+      writer
+    );
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
       block.timestamp + 3 days,
-      makeSignature(underlyingTokenId, block.timestamp + 3 days, writer)
+      sig
     );
   }
 
   function testRevert_MintOptionExpirationMustBeMoreThan1DayInTheFuture()
     public
   {
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      block.timestamp + 30 minutes,
+      writer
+    );
     vm.expectRevert(
       "mintWithErc721 -- expirationTime must be more than one day in the future time"
     );
@@ -79,13 +90,14 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       underlyingTokenId,
       1000,
       block.timestamp + 30 minutes,
-      makeSignature(underlyingTokenId, block.timestamp + 30 minutes, writer)
+      sig
     );
+    vm.stopPrank();
   }
 
   function test_SuccessfulAuctionAndSettlement() public {
     // create the call option
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
     uint256 writerStartBalance = writer.balance;
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
@@ -96,10 +108,11 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       expiration,
       makeSignature(underlyingTokenId, expiration, writer)
     );
-    vm.prank(address(writer));
+
     // assume that the writer somehow sold to the buyer, outside the scope of this test
     calls.safeTransferFrom(writer, buyer, optionId);
     uint256 buyerStartBalance = buyer.balance;
+    vm.stopPrank();
 
     // create some bidders
     address bidder1 = address(3456);
@@ -184,7 +197,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   // bid activity occurred.
   function test_NoSettlemetBidAssetReclaim() public {
     // create the call option
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
     uint256 optionId = calls.mintWithErc721(
@@ -196,17 +209,17 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
-    vm.prank(address(writer));
+
     calls.safeTransferFrom(writer, buyer, optionId);
 
     vm.warp(expiration + 50 seconds);
 
-    vm.prank(address(writer));
     calls.reclaimAsset(optionId, true);
     assertTrue(
       token.ownerOf(underlyingTokenId) == writer,
       "the nft should have returned to the buyer"
     );
+    vm.stopPrank();
   }
 
   // Test that the option was not transferred, a bid was made,
@@ -214,7 +227,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   // the auction.
   function test_NoSettlemetBidAssetEarlyReclaim() public {
     // create the call option
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
     uint256 optionId = calls.mintWithErc721(
@@ -224,6 +237,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       expiration,
       makeSignature(underlyingTokenId, expiration, writer)
     );
+    vm.stopPrank();
 
     // made a bid
     vm.warp(baseTime + 2.1 days);
@@ -238,7 +252,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
 
   function test_NoSettlemetBidAssetRecaimFailRandomClaimer() public {
     // create the call option
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
     uint256 optionId = calls.mintWithErc721(
@@ -250,8 +264,8 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
-    vm.prank(address(writer));
     calls.safeTransferFrom(writer, buyer, optionId);
+    vm.stopPrank();
 
     vm.warp(expiration + 3 seconds);
 
@@ -265,7 +279,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   // test: writer must not steal asset by buying back option nft after expiration.
   function test_WriterCannotStealBackAssetAfterExpiration() public {
     // create the call option
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
     uint256 optionId = calls.mintWithErc721(
@@ -277,8 +291,8 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
-    vm.prank(address(writer));
     calls.safeTransferFrom(writer, buyer, optionId);
+    vm.stopPrank();
 
     // made a bid
     vm.warp(baseTime + 2.1 days);
@@ -301,7 +315,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   // make sure that the writer cannot reclaim when a settlement bid is ongoing.
   function test_ActiveSettlementBidAssetRecaimFail() public {
     // create the call option
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
     uint256 optionId = calls.mintWithErc721(
@@ -313,8 +327,8 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
-    vm.prank(address(writer));
     calls.safeTransferFrom(writer, buyer, optionId);
+    vm.stopPrank();
 
     // made a bid
     vm.warp(baseTime + 2.1 days);

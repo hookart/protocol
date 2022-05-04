@@ -5,7 +5,7 @@ import "./utils/base.sol";
 import "./utils/mocks/MaliciousBidder.sol";
 
 // @dev these tests try cases where a bidder maliciously reverts on save.
-contract HookCoveredCallBiddingReverTests is HookProtocolTest {
+contract HookCoveredCallBiddingRevertTests is HookProtocolTest {
   function setUp() public {
     setUpAddresses();
     setUpFullProtocol();
@@ -34,7 +34,7 @@ contract HookCoveredCallBiddingReverTests is HookProtocolTest {
 
   function test_SuccessfulAuctionAndSettlement() public {
     // create the call option
-    vm.prank(address(writer));
+    vm.startPrank(address(writer));
     uint256 writerStartBalance = writer.balance;
     uint256 baseTime = block.timestamp;
     uint256 expiration = baseTime + 3 days;
@@ -45,11 +45,12 @@ contract HookCoveredCallBiddingReverTests is HookProtocolTest {
       expiration,
       makeSignature(underlyingTokenId, expiration, writer)
     );
-    vm.prank(address(writer));
+
     // assume that the writer somehow sold to the buyer, outside the scope of this test
     calls.safeTransferFrom(writer, buyer, optionId);
     uint256 buyerStartBalance = buyer.balance;
 
+    vm.stopPrank();
     // create some bidders
     MaliciousBidder bidder1 = new MaliciousBidder(address(calls));
     address mbcaller = address(6969420);

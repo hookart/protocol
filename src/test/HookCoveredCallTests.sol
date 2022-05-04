@@ -156,6 +156,11 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
+    Signatures.Signature memory signature = makeSignature(
+      underlyingTokenId + 1,
+      expiration + 1,
+      writer
+    );
     vm.expectRevert(
       "validateEntitlementSignature --- not signed by beneficialOwner"
     );
@@ -164,7 +169,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId + 1, expiration + 1, writer)
+      signature
     );
   }
 
@@ -175,7 +180,11 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     token.setApprovalForAll(address(calls), true);
 
     uint256 expiration = block.timestamp + 1 hours;
-
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
     vm.expectRevert(
       "mintWithErc721 -- expirationTime must be more than one day in the future time"
     );
@@ -184,15 +193,20 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      sig
     );
   }
 
   function testCannotMintOptionPaused() public {
-    vm.prank(address(admin));
+    vm.startPrank(address(admin));
     protocol.pause();
 
     uint256 expiration = block.timestamp + 3 days;
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
 
     vm.expectRevert("Pausable: paused");
     calls.mintWithErc721(
@@ -200,7 +214,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      sig
     );
   }
 
@@ -208,14 +222,18 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.startPrank(address(writer));
 
     uint256 expiration = block.timestamp + 3 days;
-
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
     vm.expectRevert("mintWithErc721 -- HookCoveredCall must be operator");
     calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      sig
     );
   }
 
@@ -224,13 +242,18 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      sig
     );
   }
 
@@ -263,6 +286,11 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       "owner should own the option"
     );
 
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
     // Vault is now owner of the underlying token so this fails.
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(
@@ -270,8 +298,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      sig
     );
+    vm.stopPrank();
   }
 
   function testCannotMintMultipleOptionsSameTokenAsOperator() public {
@@ -303,6 +332,11 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       makeSignature(underlyingTokenId, expiration, writer)
     );
 
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
     // Vault is now owner of the underlying token so this fails.
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(
@@ -310,7 +344,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      sig
     );
   }
 
@@ -345,6 +379,11 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.stopPrank();
     vm.startPrank(operator);
 
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
     // Vault is now owner of the underlying token so this fails.
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(
@@ -352,7 +391,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      sig
     );
   }
 
@@ -380,15 +419,14 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       makeSignature(underlyingTokenId, expiration, writer)
     );
 
+    Signatures.Signature memory sig = makeSignature(
+      optionId,
+      expiration,
+      writer
+    );
     // Minting should only work for TestERC721
     vm.expectRevert("mintWithErc721 -- token must be on the project allowlist");
-    calls.mintWithErc721(
-      address(calls),
-      optionId,
-      1000,
-      expiration,
-      makeSignature(optionId, expiration, writer)
-    );
+    calls.mintWithErc721(address(calls), optionId, 1000, expiration, sig);
   }
 
   /// Approvals ///
