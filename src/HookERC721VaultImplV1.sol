@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./interfaces/IHookERC721Vault.sol";
+import "./interfaces/IERC721FlashLoanReceiver.sol";
 import "./lib/Entitlements.sol";
 import "./lib/Signatures.sol";
 import "./mixin/EIP712.sol";
@@ -26,7 +27,7 @@ contract HookERC721VaultImplV1 is
   /// ----------------  STORAGE ---------------- ///
 
   /// @dev these are the NFT contract address and tokenId the vault is covering
-  address private _nftContract;
+  IERC721 private _nftContract;
   uint256 private _tokenId;
 
   /// @dev if airdrops should be disabled to this vault, we mark that here.
@@ -55,7 +56,7 @@ contract HookERC721VaultImplV1 is
   ) public initializer {
     setAddressForEipDomain(hookAddress);
     _tokenId = tokenId;
-    _nftContract = nftContract;
+    _nftContract = IERC721(nftContract);
     _hasEntitlement = false;
   }
 
@@ -70,11 +71,7 @@ contract HookERC721VaultImplV1 is
       "withdrawalAsset -- the asset canot be withdrawn with an active entitlement"
     );
 
-    IERC721(_nftContract).safeTransferFrom(
-      address(this),
-      beneficialOwner,
-      _tokenId
-    );
+    _nftContract.safeTransferFrom(address(this), beneficialOwner, _tokenId);
 
     emit AssetWithdrawn(msg.sender, beneficialOwner);
   }
@@ -125,7 +122,7 @@ contract HookERC721VaultImplV1 is
     ///
     /// ALSO IMPORTANT: Checking here that the method is called by the acutal token contract, not anyone
     /// else.
-    if (msg.sender == _nftContract && tokenId == _tokenId) {
+    if (msg.sender == address(_nftContract) && tokenId == _tokenId) {
       // There is no need to check if we currently have this token or an entitlement set.
       // Even if the contract were able to get into this state, it should still accept the asset
       // which will allow it to enforce the entitlement.
@@ -171,22 +168,61 @@ contract HookERC721VaultImplV1 is
 
     // block transactions to the NFT contract ot ensure that people cant set approvals as the owner.
     require(
-      to != _nftContract,
+      to != address(_nftContract),
       "execTransaction -- cannot send transactions to the NFT contract itself"
     );
-
-    /// TODO(HOOK-804) - MIGRATE THIS TO A FLASHLOAN ARCHITECTURE.
-    /// The current implementation here causes too many security risks
-    /// where arbitrary unknown code can be executed as the holder, meaning
-    /// that people may be able to extract the asset while they are the beneficial
-    /// owner. By requiring that the asset is transfered to another contract to perform
-    /// these calls, and then returned before the end of the block, we can be
-    /// much more sure that extranous approvals have not been performed in the meantime.
 
     // Execute transaction without further confirmations.
     (success, ) = address(to).call{value: msg.value}(data);
 
-    require(IERC721(_nftContract).ownerOf(_tokenId) == address(this));
+    require(_nftContract.ownerOf(_tokenId) == address(this));
+  }
+
+  /**
+   * @dev See {IHookERC721Vault-flashLoan}.
+   */
+  function flashLoan(address receiverAddress, bytes calldata params)
+    external
+    override
+    nonReentrant
+  {
+    IERC721FlashLoanReceiver receiver = IERC721FlashLoanReceiver(
+      receiverAddress
+    );
+
+    require(receiverAddress != address(0), "flashLoan -- zero address");
+    require(
+      msg.sender == beneficialOwner,
+      "flashLoan -- not called by the asset owner"
+    );
+
+    // (1) send the flashloan contract the vaulted NFT
+    _nftContract.safeTransferFrom(address(this), receiverAddress, _tokenId);
+
+    // (2) call the flashloan contract, giving it a chance to do whatever it wants
+    // NOTE: The flashloan contract MUST approve this vault contract as an operator
+    // for the nft, such that we're able to make sure it has arrived.
+    require(
+      receiver.executeOperation(
+        address(_nftContract),
+        _tokenId,
+        msg.sender,
+        address(this),
+        params
+      ),
+      "flashLoan -- the flash loan contract must return true"
+    );
+
+    // (3) return the nft back into the vault
+    _nftContract.safeTransferFrom(receiverAddress, address(this), _tokenId);
+
+    // (4) sanity check to ensure the asset was actually returned to the vault.
+    // this is a concern because its possible that the safeTransferFrom implemented by
+    // some contract fails silently
+    require(_nftContract.ownerOf(_tokenId) == address(this));
+
+    // (5) emit an event to record the flashloan
+    emit AssetFlashLoaned(beneficialOwner, receiverAddress);
   }
 
   /// @notice Looks up the address of the currently entitled operator
