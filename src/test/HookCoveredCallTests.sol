@@ -30,7 +30,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
@@ -181,7 +181,12 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
@@ -189,12 +194,13 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       1000,
       expiration
     );
+
     uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
       expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      sig
     );
 
     assertTrue(
@@ -205,7 +211,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     uint256 secondUnderlyingTokenId = 1;
     token.mint(address(writer), secondUnderlyingTokenId);
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
@@ -242,7 +248,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
@@ -386,7 +392,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
@@ -437,7 +443,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.startPrank(operator);
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
@@ -480,7 +486,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
@@ -524,7 +530,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
@@ -568,7 +574,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),

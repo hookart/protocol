@@ -110,7 +110,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, false, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
