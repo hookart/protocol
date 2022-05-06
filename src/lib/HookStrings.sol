@@ -1,10 +1,9 @@
 pragma solidity ^0.8.10;
 
 library HookStrings {
-  /**
-   * @dev toAsciiString creates a hex encoding of an
-   * address as a string to use in the preview NFT.
-   */
+  
+  /// @dev toAsciiString creates a hex encoding of an
+  /// address as a string to use in the preview NFT.
   function toAsciiString(address x) internal pure returns (string memory) {
     bytes memory s = new bytes(40);
     for (uint256 i = 0; i < 20; i++) {

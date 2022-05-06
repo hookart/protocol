@@ -32,18 +32,16 @@ contract HookCoveredCallImplV1 is
 {
   using Counters for Counters.Counter;
 
-  /**
-   * @notice The metadata for each covered call option
-   * @param writer The address of the writer that created the call option
-   * @param owner The address of the current owner of the underlying, updated as bidding occurs
-   * @param tokenAddress The address of the NFT that the option is on
-   * @param tokenId The tokenId of the NFT that the option is on
-   * @param strike The strike price to exercise the call option
-   * @param expiration The expiration time of the call option
-   * @param settled a flag that marks when a settlement action has taken place successfully
-   * @param bid is the current high bid in the settlement auction
-   * @param highBidder is the address that made the current winning bid in the settlement auction
-   */
+  /// @notice The metadata for each covered call option
+  /// @param writer The address of the writer that created the call option
+  /// @param owner The address of the current owner of the underlying, updated as bidding occurs
+  /// @param tokenAddress The address of the NFT that the option is on
+  /// @param tokenId The tokenId of the NFT that the option is on
+  /// @param strike The strike price to exercise the call option
+  /// @param expiration The expiration time of the call option
+  /// @param settled a flag that marks when a settlement action has taken place successfully
+  /// @param bid is the current high bid in the settlement auction
+  /// @param highBidder is the address that made the current winning bid in the settlement auction
   struct CallOption {
     address writer;
     address tokenAddress;
@@ -101,39 +99,22 @@ contract HookCoveredCallImplV1 is
 
   /// ---- Option Writer Functions ---- //
 
-  /**
-   * @dev Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
-   * @param _vaultAddress the contract address of the vault currently holding the call option
-   * @param _strikePrice the strike price for the call option being written
-   * @param _expirationTime time the timestamp after which the option will be expired
-   * @param signature the signature used to place the entitlement onto the vault
-   */
+  /// @dev See {IHookCoveredCall-mintWithVault}.
+
   function mintWithVault(
     address _vaultAddress,
     uint256 _strikePrice,
     uint256 _expirationTime,
     Signatures.Signature memory signature
   ) external whenNotPaused returns (uint256) {
-    /**
-     *
-     * ************** NOT YET IMPLEMENTED **************
-     * TODO(HOOK-798) Create a mint call option based on existing vaults.
-     * SCOPE: Implement this method, create an interface for abstract vaults that reveals which assets are within
-     * the vault update the signed entitlements to account for both generic assets and specific vault addresses.
-     *
-     */
+    /// ************** NOT YET IMPLEMENTED **************
+    /// TODO(HOOK-798) Create a mint call option based on existing vaults.
+    /// SCOPE: Implement this method, create an interface for abstract vaults that reveals which assets are within
+    /// the vault update the signed entitlements to account for both generic assets and specific vault addresses.
     return 0;
   }
 
-  /**
-   * @dev Mints a new call option for a particular "underlying" ERC-721 NFT with a given strike price and expiration.
-   * @param tokenAddress the contract address of the ERC-721 token that serves as the underlying asset for the call
-   * option
-   * @param tokenId the tokenId of the underlying ERC-721 token
-   * @param strikePrice the strike price for the call option being written
-   * @param expirationTime time the timestamp after which the option will be expired
-   * @param signature the signature used to place the entitlement onto the vault
-   */
+  /// @dev See {IHookCoveredCall-mint}.
   function mint(
     address tokenAddress,
     uint256 tokenId,
@@ -248,11 +229,7 @@ contract HookCoveredCallImplV1 is
     _;
   }
 
-  /**
-   * @dev bid in the settlement auction for an option. The paid amount is the bid,
-   * and the bidder is required to escrow this amount until either the auction ends or another bidder bids higher
-   * @param optionId the optionId corresponding to the settlement to bid on.
-   */
+  /// @dev See {IHookCoveredCall-bid}.
   function bid(uint256 optionId)
     external
     payable
@@ -313,40 +290,19 @@ contract HookCoveredCallImplV1 is
     _safeTransferETHWithFallback(call.highBidder, unnormalizedHighBid);
   }
 
-  /**
-   * @dev view function to get the current high settlement bid of an option, or 0 if there is no high bid
-   * @param optionId of the option to check
-   */
+  /// @dev See {IHookCoveredCall-currentBid}.
   function currentBid(uint256 optionId) external view returns (uint256) {
     return optionParams[optionId].bid;
   }
 
-  /**
-   * @dev view function to get the current high bidder for an option settlement auction, or the null address if no
-   * high bidder exists
-   * @param optionId of the option to check
-   */
+  /// @dev See {IHookCoveredCall-currentBidder}.
   function currentBidder(uint256 optionId) external view returns (address) {
     return optionParams[optionId].highBidder;
   }
 
   // ----- END OF OPTION FUNCTIONS ---------//
 
-  /**
-   * @notice Permissionlessly settle an expired option when the option expires in the money, distributing
-   * the proceeds to the Writer, Holder, and Bidder as follows:
-   *
-   * WRITER (who originally called mint() and owned underlying asset) - recieves the `strike`
-   * HOLDER (ownerOf(optionId)) - recieves `bid - strike`
-   * HIGH BIDDER (call.highBidder) - becomes ownerOf NFT, pays `bid`.
-   *
-   * @dev the return nft param allows the underlying asset to remain in its vault. This saves gas
-   * compared to first distributing it and then re-depositing it. No royalities or other payments
-   * are subtracted from the distribtion amounts.
-   *
-   * @param optionId of the option to settle.
-   * @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
-   */
+  /// @dev See {IHookCoveredCall-settleOption}.
   function settleOption(uint256 optionId, bool returnNft)
     external
     nonReentrant
@@ -389,13 +345,7 @@ contract HookCoveredCallImplV1 is
     emit CallDestroyed(optionId);
   }
 
-  /**
-   * @notice Allows the writer to reclaim an entitled asset. This is possible both if they are also the holder of the
-   * option NFT or if the option expired early.
-   * @dev Allows the writer to reclaim a NFT, either if the option expired OTM or if they also hold the option NFT.
-   * @param optionId the asset to reclaim after the auction.
-   * @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
-   */
+  /// @dev See {IHookCoveredCall-reclaimAsset}.
   function reclaimAsset(uint256 optionId, bool returnNft)
     external
     nonReentrant
@@ -456,16 +406,14 @@ contract HookCoveredCallImplV1 is
     call.settled = true;
     emit CallDestroyed(optionId);
 
-    /**
-            WARNING: 
-            Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on 
-            the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer 
-            could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for 
-            the current bidder to reclaim their money.
-
-            TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that 
-            there are not patterns we need to watch here.   
-         */
+    /// WARNING: 
+    /// Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on 
+    /// the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer 
+    /// could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for 
+    /// the current bidder to reclaim their money.
+    ///
+    /// TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that 
+    /// there are not patterns we need to watch here.   
   }
 
   //// ---- Administrative Fns.
@@ -478,11 +426,9 @@ contract HookCoveredCallImplV1 is
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ///
 
-  //TODO(HOOK-801) Migrate Instrument NFT to an abstract contract
-  /**
-   * @dev this is a basic token URI that will show the underlying contract address as well as the
-   * token ID in an svg (ripped off from LOOT PROJECT)
-   */
+  /// TODO(HOOK-801) Migrate Instrument NFT to an abstract contract
+  /// @dev this is a basic token URI that will show the underlying contract address as well as the
+  /// token ID in an svg (ripped off from LOOT PROJECT)
   function tokenURI(uint256 tokenId)
     public
     view
@@ -527,11 +473,9 @@ contract HookCoveredCallImplV1 is
     return output;
   }
 
-  /**
-   * @notice Transfer ETH. If the ETH transfer fails, wrap the ETH and try send it as WETH.
-   * @dev this transfer failure could occur if the transferee is a malicious contract
-   * so limiting the gas and persisting on fail helps prevent the impace of these calls.
-   */
+  /// @notice Transfer ETH. If the ETH transfer fails, wrap the ETH and try send it as WETH.
+  /// @dev this transfer failure could occur if the transferee is a malicious contract
+  /// so limiting the gas and persisting on fail helps prevent the impace of these calls.
   function _safeTransferETHWithFallback(address to, uint256 amount) internal {
     if (!_safeTransferETH(to, amount)) {
       IWETH(weth).deposit{value: amount}();
@@ -539,10 +483,8 @@ contract HookCoveredCallImplV1 is
     }
   }
 
-  /**
-   * @notice Transfer ETH and return the success status.
-   * @dev This function only forwards 30,000 gas to the callee.
-   */
+  /// @notice Transfer ETH and return the success status.
+  /// @dev This function only forwards 30,000 gas to the callee.
   function _safeTransferETH(address to, uint256 value) internal returns (bool) {
     (bool success, ) = to.call{value: value, gas: 30_000}(new bytes(0));
     return success;

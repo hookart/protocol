@@ -7,10 +7,7 @@ import "./interfaces/IHookProtocol.sol";
 
 import "./mixin/PermissionConstants.sol";
 
-/// @title HookCoveredCallFactory -- factory for instances of the Covered Call contract
-/// @author Jake Nyquist -- j@hook.xyz
-/// @notice The Factory creates covered call instruments that support specific ERC-721 contracts, and
-/// also tracks all of the existing active markets.
+/// @dev See {IHookCoveredCallFactory}.
 /// @dev Operating the factory requires specific permissions within the protocol.
 contract HookCoveredCallFactory is
   PermissionConstants,
@@ -30,10 +27,8 @@ contract HookCoveredCallFactory is
     _protocol = IHookProtocol(hookProtocolAddress);
   }
 
-  /// @notice Create a call option instrument for a specific underlying asset address
+  /// @dev See {IHookCoveredCallFactory-makeCallInstrument}.
   /// @dev Only the admin can create these addresses.
-  /// @param assetAddress the address for the underling asset
-  /// @return calls the address of the call option instrument contract (upgradeable)
   function makeCallInstrument(address assetAddress)
     external
     returns (address calls)

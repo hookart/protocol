@@ -4,9 +4,6 @@ pragma solidity ^0.8.10;
 import "./HookERC721Vault.sol";
 import "./interfaces/IHookERC721VaultFactory.sol";
 
-/// @title HookERC721Factory -- factory for instances of the hook vault
-/// @author Jake Nyquist -- j@hook.xyz
-/// @notice The Factory creates a specific vault for ERC721s.
 /// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
 /// created by this factory can be upgraded at one time via the beacon pattern.
 contract HookERC721VaultFactory is IHookERC721VaultFactory {
