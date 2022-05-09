@@ -1,17 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-
-import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-import "./lib/HookStrings.sol";
 import "./lib/Entitlements.sol";
 
 import "./interfaces/IHookERC721VaultFactory.sol";
@@ -22,6 +16,7 @@ import "./interfaces/IHookERC721Vault.sol";
 import "./interfaces/IWETH.sol";
 
 import "./mixin/PermissionConstants.sol";
+import "./mixin/HookInstrumentERC721.sol";
 
 /// @title HookCoveredCallImplV1 an implementation of covered calls on Hook
 /// @author Jake Nyquist -- j@hook.xyz
@@ -29,7 +24,7 @@ import "./mixin/PermissionConstants.sol";
 /// @dev Explain to a developer any extra details
 contract HookCoveredCallImplV1 is
   IHookCoveredCall,
-  ERC721Burnable,
+  HookInsturmentERC721,
   ReentrancyGuard,
   Initializable,
   PermissionConstants
@@ -599,59 +594,35 @@ contract HookCoveredCallImplV1 is
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ///
 
-  /// TODO(HOOK-801) Migrate Instrument NFT to an abstract contract
-  /// @dev this is a basic token URI that will show the underlying contract address as well as the
-  /// token ID in an svg (ripped off from LOOT PROJECT)
-  function tokenURI(uint256 tokenId)
+  function getTokenAddress(uint256 optionId)
     public
     view
     override
-    returns (string memory)
+    returns (address)
   {
-    IHookERC721Vault vault = IHookERC721Vault(
-      optionParams[tokenId].vaultAddress
-    );
+    return optionParams[optionId].tokenAddress;
+  }
 
-    string[5] memory parts;
-    parts[
-      0
-    ] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>'
-    '.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill='
-    '"black" /><text x="10" y="20" class="base">';
+  function getTokenId(uint256 optionId) public view override returns (uint256) {
+    return optionParams[optionId].tokenId;
+  }
 
-    parts[1] = HookStrings.toAsciiString(
-      vault.assetAddress(optionParams[tokenId].assetId)
-    );
+  function getStrikePrice(uint256 optionId)
+    public
+    view
+    override
+    returns (uint256)
+  {
+    return optionParams[optionId].strike;
+  }
 
-    parts[2] = '</text><text x="10" y="40" class="base">';
-
-    parts[3] = HookStrings.toString(
-      vault.assetTokenId(optionParams[tokenId].assetId)
-    );
-
-    parts[4] = "</text></svg>";
-
-    string memory output = string(
-      abi.encodePacked(parts[0], parts[1], parts[2], parts[3], parts[4])
-    );
-
-    string memory json = Base64.encode(
-      bytes(
-        string(
-          abi.encodePacked(
-            '{"name": "Option Id',
-            HookStrings.toString(tokenId),
-            '", "description": "Hook powers fully on-chain covered call options", "image": '
-            '"data:image/svg+xml;base64,',
-            Base64.encode(bytes(output)),
-            '"}'
-          )
-        )
-      )
-    );
-    output = string(abi.encodePacked("data:application/json;base64,", json));
-
-    return output;
+  function getExpiration(uint256 optionId)
+    public
+    view
+    override
+    returns (uint256)
+  {
+    return optionParams[optionId].expiration;
   }
 
   //// ----------------------------- ETH TRANSFER UTILITIES --------------------------- ////
