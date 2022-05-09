@@ -37,7 +37,7 @@ contract HookERC721VaultImplV1 is
   address private beneficialOwner;
 
   /// @dev these fields mark when there is an active entitlement on this contract. If these
-  /// fields are non-null, the beneficial o wner is unable to withdrawl until either the entitlement
+  /// fields are non-null, the beneficial owner is unable to withdrawl until either the entitlement
   /// expires or the fields are cleared.
   Entitlements.Entitlement private _currentEntitlement;
 
