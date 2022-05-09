@@ -55,13 +55,37 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
     returns (uint256);
 
   /// @dev this is the OpenSea compatible collection - level metadata URI.
-  function contractUri(uint256 optionId) external view returns (string) {
+  function contractUri(uint256 optionId) external view returns (string memory) {
     return
-      abi.encodePacked(
-        "token.hook.xyz/option-contract/",
-        HookStrings.toAsciiString(address(this)),
-        "/",
-        HookStrings.toString(optionId)
+      string(
+        abi.encodePacked(
+          "token.hook.xyz/option-contract/",
+          HookStrings.toAsciiString(address(this)),
+          "/",
+          HookStrings.toString(optionId)
+        )
+      );
+  }
+
+  function _generateMetadata(uint256 tokenId)
+    internal
+    view
+    returns (string memory)
+  {
+    return
+      string(
+        abi.encodePacked(
+          ', "expiration": ',
+          HookStrings.toString(this.getExpiration(tokenId)),
+          ', "underlying_address": ',
+          HookStrings.toAsciiString(this.getTokenAddress(tokenId)),
+          ', "underlying_tokenId": ',
+          HookStrings.toString(this.getTokenId(tokenId)),
+          ', "strike_price": ',
+          HookStrings.toString(this.getStrikePrice(tokenId)),
+          ', "transfer_index": ',
+          HookStrings.toString(_transfers[tokenId].current())
+        )
       );
   }
 
@@ -98,19 +122,10 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
           abi.encodePacked(
             '{"name": "Option Id',
             HookStrings.toString(tokenId),
-            '", "description": "Hook powers fully on-chain covered call options", "image": '
+            '", "description": "Hook is the on-chain covered call option protocol", "image": '
             '"data:image/svg+xml;base64,',
             Base64.encode(bytes(output)),
-            ', "expiration": ',
-            HookStrings.toString(this.getExpiration(tokenId)),
-            ', "underlying_address": ',
-            HookStrings.toAsciiString(this.getTokenAddress(tokenId)),
-            ', "underlying_tokenId": ',
-            HookStrings.toString(this.getTokenId(tokenId)),
-            ', "strike_price": ',
-            HookStrings.toString(this.getStrikePrice(tokenId)),
-            ', "transfer_index": ',
-            HookStrings.toString(_transfers[tokenId].current()),
+            _generateMetadata(tokenId),
             '"}'
           )
         )
