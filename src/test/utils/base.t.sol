@@ -108,7 +108,8 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     );
     HookCoveredCallFactory callFactory = new HookCoveredCallFactory(
       protocolAddress,
-      address(callBeacon)
+      address(callBeacon),
+      address(0)
     );
     vm.prank(address(admin));
     protocol.setCoveredCallFactory(address(callFactory));

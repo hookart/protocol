@@ -23,9 +23,15 @@ contract HookCoveredCallFactory is
   /// @dev there is only one instance of this contract, so the constructor is called exactly once.
   /// @param hookProtocolAddress the address of the deployed HookProtocol contract on this network
   /// @param beaconAddress the address of the deployed beacon pointing to the current covered call implementation
-  constructor(address hookProtocolAddress, address beaconAddress) {
+  /// @param approvedMarketplace the address of a marketplace to automatically approve to transfer insturments
+  constructor(
+    address hookProtocolAddress,
+    address beaconAddress,
+    address approvedMarketplace
+  ) {
     _beacon = beaconAddress;
     _protocol = IHookProtocol(hookProtocolAddress);
+    _preapprovedMarketplace = approvedMarketplace;
   }
 
   /// @dev See {IHookCoveredCallFactory-makeCallInstrument}.
