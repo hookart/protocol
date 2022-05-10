@@ -178,9 +178,7 @@ contract HookERC721VaultImplV1 is
     require(_nftContract.ownerOf(_tokenId) == address(this));
   }
 
-  /**
-   * @dev See {IHookERC721Vault-flashLoan}.
-   */
+  /// @dev See {IHookERC721Vault-flashLoan}.
   function flashLoan(address receiverAddress, bytes calldata params)
     external
     override

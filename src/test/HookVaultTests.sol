@@ -113,7 +113,7 @@ contract HookVaultTests is HookProtocolTest {
     );
   }
 
-  function test_basicFlashLoan() public {
+  function testBasicFlashLoan() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
@@ -150,7 +150,7 @@ contract HookVaultTests is HookProtocolTest {
     );
   }
 
-  function test_basicFlashLoanAlternateApprove() public {
+  function testBasicFlashLoanAlternateApprove() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
@@ -187,7 +187,7 @@ contract HookVaultTests is HookProtocolTest {
     );
   }
 
-  function test_basicFlashCantReturnFalse() public {
+  function testBasicFlashCantReturnFalse() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
@@ -225,7 +225,7 @@ contract HookVaultTests is HookProtocolTest {
     );
   }
 
-  function test_basicFlashMustApprove() public {
+  function testBasicFlashMustApprove() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
@@ -263,7 +263,7 @@ contract HookVaultTests is HookProtocolTest {
     );
   }
 
-  function test_basicFlashCantBurn() public {
+  function testBasicFlashCantBurn() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
@@ -302,7 +302,7 @@ contract HookVaultTests is HookProtocolTest {
     );
   }
 
-  function test_FlashCallData() public {
+  function testFlashCallData() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
@@ -340,7 +340,7 @@ contract HookVaultTests is HookProtocolTest {
     );
   }
 
-  function test_FlashWillRevert() public {
+  function testFlashWillRevert() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
