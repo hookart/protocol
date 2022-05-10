@@ -2,6 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
@@ -220,8 +221,16 @@ contract HookERC721VaultImplV1 is
     return IERC721(_nftContract).ownerOf(_tokenId) == address(this);
   }
 
+  function assetAddress() external view returns (address) {
+    return _nftContract;
+  }
+
+  function assetTokenId() external view returns (uint256) {
+    return _tokenId;
+  }
+
   /// @dev See {IHookERC721Vault-setBeneficialOwner}.
-  /// @dev setBeneficialOwner can only be called by the entitlementContract if there is an activeEntitlement.
+  /// setBeneficialOwner can only be called by the entitlementContract if there is an activeEntitlement.
   function setBeneficialOwner(address newBeneficialOwner) external {
     if (hasActiveEntitlement()) {
       require(
@@ -255,7 +264,11 @@ contract HookERC721VaultImplV1 is
   /// @dev The entitlement must be exist, and must be called by the {operator}. The operator can specify a
   /// intended reciever, which should match the beneficialOwner. The function will throw if
   /// the reciever and owner do not match.
-  function clearEntitlementAndDistribute(address reciever) external nonReentrant {
+  /// @param reciever the intended reciever of the asset
+  function clearEntitlementAndDistribute(address reciever)
+    external
+    nonReentrant
+  {
     require(
       beneficialOwner == reciever,
       "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
@@ -339,8 +352,7 @@ contract HookERC721VaultImplV1 is
   }
 
   function hasActiveEntitlement() public view returns (bool) {
-    return
-      block.timestamp < _currentEntitlement.expiry && _hasEntitlement;
+    return block.timestamp < _currentEntitlement.expiry && _hasEntitlement;
   }
 
   function _setBeneficialOwner(address newBeneficialOwner) private {

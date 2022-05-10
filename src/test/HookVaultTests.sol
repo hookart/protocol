@@ -101,7 +101,7 @@ contract HookVaultTests is HookProtocolTest {
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
     assertTrue(
-      vaultImpl.getHoldsAsset(),
+      vaultImpl.assetInVault(),
       "the token should be owned by the vault"
     );
     assertTrue(
@@ -142,7 +142,7 @@ contract HookVaultTests is HookProtocolTest {
     vaultImpl.imposeEntitlement(entitlement, sig);
 
     assertTrue(
-      vaultImpl.getHoldsAsset(),
+      vaultImpl.assetInVault(),
       "the token should be owned by the vault"
     );
     assertTrue(
@@ -204,7 +204,7 @@ contract HookVaultTests is HookProtocolTest {
     vm.prank(writer);
     vaultImpl.withdrawalAsset();
     assertTrue(
-      !vaultImpl.getHoldsAsset(),
+      !vaultImpl.assetInVault(),
       "the token should not be owned by the vault"
     );
 
@@ -252,7 +252,7 @@ contract HookVaultTests is HookProtocolTest {
     vm.prank(writer);
     vaultImpl.withdrawalAsset();
     assertTrue(
-      !vaultImpl.getHoldsAsset(),
+      !vaultImpl.assetInVault(),
       "the token should not be owned by the vault"
     );
 
