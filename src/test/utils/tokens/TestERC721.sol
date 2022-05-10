@@ -12,4 +12,8 @@ contract TestERC721 is ERC721, Ownable {
   function mint(address to, uint256 tokenId) public {
     _safeMint(to, tokenId);
   }
+
+  function burn(uint256 tokenId) public {
+    _burn(tokenId);
+  }
 }

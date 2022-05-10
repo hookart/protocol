@@ -11,6 +11,8 @@ import "../lib/Entitlements.sol";
 import "../lib/Signatures.sol";
 import "../mixin/EIP712.sol";
 
+import "./utils/mocks/FlashLoan.sol";
+
 contract HookVaultTests is HookProtocolTest {
   IHookERC721VaultFactory vault;
   uint256 tokenStartIndex = 300;
@@ -108,6 +110,265 @@ contract HookVaultTests is HookProtocolTest {
     assertTrue(
       vaultImpl.hasActiveEntitlement(),
       "there should be an active entitlement"
+    );
+  }
+
+  function testBasicFlashLoan() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    address mockContract = address(69);
+    uint256 expiration = block.timestamp + 1 days;
+
+    (
+      Entitlements.Entitlement memory entitlement,
+      Signatures.Signature memory sig
+    ) = makeEntitlementAndSignature(
+        writerpkey,
+        mockContract,
+        vaultAddress,
+        expiration
+      );
+
+    vm.prank(writer);
+
+    token.safeTransferFrom(
+      writer,
+      vaultAddress,
+      tokenId,
+      abi.encode(entitlement, sig)
+    );
+
+    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IERC721FlashLoanReceiver flashLoan = new FlashLoanSuccess();
+
+    vm.prank(writer);
+    vaultImpl.flashLoan(address(flashLoan), " ");
+    assertTrue(
+      token.ownerOf(tokenId) == vaultAddress,
+      "good flashloan should work"
+    );
+  }
+
+  function testBasicFlashLoanAlternateApprove() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    address mockContract = address(69);
+    uint256 expiration = block.timestamp + 1 days;
+
+    (
+      Entitlements.Entitlement memory entitlement,
+      Signatures.Signature memory sig
+    ) = makeEntitlementAndSignature(
+        writerpkey,
+        mockContract,
+        vaultAddress,
+        expiration
+      );
+
+    vm.prank(writer);
+
+    token.safeTransferFrom(
+      writer,
+      vaultAddress,
+      tokenId,
+      abi.encode(entitlement, sig)
+    );
+
+    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IERC721FlashLoanReceiver flashLoan = new FlashLoanApproveForAll();
+
+    vm.prank(writer);
+    vaultImpl.flashLoan(address(flashLoan), " ");
+    assertTrue(
+      token.ownerOf(tokenId) == vaultAddress,
+      "good flashloan should work"
+    );
+  }
+
+  function testBasicFlashCantReturnFalse() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    address mockContract = address(69);
+    uint256 expiration = block.timestamp + 1 days;
+
+    (
+      Entitlements.Entitlement memory entitlement,
+      Signatures.Signature memory sig
+    ) = makeEntitlementAndSignature(
+        writerpkey,
+        mockContract,
+        vaultAddress,
+        expiration
+      );
+
+    vm.prank(writer);
+
+    token.safeTransferFrom(
+      writer,
+      vaultAddress,
+      tokenId,
+      abi.encode(entitlement, sig)
+    );
+
+    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IERC721FlashLoanReceiver flashLoan = new FlashLoanReturnsFalse();
+
+    vm.prank(writer);
+    vm.expectRevert("flashLoan -- the flash loan contract must return true");
+    vaultImpl.flashLoan(address(flashLoan), " ");
+    assertTrue(
+      token.ownerOf(tokenId) == vaultAddress,
+      "good flashloan should work"
+    );
+  }
+
+  function testBasicFlashMustApprove() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    address mockContract = address(69);
+    uint256 expiration = block.timestamp + 1 days;
+
+    (
+      Entitlements.Entitlement memory entitlement,
+      Signatures.Signature memory sig
+    ) = makeEntitlementAndSignature(
+        writerpkey,
+        mockContract,
+        vaultAddress,
+        expiration
+      );
+
+    vm.prank(writer);
+
+    token.safeTransferFrom(
+      writer,
+      vaultAddress,
+      tokenId,
+      abi.encode(entitlement, sig)
+    );
+
+    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IERC721FlashLoanReceiver flashLoan = new FlashLoanDoesNotApprove();
+
+    vm.prank(writer);
+    vm.expectRevert("ERC721: transfer caller is not owner nor approved");
+    vaultImpl.flashLoan(address(flashLoan), " ");
+    assertTrue(
+      token.ownerOf(tokenId) == vaultAddress,
+      "good flashloan should work"
+    );
+  }
+
+  function testBasicFlashCantBurn() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    address mockContract = address(69);
+    uint256 expiration = block.timestamp + 1 days;
+
+    (
+      Entitlements.Entitlement memory entitlement,
+      Signatures.Signature memory sig
+    ) = makeEntitlementAndSignature(
+        writerpkey,
+        mockContract,
+        vaultAddress,
+        expiration
+      );
+
+    vm.prank(writer);
+
+    token.safeTransferFrom(
+      writer,
+      vaultAddress,
+      tokenId,
+      abi.encode(entitlement, sig)
+    );
+
+    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IERC721FlashLoanReceiver flashLoan = new FlashLoanBurnsAsset();
+
+    vm.prank(writer);
+    vm.expectRevert("ERC721: operator query for nonexistent token");
+    vaultImpl.flashLoan(address(flashLoan), " ");
+    // operation reverted, so we can still mess with the asset
+    assertTrue(
+      token.ownerOf(tokenId) == vaultAddress,
+      "good flashloan should work"
+    );
+  }
+
+  function testFlashCallData() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    address mockContract = address(69);
+    uint256 expiration = block.timestamp + 1 days;
+
+    (
+      Entitlements.Entitlement memory entitlement,
+      Signatures.Signature memory sig
+    ) = makeEntitlementAndSignature(
+        writerpkey,
+        mockContract,
+        vaultAddress,
+        expiration
+      );
+
+    vm.prank(writer);
+
+    token.safeTransferFrom(
+      writer,
+      vaultAddress,
+      tokenId,
+      abi.encode(entitlement, sig)
+    );
+
+    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IERC721FlashLoanReceiver flashLoan = new FlashLoanVerifyCalldata();
+
+    vm.prank(writer);
+    vaultImpl.flashLoan(address(flashLoan), "hello world");
+    // operation reverted, so we can still mess with the asset
+    assertTrue(
+      token.ownerOf(tokenId) == vaultAddress,
+      "good flashloan should work"
+    );
+  }
+
+  function testFlashWillRevert() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    address mockContract = address(69);
+    uint256 expiration = block.timestamp + 1 days;
+
+    (
+      Entitlements.Entitlement memory entitlement,
+      Signatures.Signature memory sig
+    ) = makeEntitlementAndSignature(
+        writerpkey,
+        mockContract,
+        vaultAddress,
+        expiration
+      );
+
+    vm.prank(writer);
+
+    token.safeTransferFrom(
+      writer,
+      vaultAddress,
+      tokenId,
+      abi.encode(entitlement, sig)
+    );
+
+    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IERC721FlashLoanReceiver flashLoan = new FlashLoanVerifyCalldata();
+
+    vm.prank(writer);
+    vm.expectRevert("should check helloworld");
+    vaultImpl.flashLoan(address(flashLoan), "hello world wrong!");
+    // operation reverted, so we can still mess with the asset
+    assertTrue(
+      token.ownerOf(tokenId) == vaultAddress,
+      "good flashloan should work"
     );
   }
 
