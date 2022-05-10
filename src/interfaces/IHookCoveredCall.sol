@@ -55,7 +55,7 @@ interface IHookCoveredCall is IERC721 {
     uint256 tokenId,
     uint256 strikePrice,
     uint256 expirationTime,
-    Signatures.Signature memory signature
+    Signatures.Signature calldata signature
   ) external returns (uint256);
 
   /// @notice Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
@@ -67,7 +67,7 @@ interface IHookCoveredCall is IERC721 {
     address _vaultAddress,
     uint256 _strikePrice,
     uint256 _expirationTime,
-    Signatures.Signature memory signature
+    Signatures.Signature calldata signature
   ) external returns (uint256);
 
   /// @notice Bid in the settlement auction for an option. The paid amount is the bid,

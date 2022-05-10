@@ -103,7 +103,7 @@ contract HookCoveredCallImplV1 is
     address vaultAddress,
     uint256 strikePrice,
     uint256 expirationTime,
-    Signatures.Signature memory signature
+    Signatures.Signature calldata signature
   ) external whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
 
@@ -135,7 +135,7 @@ contract HookCoveredCallImplV1 is
     uint256 tokenId,
     uint256 strikePrice,
     uint256 expirationTime,
-    Signatures.Signature memory signature
+    Signatures.Signature calldata signature
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
