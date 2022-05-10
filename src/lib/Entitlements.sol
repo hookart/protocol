@@ -12,8 +12,7 @@ library Entitlements {
           "Entitlement(",
           "address beneficialOwner,",
           "address operator,",
-          "address nftContract,",
-          "uint256 nftTokenId,",
+          "address vaultAddress,",
           "uint256 expiry",
           ")"
         )
@@ -26,10 +25,8 @@ library Entitlements {
     address beneficialOwner;
     /// @notice the operating contract that can change ownership during the entitlement period.
     address operator;
-    /// @notice the contract address for the vaulted NFT
-    address nftContract;
-    /// @notice the tokenId of the vaulted NFT
-    uint256 nftTokenId;
+    /// @notice the contract address for the vault that contains the underlying assets
+    address vaultAddress;
     /// @notice the block timestamp after which the asset is free of the entitlement
     uint256 expiry;
   }
@@ -46,8 +43,7 @@ library Entitlements {
           _ENTITLEMENT_TYPEHASH,
           entitlement.beneficialOwner,
           entitlement.operator,
-          entitlement.nftContract,
-          entitlement.nftTokenId,
+          entitlement.vaultAddress,
           entitlement.expiry
         )
       );

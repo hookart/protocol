@@ -37,8 +37,7 @@ contract HookVaultTests is HookProtocolTest {
   function makeEntitlementAndSignature(
     uint256 ownerPkey,
     address operator,
-    address nftToken,
-    uint256 _tokenId,
+    address vaultAddress,
     uint256 _expiry
   )
     internal
@@ -52,8 +51,7 @@ contract HookVaultTests is HookProtocolTest {
     Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
       beneficialOwner: ownerAdd,
       operator: operator,
-      nftContract: nftToken,
-      nftTokenId: _tokenId,
+      vaultAddress: vaultAddress,
       expiry: _expiry
     });
 
@@ -85,8 +83,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -101,7 +98,7 @@ contract HookVaultTests is HookProtocolTest {
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
     assertTrue(
-      vaultImpl.assetInVault(),
+      vaultImpl.getHoldsAsset(),
       "the token should be owned by the vault"
     );
     assertTrue(
@@ -126,8 +123,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -142,7 +138,7 @@ contract HookVaultTests is HookProtocolTest {
     vaultImpl.imposeEntitlement(entitlement, sig);
 
     assertTrue(
-      vaultImpl.assetInVault(),
+      vaultImpl.getHoldsAsset(),
       "the token should be owned by the vault"
     );
     assertTrue(
@@ -175,8 +171,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -204,7 +199,7 @@ contract HookVaultTests is HookProtocolTest {
     vm.prank(writer);
     vaultImpl.withdrawalAsset();
     assertTrue(
-      !vaultImpl.assetInVault(),
+      !vaultImpl.getHoldsAsset(),
       "the token should not be owned by the vault"
     );
 
@@ -226,8 +221,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -252,7 +246,7 @@ contract HookVaultTests is HookProtocolTest {
     vm.prank(writer);
     vaultImpl.withdrawalAsset();
     assertTrue(
-      !vaultImpl.assetInVault(),
+      !vaultImpl.getHoldsAsset(),
       "the token should not be owned by the vault"
     );
 
@@ -274,8 +268,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -309,8 +302,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration2
       );
     vaultImpl.imposeEntitlement(entitlement2, sig2);
@@ -332,8 +324,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -367,8 +358,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration2
       );
 
@@ -391,8 +381,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -420,8 +409,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract2,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration2
       );
 
@@ -445,8 +433,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -490,8 +477,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -530,8 +516,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 

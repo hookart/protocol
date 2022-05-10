@@ -42,8 +42,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
   event CallCreated(
     address writer,
-    address tokenContract,
-    uint256 tokenId,
+    address vaultAddress,
     uint256 optionId,
     uint256 strikePrice,
     uint256 expiration
@@ -111,16 +110,15 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
       address(token),
-      underlyingTokenId,
       1, // This would be the first option id.
       1000,
       expiration
     );
-    optionTokenId = calls.mint(
+    optionTokenId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
@@ -160,12 +158,14 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     uint256 expiry,
     address writer
   ) internal returns (Signatures.Signature memory sig) {
+    try vaultFactory.makeVault(address(token), tokenId) {} catch {}
+    address va = vaultFactory.getVault(address(token), tokenId);
+
     bytes32 structHash = Entitlements.getEntitlementStructHash(
       Entitlements.Entitlement({
         beneficialOwner: address(writer),
         operator: address(calls),
-        nftContract: address(token),
-        nftTokenId: tokenId,
+        vaultAddress: va,
         expiry: expiry
       })
     );
@@ -174,7 +174,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
       writerpkey,
       _getEIP712Hash(structHash)
     );
-    Signatures.Signature memory sig = Signatures.Signature({
+    sig = Signatures.Signature({
       signatureType: Signatures.SignatureType.EIP712,
       v: v,
       r: r,
