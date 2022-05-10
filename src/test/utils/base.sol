@@ -75,7 +75,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     HookERC721VaultBeacon vaultBeacon = new HookERC721VaultBeacon(
       address(vaultImpl),
       address(protocol),
-      PermissionConstants.ADMIN_ROLE
+      PermissionConstants.VAULT_UPGRADER
     );
     vaultFactory = new HookERC721VaultFactory(
       protocolAddress,
@@ -89,7 +89,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     HookCoveredCallBeacon callBeacon = new HookCoveredCallBeacon(
       address(callImpl),
       address(protocol),
-      PermissionConstants.ADMIN_ROLE
+      PermissionConstants.CALL_UPGRADER
     );
     HookCoveredCallFactory callFactory = new HookCoveredCallFactory(
       protocolAddress,

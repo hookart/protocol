@@ -30,6 +30,7 @@ contract HookProtocol is
     _setupRole(ALLOWLISTER_ROLE, admin);
     _setupRole(PAUSER_ROLE, admin);
     _setupRole(VAULT_UPGRADER, admin);
+    _setupRole(CALL_UPGRADER, admin);
     // create a distinct admin role
     _setupRole(ADMIN_ROLE, admin);
 
@@ -37,6 +38,7 @@ contract HookProtocol is
     _setRoleAdmin(ALLOWLISTER_ROLE, ADMIN_ROLE);
     _setRoleAdmin(PAUSER_ROLE, ADMIN_ROLE);
     _setRoleAdmin(VAULT_UPGRADER, ADMIN_ROLE);
+    _setRoleAdmin(CALL_UPGRADER, ADMIN_ROLE);
 
     // set weth
     getWETHAddress = weth;

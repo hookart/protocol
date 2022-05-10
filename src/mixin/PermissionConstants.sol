@@ -1,6 +1,8 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
+/// @notice roles on the hook protocol that can be read by other contract
+/// @dev new roles here should be initialized in the constructor of the protocol
 abstract contract PermissionConstants {
   /// ----- ROLES --------
   /// @notice The Hook protocol admin can make any changes to the protocol
@@ -14,4 +16,7 @@ abstract contract PermissionConstants {
 
   /// @notice the vault upgrader role is able to upgrade the implementation for all vaults
   bytes32 public constant VAULT_UPGRADER = keccak256("VAULT_UPGRADER");
+
+  /// @notice the call upgrader role is able to upgrade the implementation of the covered call options
+  bytes32 public constant CALL_UPGRADER = keccak256("CALL_UPGRADER");
 }
