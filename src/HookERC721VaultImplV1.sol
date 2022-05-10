@@ -252,11 +252,11 @@ contract HookERC721VaultImplV1 is
 
   /// @dev See {IHookERC721Vault-getHoldsAsset}.
   function getHoldsAsset() external view returns (bool holdsAsset) {
-    return IERC721(_nftContract).ownerOf(_tokenId) == address(this);
+    return _nftContract.ownerOf(_tokenId) == address(this);
   }
 
   function assetAddress() external view returns (address) {
-    return _nftContract;
+    return address(_nftContract);
   }
 
   function assetTokenId() external view returns (uint256) {

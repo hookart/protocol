@@ -18,6 +18,8 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 ///         contract, and then call the flashLoan method.
 ///     (3) At the end of the flashLoan, we ensure the asset is still owned by the vault.
 interface IHookERC721Vault is IHookVault, IERC721Receiver {
+  event AssetFlashLoaned(address owner, address flashLoanImpl);
+
   /// @notice the tokenID of the underlying ERC721 token;
   function assetTokenId() external view returns (uint256);
 

@@ -125,8 +125,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -162,8 +161,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -199,8 +197,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -237,8 +234,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -275,8 +271,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -314,8 +309,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
@@ -352,8 +346,7 @@ contract HookVaultTests is HookProtocolTest {
     ) = makeEntitlementAndSignature(
         writerpkey,
         mockContract,
-        address(token),
-        tokenId,
+        vaultAddress,
         expiration
       );
 
