@@ -49,13 +49,11 @@ interface IHookCoveredCall is IERC721 {
   /// @param tokenId the tokenId of the underlying ERC-721 token
   /// @param strikePrice the strike price for the call option being written
   /// @param expirationTime time the timestamp after which the option will be expired
-  /// @param signature the signature used to place the entitlement onto the vault
   function mintWithErc721(
     address tokenAddress,
     uint256 tokenId,
     uint256 strikePrice,
-    uint256 expirationTime,
-    Signatures.Signature calldata signature
+    uint256 expirationTime
   ) external returns (uint256);
 
   /// @notice Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
@@ -68,6 +66,17 @@ interface IHookCoveredCall is IERC721 {
     uint256 _strikePrice,
     uint256 _expirationTime,
     Signatures.Signature calldata signature
+  ) external returns (uint256);
+
+  /// @notice Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
+  /// That vault must already have a registered entitlement for this contract with the correct expiration registered.
+  /// @param _vaultAddress the contract address of the vault currently holding the call option
+  /// @param _strikePrice the strike price for the call option being written
+  /// @param _expirationTime time the timestamp after which the option will be expired
+  function mintWithEntitledVault(
+    address _vaultAddress,
+    uint256 _strikePrice,
+    uint256 _expirationTime
   ) external returns (uint256);
 
   /// @notice Bid in the settlement auction for an option. The paid amount is the bid,

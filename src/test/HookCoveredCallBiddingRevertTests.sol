@@ -42,8 +42,7 @@ contract HookCoveredCallBiddingRevertTests is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
