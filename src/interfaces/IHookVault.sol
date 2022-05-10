@@ -83,4 +83,5 @@ interface IHookVault {
     external
     view
     returns (bool isActive, address operator);
+
 }
