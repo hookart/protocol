@@ -18,6 +18,7 @@ contract HookCoveredCallFactory is
 
   address private _beacon;
   IHookProtocol private _protocol;
+  address private _preapprovedMarketplace;
 
   /// @dev there is only one instance of this contract, so the constructor is called exactly once.
   /// @param hookProtocolAddress the address of the deployed HookProtocol contract on this network
@@ -50,7 +51,8 @@ contract HookCoveredCallFactory is
         _beacon,
         assetAddress,
         address(_protocol),
-        _protocol.vaultContract()
+        _protocol.vaultContract(),
+        _preapprovedMarketplace
       )
     );
 

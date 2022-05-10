@@ -15,15 +15,34 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
   mapping(uint256 => Counters.Counter) private _transfers;
   bytes4 private constant ERC_721 = bytes4(keccak256("ERC712"));
 
+  /// @dev the contact address for a marketplace to pre-approve
+  address public _approvedMarketplace = address(0);
+
   /// @dev hook called after the ERC721 is transferred,
   /// which allows us to increment the counters.
   function _afterTokenTransfer(
     address, // from
-    address, // to
+    address to, // to
     uint256 tokenId
   ) internal override {
     // increment the counter for the token
     _transfers[tokenId].increment();
+    if (_approvedMarketplace != address(0)) {
+      // automatically approve the auto-approve address for the new owner
+      _setApprovalForAll(to, _approvedMarketplace, true);
+    }
+  }
+
+  constructor(string memory insturmentType)
+    ERC721(makeInsturmentName(insturmentType), "INST")
+  {}
+
+  function makeInsturmentName(string memory z)
+    internal
+    pure
+    returns (string memory)
+  {
+    return string(abi.encodePacked("Hook ", z, " instument"));
   }
 
   /// @notice the number of times the token has been transferred
