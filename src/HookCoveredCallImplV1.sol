@@ -150,7 +150,7 @@ contract HookCoveredCallImplV1 is
 
     require(
       expirationTime == vault.entitlementExpiration(),
-      "mintWithVault -- call contract must be the entitled operator"
+      "mintWithVault -- entitlement expiration must match call expiration"
     );
 
     // the beneficial owner owns the asset so
