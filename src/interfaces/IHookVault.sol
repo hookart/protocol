@@ -56,6 +56,12 @@ interface IHookVault {
     Signatures.Signature memory signature
   ) external;
 
+  /// @notice Allows the beneficial owner to grant an entitlement to an asset within the contract
+  /// @dev this function call is signed by the sender, so we know the entitlement is authentic
+  /// @param entitlement The entitlement to impose onto the contract
+  function grantEntitlement(Entitlements.Entitlement memory entitlement)
+    external;
+
   /// @notice Allowes the entitled address to release their claim on the asset
   function clearEntitlement() external;
 
@@ -84,4 +90,8 @@ interface IHookVault {
     view
     returns (bool isActive, address operator);
 
+  /// @notice Looks up the expiration timestamp of the current entitlement
+  /// @dev returns the 0 if no entitlement is set
+  /// @return expiry the block timestamp after which the entitlement expires
+  function entitlementExpiration() external view returns (uint256 expiry);
 }

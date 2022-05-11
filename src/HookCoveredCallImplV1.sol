@@ -129,13 +129,44 @@ contract HookCoveredCallImplV1 is
       _mintOptionWithVault(writer, address(vault), strikePrice, expirationTime);
   }
 
+  /// @dev See {IHookCoveredCall-mintWithEntitledVault}.
+  function mintWithEntitledVault(
+    address vaultAddress,
+    uint256 strikePrice,
+    uint256 expirationTime
+  ) external whenNotPaused returns (uint256) {
+    IHookVault vault = IHookVault(vaultAddress);
+
+    require(
+      allowedNftContract == vault.assetAddress(),
+      "mintWithVault -- token must be on the project allowlist"
+    );
+    require(vault.getHoldsAsset(), "mintWithVault-- asset must be in vault");
+    (bool active, address operator) = vault.getCurrentEntitlementOperator();
+    require(
+      active && operator == address(this),
+      "mintWithVault -- call contact must be the entitled operator"
+    );
+
+    require(
+      expirationTime == vault.entitlementExpiration(),
+      "mintWithVault -- entitlement expiration must match call expiration"
+    );
+
+    // the beneficial owner owns the asset so
+    // they should recieve the option.
+    address writer = vault.getBeneficialOwner();
+
+    return
+      _mintOptionWithVault(writer, vaultAddress, strikePrice, expirationTime);
+  }
+
   /// @dev See {IHookCoveredCall-mintWithErc721}.
   function mintWithErc721(
     address tokenAddress,
     uint256 tokenId,
     uint256 strikePrice,
-    uint256 expirationTime,
-    Signatures.Signature calldata signature
+    uint256 expirationTime
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
@@ -171,13 +202,13 @@ contract HookCoveredCallImplV1 is
       expiry: expirationTime
     });
 
-    // transfer the underlying asset into our vault, passing along the entitlement and signature that allows us
-    // to control the token in the vault.
+    // transfer the underlying asset into our vault, passing along the entitlement. The entitlement specified
+    // here will be accepted by the vault because we are also simultaneously tendering the asset.
     IERC721(tokenAddress).safeTransferFrom(
       tokenOwner,
       vault,
       tokenId,
-      abi.encode(entitlement, signature)
+      abi.encode(entitlement)
     );
 
     // make sure that the vault actually has the asset.

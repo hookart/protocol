@@ -90,11 +90,23 @@ contract HookERC721VaultImplV1 is
 
     // the beneficial owner of an asset is able to set any entitlement on their own asset
     // as long as it has not already been committed to someone else.
-    _verifyAndRegisterEntitlement(entitlement, signature, beneficialOwner);
+    _verifyAndRegisterEntitlement(entitlement, signature);
+  }
 
-    /// TODO(HOOK-800): Evaluate if we should require the msg.sender to be the contract gaining the entitlement to
-    /// prevent phishing attacks where people accidentally entitle random contracts while interacting with a valid
-    /// one.
+  /// @dev See {IHookERC721Vault-grantEntitlement}.
+  /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
+  /// entitlement
+  function grantEntitlement(Entitlements.Entitlement memory entitlement)
+    external
+  {
+    require(
+      beneficialOwner == msg.sender,
+      "grantEntitlement -- only the beneficial owner can grant an entitlement"
+    );
+
+    // the beneficial owner of an asset is able to directly set any entitlement on their own asset
+    // as long as it has not already been committed to someone else.
+    _registerEntitlement(entitlement);
   }
 
   /// @dev See {IERC721Receiver-onERC721Received}.
@@ -109,7 +121,7 @@ contract HookERC721VaultImplV1 is
     /// We should make sure that the owner of an asset never changes simply as a result of someone sending
     /// a NFT into this contract.
     ///
-    /// (1) If the contract is specified to hold a specific NFT, and that NFT is sent to the contract.
+    /// (1) If the contract is specified to hold a specific NFT, and that NFT is sent to the contract,
     /// set the beneficial owner of this vault to be current owner of the asset getting sent.
     ///
     /// (2) If another nft is sent to the contract, we should verify that airdrops are allowed to this vault;
@@ -118,10 +130,9 @@ contract HookERC721VaultImplV1 is
     /// IMPORTANT: If an unrelated contract is currently holding the asset on behalf of an owner and then
     /// subsequently transfers the asset into the contract, it needs to manually call (setBeneficialOwner)
     /// after making this call to ensure that the true owner of the asset is known to the vault. Otherwise,
-    /// the owner will lose the ability to reclaim their asset.
-    ///
-    /// ALSO IMPORTANT: Checking here that the method is called by the acutal token contract, not anyone
-    /// else.
+    /// the owner will lose the ability to reclaim their asset. Alternatively, they could pass an entitlement
+    /// in prepopulated with the correct beneficial owner, which will give that owner the ability to reclaim
+    /// the asseet.
     if (msg.sender == address(_nftContract) && tokenId == _tokenId) {
       // There is no need to check if we currently have this token or an entitlement set.
       // Even if the contract were able to get into this state, it should still accept the asset
@@ -133,11 +144,15 @@ contract HookERC721VaultImplV1 is
       if (data.length > 0) {
         // Decode the order, signature from `data`. If `data` does not encode such parameters, this
         // will throw.
-        (
-          Entitlements.Entitlement memory entitlement,
-          Signatures.Signature memory signature
-        ) = abi.decode(data, (Entitlements.Entitlement, Signatures.Signature));
-        _verifyAndRegisterEntitlement(entitlement, signature, beneficialOwner);
+        Entitlements.Entitlement memory entitlement = abi.decode(
+          data,
+          (Entitlements.Entitlement)
+        );
+        // if someone has the asset, they should be able to set whichever beneficial owner they'd like.
+        // equally, they could transfer the asset first to themselves and subsequently grant a specific
+        // entitlement, which is equivalent to this.
+        _setBeneficialOwner(entitlement.beneficialOwner);
+        _registerEntitlement(entitlement);
       }
     } else {
       // If we're recieving an airdrop or other asset uncovered by escrow to this address, we should ensure
@@ -234,9 +249,7 @@ contract HookERC721VaultImplV1 is
     }
   }
 
-  /// @notice Looks up the expiration timestamp of the current entitlement
-  /// @dev returns the 0 if no entitlement is set
-  /// @return expiry the block timestamp after which the entitlement expires
+  /// @dev See {IHookVault-entitlementExpiration}.
   function entitlementExpiration() external view returns (uint256 expiry) {
     if (!hasActiveEntitlement()) {
       return 0;
@@ -341,20 +354,24 @@ contract HookERC721VaultImplV1 is
   /// @dev The entitlement must be signed by the beneficial owner of the asset in order for it to be considered valid
   /// @param entitlement the entitlement to impose on the asset
   /// @param signature the EIP-712 signed entitlement by the beneficial owner
-  /// @param _beneficialOwner the beneficial owner signing the entitlement.
   function _verifyAndRegisterEntitlement(
     Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature,
-    address _beneficialOwner
+    Signatures.Signature memory signature
   ) private {
     validateEntitlementSignature(entitlement, signature);
+    _registerEntitlement(entitlement);
+  }
+
+  function _registerEntitlement(Entitlements.Entitlement memory entitlement)
+    private
+  {
     require(
       !hasActiveEntitlement(),
       "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
     );
     require(
-      entitlement.beneficialOwner == _beneficialOwner,
-      "_verifyAndRegisterEntitlement -- beneficialOwner does not match the entitlement"
+      entitlement.beneficialOwner == beneficialOwner,
+      "_verifyAndRegisterEntitlement -- only the current beneficial owner can make an entitlement"
     );
     require(
       entitlement.vaultAddress == address(this),

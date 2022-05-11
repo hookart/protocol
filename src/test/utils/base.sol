@@ -122,8 +122,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
 
     // Assume that the writer somehow sold the option NFT to the buyer.

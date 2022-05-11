@@ -46,8 +46,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
 
     assertTrue(
@@ -58,18 +57,12 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   }
 
   function testRevert_MintOptionMustBeOwnerOrOperator() public {
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      block.timestamp + 3 days,
-      writer
-    );
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(
       address(token),
       underlyingTokenId,
       1000,
-      block.timestamp + 3 days,
-      sig
+      block.timestamp + 3 days
     );
   }
 
@@ -77,11 +70,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     public
   {
     vm.startPrank(address(writer));
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      block.timestamp + 30 minutes,
-      writer
-    );
+
     vm.expectRevert(
       "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
@@ -89,8 +78,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      block.timestamp + 30 minutes,
-      sig
+      block.timestamp + 30 minutes
     );
     vm.stopPrank();
   }
@@ -105,8 +93,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
@@ -204,8 +191,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
@@ -234,8 +220,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
     vm.stopPrank();
 
@@ -259,8 +244,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
@@ -286,8 +270,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
@@ -322,8 +305,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      expiration,
-      makeSignature(underlyingTokenId, expiration, writer)
+      expiration
     );
 
     // assume that the writer somehow sold to the buyer, outside the scope of this test
