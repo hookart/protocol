@@ -411,6 +411,10 @@ contract HookERC721VaultImplV1 is
   }
 
   function _setBeneficialOwner(address newBeneficialOwner) private {
+    require(
+      newBeneficialOwner != address(0),
+      "_setBeneficialOwner -- new owner is the zero address"
+    );
     beneficialOwner = newBeneficialOwner;
     emit BeneficialOwnerSet(newBeneficialOwner, msg.sender);
   }

@@ -1170,6 +1170,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
   }
 
   function testReclaimAssetWriterBidFirst() public {
+    address firstBidder = address(37);
     vm.startPrank(writer);
     uint256 underlyingTokenId2 = 1;
     token.mint(writer, underlyingTokenId2);
@@ -1217,6 +1218,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
   }
 
   function testReclaimAssetWriterBidLast() public {
+    address firstBidder = address(37);
     vm.startPrank(writer);
     uint256 underlyingTokenId2 = 1;
     token.mint(writer, underlyingTokenId2);
@@ -1265,6 +1267,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
   }
 
   function testReclaimAssetWriterBidMultiple() public {
+    address firstBidder = address(37);
     vm.startPrank(writer);
     uint256 underlyingTokenId2 = 1;
     token.mint(writer, underlyingTokenId2);
