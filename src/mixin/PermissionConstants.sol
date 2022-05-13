@@ -19,4 +19,11 @@ abstract contract PermissionConstants {
 
   /// @notice the call upgrader role is able to upgrade the implementation of the covered call options
   bytes32 public constant CALL_UPGRADER = keccak256("CALL_UPGRADER");
+
+  /// @notice the market configuration role allows the actor to make changes to how the market operates
+  bytes32 public constant MARKET_CONF = keccak256("MARKET_CONF");
+
+  /// @notice the collection configuration role allows the actor to make changes the collection
+  /// configs on the protocol contract
+  bytes32 public constant COLLECTION_CONF = keccak256("COLLECTION_CONF");
 }

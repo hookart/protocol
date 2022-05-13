@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./interfaces/IHookERC721Vault.sol";
 import "./interfaces/IERC721FlashLoanReceiver.sol";
+import "./interfaces/IHookProtocol.sol";
 import "./lib/Entitlements.sol";
 import "./lib/Signatures.sol";
 import "./mixin/EIP712.sol";
@@ -30,9 +31,6 @@ contract HookERC721VaultImplV1 is
   IERC721 private _nftContract;
   uint256 private _tokenId;
 
-  /// @dev if airdrops should be disabled to this vault, we mark that here.
-  bool private _airdropsAllowed;
-
   /// @dev the current owner of the asset, who is able to withdrawl it if there are no
   /// entitlements.
   address private beneficialOwner;
@@ -44,6 +42,8 @@ contract HookERC721VaultImplV1 is
 
   /// @dev mark if an entitlement has been set.
   bool private _hasEntitlement;
+
+  IHookProtocol private _hookProtocol;
 
   /// Upgradeable Implementations cannot have a contructor, so we call the initialize instead;
   constructor() {}
@@ -57,6 +57,7 @@ contract HookERC721VaultImplV1 is
     setAddressForEipDomain(hookAddress);
     _tokenId = tokenId;
     _nftContract = IERC721(nftContract);
+    _hookProtocol = IHookProtocol(hookAddress);
     _hasEntitlement = false;
   }
 
@@ -158,7 +159,10 @@ contract HookERC721VaultImplV1 is
       // If we're recieving an airdrop or other asset uncovered by escrow to this address, we should ensure
       // that this is allowed by our current settings.
       require(
-        _airdropsAllowed,
+        !_hookProtocol.getCollectionConfig(
+          address(_nftContract),
+          keccak256("vault.airdropsProhibited")
+        ),
         "onERC721Received -- non-escrow asset returned when airdrops are disabled"
       );
     }
@@ -187,6 +191,14 @@ contract HookERC721VaultImplV1 is
       "execTransaction -- cannot send transactions to the NFT contract itself"
     );
 
+    require(
+      !_hookProtocol.getCollectionConfig(
+        address(_nftContract),
+        keccak256("vault.execTransactionDisabled")
+      ),
+      "execTransaction -- feature is disabled for this collection"
+    );
+
     // Execute transaction without further confirmations.
     (success, ) = address(to).call{value: msg.value}(data);
 
@@ -207,6 +219,14 @@ contract HookERC721VaultImplV1 is
     require(
       msg.sender == beneficialOwner,
       "flashLoan -- not called by the asset owner"
+    );
+
+    require(
+      !_hookProtocol.getCollectionConfig(
+        address(_nftContract),
+        keccak256("vault.flashLoanDisabled")
+      ),
+      "flashLoan -- flashLoan feature disabled for this contract"
     );
 
     // (1) send the flashloan contract the vaulted NFT

@@ -25,6 +25,7 @@ contract HookProtocol is
   address public override coveredCallContract;
   address public override vaultContract;
   address public override getWETHAddress;
+  mapping(address => mapping(bytes32 => bool)) collectionConfigs;
 
   constructor(address admin, address weth) {
     _setupRole(ALLOWLISTER_ROLE, admin);
@@ -33,15 +34,35 @@ contract HookProtocol is
     _setupRole(CALL_UPGRADER, admin);
     // create a distinct admin role
     _setupRole(ADMIN_ROLE, admin);
+    _setupRole(MARKET_CONF, admin);
+    _setupRole(COLLECTION_CONF, admin);
 
     // allow the admin to add and remove other roles
     _setRoleAdmin(ALLOWLISTER_ROLE, ADMIN_ROLE);
     _setRoleAdmin(PAUSER_ROLE, ADMIN_ROLE);
     _setRoleAdmin(VAULT_UPGRADER, ADMIN_ROLE);
     _setRoleAdmin(CALL_UPGRADER, ADMIN_ROLE);
-
+    _setRoleAdmin(MARKET_CONF, ADMIN_ROLE);
+    _setRoleAdmin(COLLECTION_CONF, ADMIN_ROLE);
     // set weth
     getWETHAddress = weth;
+  }
+
+  function setCollectionConfig(
+    address collectionAddress,
+    bytes32 config,
+    bool value
+  ) external onlyRole(COLLECTION_CONF) {
+    collectionConfigs[collectionAddress][config] = value;
+  }
+
+  /// @dev See {IHookProtocol-getCollectionConfig}.
+  function getCollectionConfig(address collectionAddress, bytes32 conf)
+    external
+    view
+    returns (bool value)
+  {
+    return collectionConfigs[collectionAddress][conf];
   }
 
   modifier adminOnly() {
@@ -49,6 +70,7 @@ contract HookProtocol is
     _;
   }
 
+  /// @notice throws an exception when the protocol is paused
   function throwWhenPaused() external view whenNotPaused {
     // depend on the modifier to throw.
     return;
