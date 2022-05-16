@@ -97,6 +97,22 @@ contract HookCoveredCallImplV1 is
   /// financial situation for the holder of the options.
   bool public marketPaused;
 
+  /// @dev Emitted when the market is paused or unpaused
+  /// @param paused true if paused false otherwise
+  event MarketPauseUpdated(bool paused);
+
+  /// @dev Emitted when the bid increment is updated
+  /// @param bidIncrementBips the new bid increment amount in bips
+  event MinBidIncrementUpdated(uint256 bidIncrementBips);
+
+  /// @dev emitted when the settlement auction start offset is updated
+  /// @param startOffset new number of seconds from expiration when the start offset begins
+  event SettlementAuctionStartOffsetUpdated(uint256 startOffset);
+
+  /// @dev emitted when the minimun duration for an option is changed
+  /// @param optionDuration new minimum length of an option in seconds.
+  event MinOptionDurationUpdated(uint256 optionDuration);
+
   /// --- Constructor
   // the constructor cannot have arugments in proxied contracts.
   constructor() ERC721("CallOption", "CALL") {}
@@ -500,10 +516,7 @@ contract HookCoveredCallImplV1 is
 
   // forward to protocol pausability
   modifier whenNotPaused() {
-    require(
-      !marketPaused,
-      "whenNotPaused -- market is paused"
-    );
+    require(!marketPaused, "whenNotPaused -- market is paused");
     _protocol.throwWhenPaused();
     _;
   }
@@ -524,6 +537,7 @@ contract HookCoveredCallImplV1 is
     onlyMarketController
   {
     minimumOptionDuration = newMinDuration;
+    emit MinOptionDurationUpdated(newMinDuration);
   }
 
   /// @dev set the minimum overage, in bips, for a new bid compared to the current bid.
@@ -533,6 +547,7 @@ contract HookCoveredCallImplV1 is
     onlyMarketController
   {
     minBidIncrementBips = newBidIncrement;
+    emit MinBidIncrementUpdated(newBidIncrement);
   }
 
   /// @dev set the settlment auction start offset. Settlement auctions begin at this time prior to expiration.
@@ -546,12 +561,14 @@ contract HookCoveredCallImplV1 is
       "the settlement auctions cannot start sooner than an option expired"
     );
     settlementAuctionStartOffset = newSettlementStartOffset;
+    emit SettlementAuctionStartOffsetUpdated(newSettlementStartOffset);
   }
 
   /// @dev sets a paused / unpaused state for the market corresponding to this contract
   /// @param paused should the market be set to paused or unpaused
   function setMarketPaused(bool paused) public onlyMarketController {
     marketPaused = paused;
+    emit MarketPauseUpdated(paused);
   }
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ///
