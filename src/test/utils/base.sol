@@ -32,6 +32,8 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   address internal firstBidder;
   address internal secondBidder;
   IHookCoveredCall calls;
+  // can use this identifier to call fns not on the interface
+  HookCoveredCallImplV1 callInternal;
   TestERC721 internal token;
   WETH internal weth;
   uint256 internal underlyingTokenId;
@@ -98,8 +100,9 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     protocol.setCoveredCallFactory(address(callFactory));
     vm.prank(address(admin));
 
-    // make a call factory for our token
+    // make a call insturment for our token
     calls = IHookCoveredCall(callFactory.makeCallInstrument(address(token)));
+    callInternal = HookCoveredCallImplV1(address(calls));
   }
 
   function setUpMintOption() public {
