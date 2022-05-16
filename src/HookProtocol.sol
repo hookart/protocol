@@ -79,11 +79,13 @@ contract HookProtocol is
   function unpause() external {
     require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an admin");
     _unpause();
+    emit PausedUpdated(false);
   }
 
   function pause() external {
     require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an admin");
     _pause();
+    emit PausedUpdated(true);
   }
 
   /// @notice Allows an admin to set the address of the deployed covered call factory

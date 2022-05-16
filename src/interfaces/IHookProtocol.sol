@@ -7,12 +7,17 @@ import "@openzeppelin/contracts/access/IAccessControl.sol";
 /// @notice This contract contains the addresses of currently deployed Hook protocol
 /// contract and contains the centralized Access Control and protocol pausing functions
 interface IHookProtocol is IAccessControl {
+  /// @notice emitted when the protocol is paused or unpaused
+  /// @notice paused true if paused false if unpaused
+  event PausedUpdated(bool paused);
+
   /// @notice the address of the deployed CoveredCallFactory used by the protocol
   function coveredCallContract() external view returns (address);
 
   /// @notice the address of the deployed VaultFactory used by the protocol
   function vaultContract() external view returns (address);
 
+  /// @notice callable function that reverts when the protocol is paused
   function throwWhenPaused() external;
 
   /// @notice the standard weth address on this chain

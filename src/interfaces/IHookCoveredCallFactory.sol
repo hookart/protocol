@@ -6,6 +6,17 @@ pragma solidity ^0.8.10;
 /// @notice The Factory creates covered call instruments that support specific ERC-721 contracts, and
 /// also tracks all of the existing active markets.
 interface IHookCoveredCallFactory {
+  /// @dev emitted whenever a new call insturment instance is created
+  /// @param assetAddress the address of the asset underlying the covered call
+  /// @param insturmentAddress the address of the coveredcall insturment
+  event CoveredCallInsturmentCreated(
+    address assetAddress,
+    address insturmentAddress
+  );
+
+  /// @notice Lookup the call instrument contract based on the asset address
+  /// @param assetAddress the contract address for the underlying asset
+  /// @return calls the address of the insturment contract
   function getCallInstrument(address assetAddress)
     external
     view

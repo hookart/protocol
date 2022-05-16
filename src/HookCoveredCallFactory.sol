@@ -52,6 +52,11 @@ contract HookCoveredCallFactory is
       )
     );
 
+    emit CoveredCallInsturmentCreated(
+      assetAddress,
+      getCallInstrument[assetAddress]
+    );
+
     return getCallInstrument[assetAddress];
   }
 }
