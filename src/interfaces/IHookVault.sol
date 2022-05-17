@@ -13,6 +13,9 @@ import "../lib/Entitlements.sol";
 /// the utility of the asset. Specifically, that means this structure should not be used in order to
 /// hold assets in escrow away from owner to benefit an owner for a short period of time.
 ///
+/// The vault can work with multiple assets via the assetId, where the asset or set of assets covered by
+/// each segment is granted an individual id.
+///
 /// ENTITLEMENTS -
 ///     (1) only one entitlement can be placed at a time.
 ///     (2) entitlements must expire, but can also be cleared by the entitled party
@@ -23,30 +26,35 @@ import "../lib/Entitlements.sol";
 ///
 interface IHookVault {
   event EntitlementImposed(
+    uint256 assetId,
     address entitledAccout,
     uint256 expiry,
     address beneficialOwner
   );
 
-  event EntitlementCleared(address beneficialOwner);
+  event EntitlementCleared(uint256 assetId, address beneficialOwner);
 
-  event BeneficialOwnerSet(address beneficialOwner, address setBy);
-
-  event AssetWithdrawn(address caller, address assetReceiver);
+  event BeneficialOwnerSet(
+    uint256 assetId,
+    address beneficialOwner,
+    address setBy
+  );
 
   event AssetReceived(
     address owner,
     address sender,
     address contractAddress,
-    uint256 tokenId
+    uint256 tokenId,
+    uint256 assetId
   );
 
-  /// @notice Withdrawl an unencumbered asset from this vault
-  function withdrawalAsset() external;
+  /// @notice Withdrawal an unencumbered asset from this vault
+  function withdrawalAsset(uint256 assetId) external;
 
   /// @notice setBeneficialOwner updates the current address that can claim the asset when it is free of entitlements.
   /// @param newBeneficialOwner the account of the person who is able to withdrawl when there are no entitlements.
-  function setBeneficialOwner(address newBeneficialOwner) external;
+  function setBeneficialOwner(uint256 assetId, address newBeneficialOwner)
+    external;
 
   /// @notice Add an entitlement claim to the asset held within the contract
   /// @param entitlement The entitlement to impose onto the contract
@@ -78,14 +86,14 @@ interface IHookVault {
     returns (bool success);
 
   /// @notice looks up the current beneficial owner of the underlying asset
-  function getBeneficialOwner() external view returns (address);
+  function getBeneficialOwner(uint256 assetId) external view returns (address);
 
   /// @notice checks if the asset is currently stored in the vault
-  function getHoldsAsset() external view returns (bool);
+  function getHoldsAsset(uint256 assetId) external view returns (bool);
 
-  function assetAddress() external view returns (address);
+  function assetAddress(uint256 assetId) external view returns (address);
 
-  function getCurrentEntitlementOperator()
+  function getCurrentEntitlementOperator(uint256 assetId)
     external
     view
     returns (bool isActive, address operator);
@@ -93,5 +101,8 @@ interface IHookVault {
   /// @notice Looks up the expiration timestamp of the current entitlement
   /// @dev returns the 0 if no entitlement is set
   /// @return expiry the block timestamp after which the entitlement expires
-  function entitlementExpiration() external view returns (uint256 expiry);
+  function entitlementExpiration(uint256 assetId)
+    external
+    view
+    returns (uint256 expiry);
 }

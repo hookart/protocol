@@ -27,6 +27,8 @@ library Entitlements {
     address operator;
     /// @notice the contract address for the vault that contains the underlying assets
     address vaultAddress;
+    /// @notice the assetId of the asset or assets within the vault
+    uint256 assetId;
     /// @notice the block timestamp after which the asset is free of the entitlement
     uint256 expiry;
   }
