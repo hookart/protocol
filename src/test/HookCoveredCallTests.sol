@@ -34,6 +34,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -70,10 +71,11 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
     vm.expectEmit(true, true, true, true);
-    emit CallCreated(address(writer), address(vault), 1, 1000, expiration);
+    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
 
     uint256 optionId = calls.mintWithVault(
       address(vault),
+      0,
       1000,
       expiration,
       sig
@@ -84,7 +86,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       "owner should own the option"
     );
 
-    (bool isActive, address operator) = vault.getCurrentEntitlementOperator();
+    (bool isActive, address operator) = vault.getCurrentEntitlementOperator(0);
     assertTrue(isActive, "there should be an active entitlement");
     assertTrue(
       operator == address(calls),
@@ -116,6 +118,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
     uint256 optionId = calls.mintWithVault(
       address(vault),
+      0,
       1000,
       expiration,
       sig
@@ -141,6 +144,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.expectRevert("mintWithVault-- asset must be in vault");
     uint256 optionId = calls.mintWithVault(
       address(vault),
+      0,
       1000,
       expiration,
       sig
@@ -166,6 +170,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.expectRevert("mintWithVault -- token must be on the project allowlist");
     uint256 optionId = calls.mintWithVault(
       address(vault),
+      0,
       1000,
       expiration,
       sig
@@ -189,6 +194,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -213,6 +219,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       2, // This would be the second option id.
       1000,
       expiration
@@ -249,6 +256,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -292,7 +300,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.expectRevert(
       "validateEntitlementSignature --- not signed by beneficialOwner"
     );
-    calls.mintWithVault(address(vault), 1000, expiration, signature);
+    calls.mintWithVault(address(vault), 0, 1000, expiration, signature);
   }
 
   function testCannotMintOptionInvalidExpiration() public {
@@ -411,6 +419,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -450,6 +459,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -481,6 +491,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -513,6 +524,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -556,6 +568,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -910,7 +923,10 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
       address(token),
       underlyingTokenId
     );
-    vm.expectCall(vaultAddress, abi.encodeWithSignature("withdrawalAsset()"));
+    vm.expectCall(
+      vaultAddress,
+      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
+    );
 
     vm.prank(writer);
     calls.settleOption(optionTokenId, true);
@@ -1221,7 +1237,10 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       address(token),
       underlyingTokenId
     );
-    vm.expectCall(vaultAddress, abi.encodeWithSignature("withdrawalAsset()"));
+    vm.expectCall(
+      vaultAddress,
+      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
+    );
     calls.reclaimAsset(optionTokenId, true);
   }
 
@@ -1311,7 +1330,10 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       address(token),
       underlyingTokenId
     );
-    vm.expectCall(vaultAddress, abi.encodeWithSignature("withdrawalAsset()"));
+    vm.expectCall(
+      vaultAddress,
+      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
+    );
     calls.reclaimAsset(optionTokenId, true);
   }
 
@@ -1360,7 +1382,10 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       address(token),
       underlyingTokenId
     );
-    vm.expectCall(vaultAddress, abi.encodeWithSignature("withdrawalAsset()"));
+    vm.expectCall(
+      vaultAddress,
+      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
+    );
     calls.reclaimAsset(optionTokenId, true);
   }
 
@@ -1412,7 +1437,10 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       address(token),
       underlyingTokenId
     );
-    vm.expectCall(vaultAddress, abi.encodeWithSignature("withdrawalAsset()"));
+    vm.expectCall(
+      vaultAddress,
+      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
+    );
     calls.reclaimAsset(optionTokenId, true);
   }
 }
