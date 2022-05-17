@@ -149,6 +149,50 @@ contract HookVaultTests is HookProtocolTest {
     );
   }
 
+  function testFlashLoanFailsIfDisabled() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    address mockContract = address(69);
+    uint256 expiration = block.timestamp + 1 days;
+
+    (
+      Entitlements.Entitlement memory entitlement,
+      Signatures.Signature memory sig
+    ) = makeEntitlementAndSignature(
+        writerpkey,
+        mockContract,
+        vaultAddress,
+        expiration
+      );
+
+    vm.prank(writer);
+
+    token.safeTransferFrom(
+      writer,
+      vaultAddress,
+      tokenId,
+      abi.encode(entitlement, sig)
+    );
+
+    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IERC721FlashLoanReceiver flashLoan = new FlashLoanSuccess();
+    vm.prank(admin);
+    protocol.setCollectionConfig(
+      address(token),
+      keccak256("vault.flashLoanDisabled"),
+      true
+    );
+    vm.prank(writer);
+    vm.expectRevert(
+      "flashLoan -- flashLoan feature disabled for this contract"
+    );
+    vaultImpl.flashLoan(address(flashLoan), " ");
+    assertTrue(
+      token.ownerOf(tokenId) == vaultAddress,
+      "good flashloan should work"
+    );
+  }
+
   function testBasicFlashLoanAlternateApprove() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
@@ -763,6 +807,38 @@ contract HookVaultTests is HookProtocolTest {
       token.ownerOf(tokenId) == writer,
       "Token should be returned to the owner"
     );
+  }
+
+  function testAirdropsCanBeDisbled() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    vm.prank(admin);
+    protocol.setCollectionConfig(
+      address(token),
+      keccak256("vault.airdropsProhibited"),
+      true
+    );
+
+    TestERC721 token2 = new TestERC721();
+    vm.expectRevert(
+      "onERC721Received -- non-escrow asset returned when airdrops are disabled"
+    );
+    token2.mint(vaultAddress, 0);
+  }
+
+  function testAirdropsAllowedWhenEnabled() public {
+    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+
+    vm.prank(admin);
+    protocol.setCollectionConfig(
+      address(token),
+      keccak256("vault.airdropsProhibited"),
+      false
+    );
+
+    TestERC721 token2 = new TestERC721();
+    token2.mint(vaultAddress, 0);
+    assertTrue(token2.ownerOf(0) == vaultAddress, "vault should hold airdrop");
   }
 
   function testClearAndDistributeDoesNotReturnToWrongPerson() public {

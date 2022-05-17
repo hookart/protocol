@@ -22,4 +22,10 @@ interface IHookProtocol is IAccessControl {
   /// ropsten: 0xc778417e063141139fce010982780140aa0cd5ab
   /// rinkeby: 0xc778417e063141139fce010982780140aa0cd5ab
   function getWETHAddress() external view returns (address);
+
+  /// @notice get a configuration flag with a specific key for a collection
+  function getCollectionConfig(address collectionAddress, bytes32 conf)
+    external
+    view
+    returns (bool value);
 }
