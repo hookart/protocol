@@ -54,6 +54,7 @@ contract HookVaultTests is HookProtocolTest {
       beneficialOwner: ownerAdd,
       operator: operator,
       vaultAddress: vaultAddress,
+      assetId: 0,
       expiry: _expiry
     });
 
@@ -100,11 +101,11 @@ contract HookVaultTests is HookProtocolTest {
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
     assertTrue(
-      vaultImpl.getHoldsAsset(),
+      vaultImpl.getHoldsAsset(0),
       "the token should be owned by the vault"
     );
     assertTrue(
-      vaultImpl.getBeneficialOwner() == writer,
+      vaultImpl.getBeneficialOwner(0) == writer,
       "writer should be the beneficial owner"
     );
     assertTrue(
@@ -142,7 +143,7 @@ contract HookVaultTests is HookProtocolTest {
     IERC721FlashLoanReceiver flashLoan = new FlashLoanSuccess();
 
     vm.prank(writer);
-    vaultImpl.flashLoan(address(flashLoan), " ");
+    vaultImpl.flashLoan(0, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -186,7 +187,7 @@ contract HookVaultTests is HookProtocolTest {
     vm.expectRevert(
       "flashLoan -- flashLoan feature disabled for this contract"
     );
-    vaultImpl.flashLoan(address(flashLoan), " ");
+    vaultImpl.flashLoan(0, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -222,7 +223,7 @@ contract HookVaultTests is HookProtocolTest {
     IERC721FlashLoanReceiver flashLoan = new FlashLoanApproveForAll();
 
     vm.prank(writer);
-    vaultImpl.flashLoan(address(flashLoan), " ");
+    vaultImpl.flashLoan(0, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -259,7 +260,7 @@ contract HookVaultTests is HookProtocolTest {
 
     vm.prank(writer);
     vm.expectRevert("flashLoan -- the flash loan contract must return true");
-    vaultImpl.flashLoan(address(flashLoan), " ");
+    vaultImpl.flashLoan(0, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -296,7 +297,7 @@ contract HookVaultTests is HookProtocolTest {
 
     vm.prank(writer);
     vm.expectRevert("ERC721: transfer caller is not owner nor approved");
-    vaultImpl.flashLoan(address(flashLoan), " ");
+    vaultImpl.flashLoan(0, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -333,7 +334,7 @@ contract HookVaultTests is HookProtocolTest {
 
     vm.prank(writer);
     vm.expectRevert("ERC721: operator query for nonexistent token");
-    vaultImpl.flashLoan(address(flashLoan), " ");
+    vaultImpl.flashLoan(0, address(flashLoan), " ");
     // operation reverted, so we can still mess with the asset
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
@@ -370,7 +371,7 @@ contract HookVaultTests is HookProtocolTest {
     IERC721FlashLoanReceiver flashLoan = new FlashLoanVerifyCalldata();
 
     vm.prank(writer);
-    vaultImpl.flashLoan(address(flashLoan), "hello world");
+    vaultImpl.flashLoan(0, address(flashLoan), "hello world");
     // operation reverted, so we can still mess with the asset
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
@@ -408,7 +409,7 @@ contract HookVaultTests is HookProtocolTest {
 
     vm.prank(writer);
     vm.expectRevert("should check helloworld");
-    vaultImpl.flashLoan(address(flashLoan), "hello world wrong!");
+    vaultImpl.flashLoan(0, address(flashLoan), "hello world wrong!");
     // operation reverted, so we can still mess with the asset
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
@@ -443,11 +444,11 @@ contract HookVaultTests is HookProtocolTest {
     vaultImpl.imposeEntitlement(entitlement, sig);
 
     assertTrue(
-      vaultImpl.getHoldsAsset(),
+      vaultImpl.getHoldsAsset(0),
       "the token should be owned by the vault"
     );
     assertTrue(
-      vaultImpl.getBeneficialOwner() == writer,
+      vaultImpl.getBeneficialOwner(0) == writer,
       "writer should be the beneficial owner"
     );
     assertTrue(
@@ -461,7 +462,7 @@ contract HookVaultTests is HookProtocolTest {
       "withdrawalAsset -- the asset canot be withdrawn with an active entitlement"
     );
     vm.prank(writer);
-    vaultImpl.withdrawalAsset();
+    vaultImpl.withdrawalAsset(0);
   }
 
   function testEntitlementGoesAwayAfterExpiration() public {
@@ -502,9 +503,9 @@ contract HookVaultTests is HookProtocolTest {
     );
 
     vm.prank(writer);
-    vaultImpl.withdrawalAsset();
+    vaultImpl.withdrawalAsset(0);
     assertTrue(
-      !vaultImpl.getHoldsAsset(),
+      !vaultImpl.getHoldsAsset(0),
       "the token should not be owned by the vault"
     );
 
@@ -540,7 +541,7 @@ contract HookVaultTests is HookProtocolTest {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     vm.prank(mockContract);
-    vaultImpl.clearEntitlement();
+    vaultImpl.clearEntitlement(0);
 
     assertTrue(
       !vaultImpl.hasActiveEntitlement(),
@@ -549,9 +550,9 @@ contract HookVaultTests is HookProtocolTest {
 
     // check that the owner can actually withdrawl
     vm.prank(writer);
-    vaultImpl.withdrawalAsset();
+    vaultImpl.withdrawalAsset(0);
     assertTrue(
-      !vaultImpl.getHoldsAsset(),
+      !vaultImpl.getHoldsAsset(0),
       "the token should not be owned by the vault"
     );
 
@@ -648,7 +649,7 @@ contract HookVaultTests is HookProtocolTest {
     );
 
     vm.prank(mockContract);
-    vaultImpl.clearEntitlement();
+    vaultImpl.clearEntitlement(0);
 
     assertTrue(
       !vaultImpl.hasActiveEntitlement(),
@@ -677,7 +678,7 @@ contract HookVaultTests is HookProtocolTest {
   function testOnlyOneEntitlementAllowed() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
-    address mockContract = address(69);
+    address mockContract = address(3333);
     uint256 expiration = block.timestamp + 1 days;
 
     (
@@ -761,13 +762,13 @@ contract HookVaultTests is HookProtocolTest {
     vm.expectRevert(
       "clearEntitlement -- only the entitled address can clear the entitlement"
     );
-    vaultImpl.clearEntitlement();
+    vaultImpl.clearEntitlement(0);
 
     vm.prank(address(55566677788899911));
     vm.expectRevert(
       "clearEntitlement -- only the entitled address can clear the entitlement"
     );
-    vaultImpl.clearEntitlement();
+    vaultImpl.clearEntitlement(0);
   }
 
   function testClearAndDistributeReturnsNFT() public {
@@ -796,7 +797,7 @@ contract HookVaultTests is HookProtocolTest {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     vm.prank(mockContract);
-    vaultImpl.clearEntitlementAndDistribute(writer);
+    vaultImpl.clearEntitlementAndDistribute(0, writer);
 
     assertTrue(
       !vaultImpl.hasActiveEntitlement(),
@@ -870,6 +871,6 @@ contract HookVaultTests is HookProtocolTest {
       "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
     );
     vm.prank(mockContract);
-    vaultImpl.clearEntitlementAndDistribute(address(0x033333344545));
+    vaultImpl.clearEntitlementAndDistribute(0, address(0x033333344545));
   }
 }

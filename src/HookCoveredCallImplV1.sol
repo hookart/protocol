@@ -637,7 +637,9 @@ contract HookCoveredCallImplV1 is
 
     parts[2] = '</text><text x="10" y="40" class="base">';
 
-    parts[3] = HookStrings.toString(vault.assetTokenId());
+    parts[3] = HookStrings.toString(
+      vault.assetTokenId(optionParams[tokenId].assetId)
+    );
 
     parts[4] = "</text></svg>";
 

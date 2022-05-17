@@ -45,6 +45,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   event CallCreated(
     address writer,
     address vaultAddress,
+    uint256 assetId,
     uint256 optionId,
     uint256 strikePrice,
     uint256 expiration
@@ -117,6 +118,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
@@ -168,6 +170,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
         beneficialOwner: address(writer),
         operator: address(calls),
         vaultAddress: va,
+        assetId: 0,
         expiry: expiry
       })
     );

@@ -38,6 +38,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     emit CallCreated(
       address(writer),
       address(token),
+      0,
       1, // This would be the first option id.
       1000,
       expiration
