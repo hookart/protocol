@@ -39,7 +39,8 @@ contract HookERC721VaultFactory is IHookERC721VaultFactory {
         _hookProtocol
       )
     );
-    
+
+    emit ERC721VaultCreated(nftAddress, tokenId, getVault[nftAddress][tokenId]);
     return getVault[nftAddress][tokenId];
   }
 }
