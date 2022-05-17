@@ -349,6 +349,7 @@ contract HookCoveredCallImplV1 is
     emit CallCreated(
       writer,
       vaultAddress,
+      assetId,
       newOptionId,
       strikePrice,
       expirationTime
