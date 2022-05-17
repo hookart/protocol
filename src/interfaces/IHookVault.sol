@@ -54,6 +54,8 @@ interface IHookVault {
     uint256 assetId
   );
 
+  event AssetWithdrawn(uint256 assetId, address to, address beneficialOwner);
+
   /// @notice Withdrawal an unencumbered asset from this vault
   /// @param assetId the asset to remove from the vault
   function withdrawalAsset(uint256 assetId) external;

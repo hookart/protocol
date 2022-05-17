@@ -8,8 +8,6 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 /// future. Further, each covered call is mapped to a specific ERC-721 contract address -- meaning there is one covered
 /// call contract per collection.
 contract HookCoveredCall is BeaconProxy {
-  // TODO(HOOK-789)[GAS]: Explore implemeting the initialize function by setting storage slots on the
-  // newly deployed contract to avoid additional method calls.
   constructor(
     address beacon,
     address nftAddress,

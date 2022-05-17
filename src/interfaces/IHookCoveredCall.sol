@@ -31,16 +31,23 @@ import "../lib/Signatures.sol";
 /// of the instrument NFT, the strike price is transferred to the writer. The high bid is transferred to the holder of
 /// the option.
 interface IHookCoveredCall is IERC721 {
+  /// @notice emitted when a new call option is successfully minted with a specific underlying vault
   event CallCreated(
     address writer,
     address vaultAddress,
+    uint256 assetId,
     uint256 optionId,
     uint256 strikePrice,
     uint256 expiration
   );
 
+  /// @notice emitted when a call option is destroyed
   event CallDestroyed(uint256 optionId);
 
+  /// @notice emitted when a call option settlement auction gets and accepts a new bid
+  /// @param bidder the account placing the bid that is now the high bidder
+  /// @param bidAmount the amount of the bid (in wei)
+  /// @param optionId the option for the underlying that was bid on
   event Bid(uint256 optionId, uint256 bidAmount, address bidder);
 
   /// @notice Mints a new call option for a particular "underlying" ERC-721 NFT with a given strike price and expiration
@@ -57,26 +64,30 @@ interface IHookCoveredCall is IERC721 {
   ) external returns (uint256);
 
   /// @notice Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
-  /// @param _vaultAddress the contract address of the vault currently holding the call option
-  /// @param _strikePrice the strike price for the call option being written
-  /// @param _expirationTime time the timestamp after which the option will be expired
+  /// @param vaultAddress the contract address of the vault currently holding the call option
+  /// @param assetId the id of the asset within the vault
+  /// @param strikePrice the strike price for the call option being written
+  /// @param expirationTime time the timestamp after which the option will be expired
   /// @param signature the signature used to place the entitlement onto the vault
   function mintWithVault(
-    address _vaultAddress,
-    uint256 _strikePrice,
-    uint256 _expirationTime,
+    address vaultAddress,
+    uint256 assetId,
+    uint256 strikePrice,
+    uint256 expirationTime,
     Signatures.Signature calldata signature
   ) external returns (uint256);
 
   /// @notice Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
   /// That vault must already have a registered entitlement for this contract with the correct expiration registered.
-  /// @param _vaultAddress the contract address of the vault currently holding the call option
-  /// @param _strikePrice the strike price for the call option being written
-  /// @param _expirationTime time the timestamp after which the option will be expired
+  /// @param vaultAddress the contract address of the vault currently holding the call option
+  /// @param assetId the id of the asset within the vault
+  /// @param strikePrice the strike price for the call option being written
+  /// @param expirationTime time the timestamp after which the option will be expired
   function mintWithEntitledVault(
-    address _vaultAddress,
-    uint256 _strikePrice,
-    uint256 _expirationTime
+    address vaultAddress,
+    uint256 assetId,
+    uint256 strikePrice,
+    uint256 expirationTime
   ) external returns (uint256);
 
   /// @notice Bid in the settlement auction for an option. The paid amount is the bid,
