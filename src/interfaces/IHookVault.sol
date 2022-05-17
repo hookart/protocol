@@ -25,6 +25,7 @@ import "../lib/Entitlements.sol";
 ///     (5) the beneficial owner cannot modify the beneficial owner while an entitlement is in place
 ///
 interface IHookVault {
+  /// @notice emitted when an entitlement is placed on an asset
   event EntitlementImposed(
     uint256 assetId,
     address entitledAccout,
@@ -32,14 +33,19 @@ interface IHookVault {
     address beneficialOwner
   );
 
+  /// @notice emitted when an entitlment is cleared from an asset
   event EntitlementCleared(uint256 assetId, address beneficialOwner);
 
+  /// @notice emitted when the beneficial owner of an asset changes
+  /// @dev it is not required that this event is emitted when an entitlement is
+  /// imposed that also modifies the beneficial owner.
   event BeneficialOwnerSet(
     uint256 assetId,
     address beneficialOwner,
     address setBy
   );
 
+  /// @notice emitted when an asset is added into the vault
   event AssetReceived(
     address owner,
     address sender,
@@ -49,9 +55,11 @@ interface IHookVault {
   );
 
   /// @notice Withdrawal an unencumbered asset from this vault
+  /// @param assetId the asset to remove from the vault
   function withdrawalAsset(uint256 assetId) external;
 
   /// @notice setBeneficialOwner updates the current address that can claim the asset when it is free of entitlements.
+  /// @param assetId the id of the subject asset to impose the entitlement
   /// @param newBeneficialOwner the account of the person who is able to withdrawl when there are no entitlements.
   function setBeneficialOwner(uint256 assetId, address newBeneficialOwner)
     external;
@@ -71,19 +79,14 @@ interface IHookVault {
     external;
 
   /// @notice Allowes the entitled address to release their claim on the asset
-  function clearEntitlement() external;
+  /// @param assetId the id of the asset to clear
+  function clearEntitlement(uint256 assetId) external;
 
   /// @notice Removes the active entitlement from a vault and returns the asset to the beneficial owner
   /// @param reciever the intended reciever of the asset
-  function clearEntitlementAndDistribute(address reciever) external;
-
-  /// @param to Destination address of transaction.
-  /// @param data Data payload of transaction.
-  /// @return success if the call was successful.
-  function execTransaction(address to, bytes memory data)
-    external
-    payable
-    returns (bool success);
+  /// @param assetId the Id of the asset to clear
+  function clearEntitlementAndDistribute(uint256 assetId, address reciever)
+    external;
 
   /// @notice looks up the current beneficial owner of the underlying asset
   function getBeneficialOwner(uint256 assetId) external view returns (address);
@@ -93,6 +96,8 @@ interface IHookVault {
 
   function assetAddress(uint256 assetId) external view returns (address);
 
+  /// @notice looks up the current operator of an entitlemnt on an asset
+  /// @param assetId the id of the underlying asset
   function getCurrentEntitlementOperator(uint256 assetId)
     external
     view

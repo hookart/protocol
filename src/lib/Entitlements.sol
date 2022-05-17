@@ -13,6 +13,7 @@ library Entitlements {
           "address beneficialOwner,",
           "address operator,",
           "address vaultAddress,",
+          "uint256 assetId,",
           "uint256 expiry",
           ")"
         )
@@ -46,6 +47,7 @@ library Entitlements {
           entitlement.beneficialOwner,
           entitlement.operator,
           entitlement.vaultAddress,
+          entitlement.assetId,
           entitlement.expiry
         )
       );
