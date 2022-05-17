@@ -21,6 +21,8 @@ import "./interfaces/IHookProtocol.sol";
 import "./interfaces/IHookERC721Vault.sol";
 import "./interfaces/IWETH.sol";
 
+import "./mixin/PermissionConstants.sol";
+
 /// @title HookCoveredCallImplV1 an implementation of covered calls on Hook
 /// @author Jake Nyquist -- j@hook.xyz
 /// @notice Covered call options use this logic to
@@ -29,7 +31,8 @@ contract HookCoveredCallImplV1 is
   IHookCoveredCall,
   ERC721Burnable,
   ReentrancyGuard,
-  Initializable
+  Initializable,
+  PermissionConstants
 {
   using Counters for Counters.Counter;
 
@@ -75,6 +78,41 @@ contract HookCoveredCallImplV1 is
   /// @dev the address of WETH on the chain where this contract is deployed
   address public weth;
 
+  /// @dev this is the minimum duration of an option created in this contract instance
+  uint256 public minimumOptionDuration;
+
+  /// @dev this is the minimum amount of the current bid that the new bid
+  /// must exceed the current bid by in order to be considered valid.
+  /// This amount is expressed in basis points (i.e. 1/100th of 1%)
+  uint256 public minBidIncrementBips;
+
+  /// @dev this is the amount of time before the expiration of the option
+  /// that the settlement auction will begin.
+  uint256 public settlementAuctionStartOffset;
+
+  /// @dev this is a flag that can be set to pause this particular
+  /// instance of the call option contract.
+  /// NOTE: settlement auctions are still enabled in
+  /// this case because pausing the market should not change the
+  /// financial situation for the holder of the options.
+  bool public marketPaused;
+
+  /// @dev Emitted when the market is paused or unpaused
+  /// @param paused true if paused false otherwise
+  event MarketPauseUpdated(bool paused);
+
+  /// @dev Emitted when the bid increment is updated
+  /// @param bidIncrementBips the new bid increment amount in bips
+  event MinBidIncrementUpdated(uint256 bidIncrementBips);
+
+  /// @dev emitted when the settlement auction start offset is updated
+  /// @param startOffset new number of seconds from expiration when the start offset begins
+  event SettlementAuctionStartOffsetUpdated(uint256 startOffset);
+
+  /// @dev emitted when the minimun duration for an option is changed
+  /// @param optionDuration new minimum length of an option in seconds.
+  event MinOptionDurationUpdated(uint256 optionDuration);
+
   /// --- Constructor
   // the constructor cannot have arugments in proxied contracts.
   constructor() ERC721("CallOption", "CALL") {}
@@ -94,6 +132,15 @@ contract HookCoveredCallImplV1 is
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();
     allowedNftContract = nftContract;
+
+    /// Initialize basic configuration.
+    /// Even though these are defaults, we cannot set them in the constructor because
+    /// each instance of this contract will need to have the storage initialized
+    /// to read from these values
+    minimumOptionDuration = 1 days;
+    minBidIncrementBips = 0;
+    settlementAuctionStartOffset = 1 days;
+    marketPaused = false;
   }
 
   /// ---- Option Writer Functions ---- //
@@ -235,7 +282,7 @@ contract HookCoveredCallImplV1 is
   ) private returns (uint256) {
     // NOTE: The settlement auction always occurs one day before expiration
     require(
-      expirationTime > block.timestamp + 1 days,
+      expirationTime > block.timestamp + minimumOptionDuration,
       "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
 
@@ -283,7 +330,7 @@ contract HookCoveredCallImplV1 is
       "biddingEnabled -- option already expired"
     );
     require(
-      call.expiration - 1 days <= block.timestamp,
+      (call.expiration - settlementAuctionStartOffset) <= block.timestamp,
       "biddingEnabled -- bidding starts on last day"
     );
     require(
@@ -304,10 +351,24 @@ contract HookCoveredCallImplV1 is
     CallOption storage call = optionParams[optionId];
 
     if (msg.sender == call.writer) {
-      _writerBid(call, optionId);
-    } else {
-      _generalBid(call);
+      /// handle the case where an option writer bids on
+      /// an underlying asset that they owned. In this case, as they would be
+      /// the recipient of the spread after the auction, they are able to bid
+      /// paying only the difference between their bid and the strike.
+      bidAmt = msg.value + call.strike;
     }
+
+    require(
+      bidAmt >= call.bid + ((call.bid * minBidIncrementBips) / 10000),
+      "bid - bid is lower than the current bid + minBidIncrementBips"
+    );
+    require(bidAmt > call.strike, "bid - bid is lower than the strike price");
+
+    _returnBidToPreviousBidder(call);
+
+    // set the new bidder
+    call.bid = bidAmt;
+    call.highBidder = msg.sender;
 
     // the new high bidder is the beneficial owner of the asset.
     // The beneficial owner must be set here instead of with a final bid
@@ -316,32 +377,6 @@ contract HookCoveredCallImplV1 is
 
     // emit event
     emit Bid(optionId, bidAmt, msg.sender);
-  }
-
-  function _writerBid(CallOption storage call, uint256 optionId) internal {
-    uint256 bidAmt = msg.value + call.strike;
-
-    require(bidAmt > call.bid, "bid - bid is lower than the current bid");
-    require(bidAmt > call.strike, "bid - bid is lower than the strike price");
-
-    _returnBidToPreviousBidder(call);
-
-    // set the new bidder
-    call.bid = bidAmt;
-    call.highBidder = msg.sender;
-  }
-
-  function _generalBid(CallOption storage call) internal {
-    uint256 bidAmt = msg.value;
-
-    require(bidAmt > call.bid, "bid - bid is lower than the current bid");
-    require(bidAmt > call.strike, "bid - bid is lower than the strike price");
-
-    _returnBidToPreviousBidder(call);
-
-    // set the new bidder
-    call.bid = bidAmt;
-    call.highBidder = msg.sender;
   }
 
   function _returnBidToPreviousBidder(CallOption storage call) internal {
@@ -481,8 +516,59 @@ contract HookCoveredCallImplV1 is
 
   // forward to protocol pausability
   modifier whenNotPaused() {
+    require(!marketPaused, "whenNotPaused -- market is paused");
     _protocol.throwWhenPaused();
     _;
+  }
+
+  modifier onlyMarketController() {
+    require(
+      _protocol.hasRole(MARKET_CONF, msg.sender),
+      "onlyMarketController -- caller does not have the MARKET_CONF protocol role"
+    );
+    _;
+  }
+
+  /// @dev configures the minimum duration for a newly minted option. Options must be at
+  /// least this far away in the future.
+  /// @param newMinDuration is the minimum option duration in seconds
+  function setMinOptionDuration(uint256 newMinDuration)
+    public
+    onlyMarketController
+  {
+    minimumOptionDuration = newMinDuration;
+    emit MinOptionDurationUpdated(newMinDuration);
+  }
+
+  /// @dev set the minimum overage, in bips, for a new bid compared to the current bid.
+  /// @param newBidIncrement the minimum bid increment in basis points (1/100th of 1%)
+  function setBidIncrement(uint256 newBidIncrement)
+    public
+    onlyMarketController
+  {
+    minBidIncrementBips = newBidIncrement;
+    emit MinBidIncrementUpdated(newBidIncrement);
+  }
+
+  /// @dev set the settlment auction start offset. Settlement auctions begin at this time prior to expiration.
+  /// @param newSettlementStartOffset in seconds (i.e. block.timestamp increments)
+  function setSettlementAuctionStartOffset(uint256 newSettlementStartOffset)
+    public
+    onlyMarketController
+  {
+    require(
+      newSettlementStartOffset < minimumOptionDuration,
+      "the settlement auctions cannot start sooner than an option expired"
+    );
+    settlementAuctionStartOffset = newSettlementStartOffset;
+    emit SettlementAuctionStartOffsetUpdated(newSettlementStartOffset);
+  }
+
+  /// @dev sets a paused / unpaused state for the market corresponding to this contract
+  /// @param paused should the market be set to paused or unpaused
+  function setMarketPaused(bool paused) public onlyMarketController {
+    marketPaused = paused;
+    emit MarketPauseUpdated(paused);
   }
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ///
@@ -537,6 +623,8 @@ contract HookCoveredCallImplV1 is
 
     return output;
   }
+
+  //// ----------------------------- ETH TRANSFER UTILITIES --------------------------- ////
 
   /// @notice Transfer ETH. If the ETH transfer fails, wrap the ETH and try send it as WETH.
   /// @dev this transfer failure could occur if the transferee is a malicious contract

@@ -313,6 +313,44 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
+  function testCannotMintOptionInvalidExpiration2() public {
+    vm.prank(address(admin));
+    callInternal.setMinOptionDuration(3 hours);
+    vm.startPrank(address(writer));
+
+    // Writer approve covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 1 hours;
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectRevert(
+      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
+    );
+    calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
+  }
+
+  function testCanMintOptionShorterExpiration() public {
+    vm.prank(address(admin));
+    callInternal.setMinOptionDuration(3 hours);
+    vm.startPrank(address(writer));
+
+    // Writer approve covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 5 hours;
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+
+    calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
+  }
+
   function testCannotMintOptionPaused() public {
     vm.startPrank(address(admin));
     protocol.pause();
@@ -325,6 +363,21 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     vm.expectRevert("Pausable: paused");
+    calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
+  }
+
+  function testCannotMintOptionMarketPaused() public {
+    vm.startPrank(address(admin));
+    callInternal.setMarketPaused(true);
+
+    uint256 expiration = block.timestamp + 3 days;
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+
+    vm.expectRevert("whenNotPaused -- market is paused");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -662,8 +715,53 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     calls.bid{value: 0.1 ether}(optionTokenId);
 
     vm.prank(secondBidder);
-    vm.expectRevert("bid - bid is lower than the current bid");
+    vm.expectRevert(
+      "bid - bid is lower than the current bid + minBidIncrementBips"
+    );
     calls.bid{value: 0.09 ether}(optionTokenId);
+  }
+
+  function testCannotBidLessThanCurrentIncrement() public {
+    vm.prank(admin);
+    callInternal.setBidIncrement(1000); // set it to 10% for this test
+    address firstBidder = address(37);
+    vm.label(firstBidder, "First option bidder");
+    vm.deal(address(firstBidder), 1 ether);
+
+    address secondBidder = address(38);
+    vm.label(secondBidder, "Second option bidder");
+    vm.deal(address(secondBidder), 1 ether);
+
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 0.1 ether}(optionTokenId);
+
+    vm.prank(secondBidder);
+    vm.expectRevert(
+      "bid - bid is lower than the current bid + minBidIncrementBips"
+    );
+    calls.bid{value: 0.105 ether}(optionTokenId);
+  }
+
+  function testCanBidLessMoreThanCurrentIncrement() public {
+    vm.prank(admin);
+    callInternal.setBidIncrement(1000); // set it to 10% for this test
+    address firstBidder = address(37);
+    vm.label(firstBidder, "First option bidder");
+    vm.deal(address(firstBidder), 1 ether);
+
+    address secondBidder = address(38);
+    vm.label(secondBidder, "Second option bidder");
+    vm.deal(address(secondBidder), 1 ether);
+
+    vm.warp(block.timestamp + 2.1 days);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 0.1 ether}(optionTokenId);
+
+    vm.prank(secondBidder);
+    calls.bid{value: 0.112 ether}(optionTokenId);
   }
 
   function testWriterCanBidOnSpread() public {
