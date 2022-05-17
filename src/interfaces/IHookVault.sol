@@ -28,7 +28,7 @@ interface IHookVault {
   /// @notice emitted when an entitlement is placed on an asset
   event EntitlementImposed(
     uint256 assetId,
-    address entitledAccout,
+    address entitledAccount,
     uint256 expiry,
     address beneficialOwner
   );
