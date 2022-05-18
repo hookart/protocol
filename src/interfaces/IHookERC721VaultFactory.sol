@@ -15,6 +15,11 @@ interface IHookERC721VaultFactory {
     view
     returns (address vault);
 
+  function getMultiVault(address nftAddress)
+    external
+    view
+    returns (address vault);
+
   function makeVault(address nftAddress, uint256 tokenId)
     external
     returns (address vault);
