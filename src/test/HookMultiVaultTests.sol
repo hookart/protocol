@@ -31,7 +31,9 @@ contract HookMultiVaultTests is HookProtocolTest {
     tokenStartIndex += 1;
     tokenId = tokenStartIndex;
     token.mint(address(writer), tokenId);
-    address vaultAddress = vault.makeVault(address(token), tokenId);
+    address vaultAddress = address(
+      vault.findOrCreateVault(address(token), tokenId)
+    );
     vm.stopPrank();
     return (vaultAddress, tokenId);
   }

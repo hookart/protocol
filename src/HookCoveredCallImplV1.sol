@@ -128,7 +128,7 @@ contract HookCoveredCallImplV1 is
     address protocol,
     address nftContract,
     address hookVaultFactory
-  ) public initializer {
+  ) external initializer {
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();
@@ -179,13 +179,7 @@ contract HookCoveredCallImplV1 is
     vault.imposeEntitlement(entitlement, signature);
 
     return
-      _mintOptionWithVault(
-        writer,
-        address(vault),
-        assetId,
-        strikePrice,
-        expirationTime
-      );
+      _mintOptionWithVault(writer, vault, assetId, strikePrice, expirationTime);
   }
 
   /// @dev See {IHookCoveredCall-mintWithEntitledVault}.
@@ -223,13 +217,7 @@ contract HookCoveredCallImplV1 is
     address writer = vault.getBeneficialOwner(assetId);
 
     return
-      _mintOptionWithVault(
-        writer,
-        vaultAddress,
-        assetId,
-        strikePrice,
-        expirationTime
-      );
+      _mintOptionWithVault(writer, vault, assetId, strikePrice, expirationTime);
   }
 
   /// @dev See {IHookCoveredCall-mintWithErc721}.
@@ -259,10 +247,10 @@ contract HookCoveredCallImplV1 is
     );
 
     // FIND OR CREATE HOOK VAULT, SET AN ENTITLEMENT
-    address vault = _erc721VaultFactory.getVault(tokenAddress, tokenId);
-    if (vault == address(0)) {
-      vault = _erc721VaultFactory.makeVault(tokenAddress, tokenId);
-    }
+    IHookERC721Vault vault = _erc721VaultFactory.findOrCreateVault(
+      tokenAddress,
+      tokenId
+    );
 
     /// IMPORTANT: the entitlement entitles the user to this contract address. That means that even if this
     // implementation code were upgraded, the contract at this address (i.e. with the new implementation) would
@@ -270,7 +258,7 @@ contract HookCoveredCallImplV1 is
     Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
       beneficialOwner: tokenOwner,
       operator: address(this),
-      vaultAddress: vault,
+      vaultAddress: address(vault),
       assetId: assetId, /// assume that the asset within the vault has assetId 0
       expiry: expirationTime
     });
@@ -279,21 +267,21 @@ contract HookCoveredCallImplV1 is
     // here will be accepted by the vault because we are also simultaneously tendering the asset.
     IERC721(tokenAddress).safeTransferFrom(
       tokenOwner,
-      vault,
+      address(vault),
       tokenId,
       abi.encode(entitlement)
     );
 
     // make sure that the vault actually has the asset.
     require(
-      IHookVault(vault).getHoldsAsset(assetId),
+      vault.getHoldsAsset(assetId),
       "mintWithErc712 -- asset must be in vault"
     );
 
     return
       _mintOptionWithVault(
         tokenOwner,
-        vault,
+        IHookVault(vault),
         assetId,
         strikePrice,
         expirationTime
@@ -304,13 +292,13 @@ contract HookCoveredCallImplV1 is
   /// @dev the vault is completely unchecked here, so the caller must ensure the vault is created,
   /// has a valid entitlement, and has the asset inside it
   /// @param writer the writer of the call option, usually the current owner of the underlying asset
-  /// @param vaultAddress the address of the IHookVault which contains the underlying asset
+  /// @param vault the address of the IHookVault which contains the underlying asset
   /// @param assetId the id of the underlying asset
   /// @param strikePrice the strike price for this current option, in ETH
   /// @param expirationTime the time after which the option will be considered expired
   function _mintOptionWithVault(
     address writer,
-    address vaultAddress,
+    IHookVault vault,
     uint256 assetId,
     uint256 strikePrice,
     uint256 expirationTime
@@ -328,7 +316,7 @@ contract HookCoveredCallImplV1 is
     // save the option metadata
     optionParams[newOptionId] = CallOption({
       writer: writer,
-      vaultAddress: vaultAddress,
+      vaultAddress: address(vault),
       assetId: assetId,
       strike: strikePrice,
       expiration: expirationTime,
@@ -348,7 +336,7 @@ contract HookCoveredCallImplV1 is
 
     emit CallCreated(
       writer,
-      vaultAddress,
+      address(vault),
       assetId,
       newOptionId,
       strikePrice,

@@ -31,9 +31,12 @@ contract HookVaultTests is HookProtocolTest {
     tokenStartIndex += 1;
     tokenId = tokenStartIndex;
     token.mint(address(writer), tokenId);
-    address vaultAddress = vault.makeVault(address(token), tokenId);
+    IHookERC721Vault vaultAddress = vault.findOrCreateVault(
+      address(token),
+      tokenId
+    );
     vm.stopPrank();
-    return (vaultAddress, tokenId);
+    return (address(vaultAddress), tokenId);
   }
 
   function makeEntitlementAndSignature(
