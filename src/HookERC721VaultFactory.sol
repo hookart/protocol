@@ -2,6 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "./HookERC721Vault.sol";
+import "./HookERC721MultiVault.sol";
 import "./interfaces/IHookERC721VaultFactory.sol";
 
 /// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
@@ -12,18 +13,34 @@ contract HookERC721VaultFactory is IHookERC721VaultFactory {
   /// @dev From this view, we do not know if a vault is empty or full
   mapping(address => mapping(uint256 => address)) public override getVault;
 
+  /// @notice Registry of all of the active multi-vaults within the protocol
+  mapping(address => address) public override getMultiVault;
+
   address private _hookProtocol;
   address private _beacon;
+  address private _multiBeacon;
 
-  constructor(address hookProtocolAddress, address beaconAddress) {
+  constructor(
+    address hookProtocolAddress,
+    address beaconAddress,
+    address multiBeaconAddress
+  ) {
     _hookProtocol = hookProtocolAddress;
     _beacon = beaconAddress;
+    _multiBeacon = multiBeaconAddress;
   }
 
+  /// @notice creates a vault for a specific tokenId. If there
+  /// is a multi-vault in existence which supports that address
+  /// the address for that vault is returned as a new one
+  /// does not need to be made.
   function makeVault(address nftAddress, uint256 tokenId)
     external
     returns (address vault)
   {
+    if (getMultiVault[nftAddress] != address(0)) {
+      return getMultiVault[nftAddress];
+    }
     require(
       getVault[nftAddress][tokenId] == address(0),
       "makeVault -- a vault cannot already exist"

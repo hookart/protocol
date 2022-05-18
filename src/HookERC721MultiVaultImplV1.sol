@@ -21,7 +21,7 @@ import "./mixin/EIP712.sol";
 /// @dev This contract implements ERC721Reciever
 /// This contract views the tokenId for the asset on the ERC721 contract as the corresponding assetId for that asset
 /// when deposited into the vault
-contract HookERC721VaultImplV1 is
+contract HookERC721MultiVaultImplV1 is
   IHookERC721Vault,
   EIP712,
   Initializable,
