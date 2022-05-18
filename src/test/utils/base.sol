@@ -76,12 +76,14 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
     // Deploy new vault factory
     HookERC721VaultImplV1 vaultImpl = new HookERC721VaultImplV1();
-    HookERC721MultiVaultImplV1 multiVaultImpl = new HookERC721MultiVaultImplV1();
+
     HookERC721VaultBeacon vaultBeacon = new HookERC721VaultBeacon(
       address(vaultImpl),
       address(protocol),
       PermissionConstants.VAULT_UPGRADER
     );
+
+    HookERC721MultiVaultImplV1 multiVaultImpl = new HookERC721MultiVaultImplV1();
 
     HookERC721MultiVaultBeacon multiVaultBeacon = new HookERC721MultiVaultBeacon(
         address(multiVaultImpl),
@@ -171,14 +173,14 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   function makeSignature(
     uint256 tokenId,
     uint256 expiry,
-    address writer
+    address _writer
   ) internal returns (Signatures.Signature memory sig) {
     try vaultFactory.findOrCreateVault(address(token), tokenId) {} catch {}
     address va = address(vaultFactory.getVault(address(token), tokenId));
 
     bytes32 structHash = Entitlements.getEntitlementStructHash(
       Entitlements.Entitlement({
-        beneficialOwner: address(writer),
+        beneficialOwner: address(_writer),
         operator: address(calls),
         vaultAddress: va,
         assetId: 0,
