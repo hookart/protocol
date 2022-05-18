@@ -146,7 +146,6 @@ contract HookERC721MultiVaultImplV1 is
       // There is no need to check if we currently have this token or an entitlement set.
       // Even if the contract were able to get into this state, it should still accept the asset
       // which will allow it to enforce the entitlement.
-      _setBeneficialOwner(tokenId, from);
 
       // If additional data is sent with the transfer, we attempt to parse an entitlement from it.
       // this allows the entitlement to be registered ahead of time.
@@ -171,6 +170,8 @@ contract HookERC721MultiVaultImplV1 is
         // entitlement, which is equivalent to this.
         _setBeneficialOwner(tokenId, entitlement.beneficialOwner);
         _registerEntitlement(entitlement);
+      } else {
+        _setBeneficialOwner(tokenId, from);
       }
     } else {
       // If we're recieving an airdrop or other asset uncovered by escrow to this address, we should ensure
@@ -196,8 +197,11 @@ contract HookERC721MultiVaultImplV1 is
     IERC721FlashLoanReceiver receiver = IERC721FlashLoanReceiver(
       receiverAddress
     );
-    require(assetId == assetId, "flashLoan -- invalid asset id");
     require(receiverAddress != address(0), "flashLoan -- zero address");
+    require(
+      _nftContract.ownerOf(assetId) == address(this),
+      "flashLoan -- asset not in vault"
+    );
     require(
       msg.sender == entitlements[assetId].beneficialOwner,
       "flashLoan -- not called by the asset owner"

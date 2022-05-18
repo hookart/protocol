@@ -37,9 +37,11 @@ contract HookCoveredCallFactory is
       getCallInstrument[assetAddress] == address(0),
       "makeCallInstrument -- a call instrument already exists"
     );
-    // make sure new instruments created by admins.
+    // make sure new instruments created by admins or the role
+    // has been burned
     require(
-      _protocol.hasRole(ALLOWLISTER_ROLE, msg.sender),
+      _protocol.hasRole(ALLOWLISTER_ROLE, msg.sender) ||
+        _protocol.hasRole(ALLOWLISTER_ROLE, address(0)),
       "makeCallInstrument -- Only admins can make instruments"
     );
 

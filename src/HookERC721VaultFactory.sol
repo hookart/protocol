@@ -46,7 +46,8 @@ contract HookERC721VaultFactory is
     returns (IHookERC721Vault vault)
   {
     require(
-      IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, msg.sender),
+      IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, msg.sender) ||
+        IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, address(0)),
       "makeMultiVault -- Only accounts with the ALLOWLISTER role can make new multiVaults"
     );
 
@@ -58,7 +59,7 @@ contract HookERC721VaultFactory is
     getMultiVault[nftAddress] = IHookERC721Vault(
       address(
         new HookERC721MultiVault{salt: keccak256(abi.encode(nftAddress))}(
-          _beacon,
+          _multiBeacon,
           nftAddress,
           _hookProtocol
         )
@@ -68,7 +69,7 @@ contract HookERC721VaultFactory is
     return getMultiVault[nftAddress];
   }
 
-  /// @notice make a new vault that
+  /// @notice make a new vault that can contain a single asset only
   function makeSoloVault(address nftAddress, uint256 tokenId)
     public
     returns (IHookERC721Vault vault)

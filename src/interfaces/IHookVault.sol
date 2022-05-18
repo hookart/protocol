@@ -95,6 +95,7 @@ interface IHookVault {
   /// @notice checks if the asset is currently stored in the vault
   function getHoldsAsset(uint256 assetId) external view returns (bool);
 
+  /// @notice the contract address of the vaulted asset
   function assetAddress(uint256 assetId) external view returns (address);
 
   /// @notice looks up the current operator of an entitlemnt on an asset
