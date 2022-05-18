@@ -1,7 +1,6 @@
 /// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "../lib/Entitlements.sol";
 
 /// @title Generic Hook Vault -- a vault designed to contain a single asset to be used as escrow.
@@ -50,10 +49,10 @@ interface IHookVault {
     address owner,
     address sender,
     address contractAddress,
-    uint256 tokenId,
     uint256 assetId
   );
 
+  /// @notice emitted when an asset is withdrawn from the vault
   event AssetWithdrawn(uint256 assetId, address to, address beneficialOwner);
 
   /// @notice Withdrawal an unencumbered asset from this vault
