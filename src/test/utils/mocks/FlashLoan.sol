@@ -35,9 +35,9 @@ contract FlashLoanDoesNotApprove is IERC721FlashLoanReceiver {
     address nftContract,
     uint256 tokenId,
     address,
-    address vault,
+    address,
     bytes calldata
-  ) external returns (bool) {
+  ) external view returns (bool) {
     // skip this:
     // IERC721(nftContract).approve(vault, tokenId);
     return IERC721(nftContract).ownerOf(tokenId) == address(this);
@@ -131,7 +131,7 @@ contract FlashLoanVerifyCalldata is IERC721FlashLoanReceiver {
 
   function executeOperation(
     address nftContract,
-    uint256 tokenId,
+    uint256,
     address,
     address vault,
     bytes calldata params
