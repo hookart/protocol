@@ -13,6 +13,7 @@ library Entitlements {
           "address beneficialOwner,",
           "address operator,",
           "address vaultAddress,",
+          "uint256 assetId,",
           "uint256 expiry",
           ")"
         )
@@ -27,6 +28,8 @@ library Entitlements {
     address operator;
     /// @notice the contract address for the vault that contains the underlying assets
     address vaultAddress;
+    /// @notice the assetId of the asset or assets within the vault
+    uint256 assetId;
     /// @notice the block timestamp after which the asset is free of the entitlement
     uint256 expiry;
   }
@@ -44,6 +47,7 @@ library Entitlements {
           entitlement.beneficialOwner,
           entitlement.operator,
           entitlement.vaultAddress,
+          entitlement.assetId,
           entitlement.expiry
         )
       );
