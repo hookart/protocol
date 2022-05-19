@@ -369,6 +369,10 @@ contract HookERC721VaultImplV1 is
     );
   }
 
+  function tokenAssetId(uint256) external pure returns (uint32) {
+    return uint32(ASSET_ID);
+  }
+
   /// ---------------- INTERNAL/PRIVATE FUNCTIONS ---------------- ///
 
   /// @notice Verify that an entitlement is properly signed and apply it to the asset if able.

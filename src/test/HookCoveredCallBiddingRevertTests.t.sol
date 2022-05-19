@@ -37,7 +37,7 @@ contract HookCoveredCallBiddingRevertTests is HookProtocolTest {
     vm.startPrank(address(writer));
     uint256 writerStartBalance = writer.balance;
     uint256 baseTime = block.timestamp;
-    uint256 expiration = baseTime + 3 days;
+    uint32 expiration = uint32(baseTime + 3 days);
     uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,

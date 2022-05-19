@@ -366,6 +366,10 @@ contract HookERC721MultiVaultImplV1 is
     );
   }
 
+  function tokenAssetId(uint256 tokenId) external pure returns (uint32) {
+    return uint32(tokenId);
+  }
+
   /// ---------------- INTERNAL/PRIVATE FUNCTIONS ---------------- ///
 
   /// @notice Verify that an entitlement is properly signed and apply it to the asset if able.

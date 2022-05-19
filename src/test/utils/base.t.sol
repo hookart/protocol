@@ -50,7 +50,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     uint256 assetId,
     uint256 optionId,
     uint256 strikePrice,
-    uint256 expiration
+    uint32 expiration
   );
 
   function setUpAddresses() public {
@@ -125,7 +125,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(

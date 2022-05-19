@@ -28,7 +28,39 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
+
+    vm.expectEmit(true, true, true, false);
+    emit CallCreated(
+      address(writer),
+      address(token),
+      0,
+      1, // This would be the first option id.
+      1000,
+      expiration
+    );
+    uint256 optionId = calls.mintWithErc721(
+      address(token),
+      underlyingTokenId,
+      1000,
+      expiration
+    );
+
+    assertTrue(
+      calls.ownerOf(optionId) == address(writer),
+      "owner should own the option"
+    );
+  }
+
+  function testMintOptionMultiVault() public {
+    vm.prank(admin);
+    vaultFactory.makeMultiVault(address(token));
+    vm.startPrank(address(writer));
+
+    // Writer approve covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -65,7 +97,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // place token in the vault
     token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     Signatures.Signature memory sig = makeSignature(
       underlyingTokenId,
@@ -109,7 +141,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // place token in the vault
     token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
 
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     Signatures.Signature memory sig = makeSignature(
       underlyingTokenId,
@@ -133,7 +165,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       vaultFactory.getVault(address(token), underlyingTokenId)
     );
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     Signatures.Signature memory sig = makeSignature(
       underlyingTokenId,
@@ -155,7 +187,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       vaultFactory.getVault(address(calls), underlyingTokenId)
     );
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     Signatures.Signature memory sig = makeSignature(
       underlyingTokenId,
@@ -173,7 +205,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -235,7 +267,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     vm.startPrank(operator);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -277,7 +309,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     // place token in the vault
     token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     Signatures.Signature memory signature = makeSignature(
       underlyingTokenId + 1,
@@ -296,7 +328,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 1 hours;
+    uint32 expiration = uint32(block.timestamp + 1 hours);
     vm.expectRevert(
       "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
@@ -311,7 +343,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 1 hours;
+    uint32 expiration = uint32(block.timestamp + 1 hours);
 
     vm.expectRevert(
       "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
@@ -327,7 +359,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 5 hours;
+    uint32 expiration = uint32(block.timestamp + 5 hours);
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -335,7 +367,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.startPrank(address(admin));
     protocol.pause();
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectRevert("Pausable: paused");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
@@ -345,7 +377,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.startPrank(address(admin));
     callInternal.setMarketPaused(true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectRevert("whenNotPaused -- market is paused");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
@@ -354,7 +386,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
   function testCannotMintOptionHookContractNotApproved() public {
     vm.startPrank(address(writer));
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectRevert("mintWithErc721 -- HookCoveredCall must be operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
@@ -363,7 +395,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
   function testCannotMintOptionNotUnderlyingOwner() public {
     vm.startPrank(address(buyer));
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
@@ -375,7 +407,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -415,7 +447,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.stopPrank();
 
     vm.startPrank(operator);
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -442,7 +474,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     token.setApprovalForAll(operator, true);
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -470,7 +502,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -509,7 +541,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     vm.startPrank(operator);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -579,7 +611,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     vm.stopPrank();
 
     startHoax(operator);
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     calls.mintWithErc721(address(token), underlyingTokenId2, 1000, expiration);
 
@@ -898,7 +930,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),
@@ -921,7 +953,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),
@@ -958,7 +990,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),
@@ -1002,7 +1034,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),
@@ -1052,7 +1084,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),
@@ -1104,7 +1136,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),
@@ -1242,7 +1274,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),
@@ -1290,7 +1322,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),
@@ -1339,7 +1371,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp + 3 days);
 
     uint256 optionId = calls.mintWithErc721(
       address(token),

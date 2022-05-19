@@ -26,6 +26,9 @@ interface IHookERC721Vault is IHookVault, IERC721Receiver {
   /// @notice the tokenID of the underlying ERC721 token;
   function assetTokenId(uint256 assetId) external view returns (uint256);
 
+  /// @notice looks up the assetId which represents a specific token
+  function tokenAssetId(uint256 tokenId) external view returns (uint32);
+
   /// @notice flashLoans the vaulted asset to another contract for use and return to the vault. Only the owner
   /// may perform the flashloan
   /// @dev the flashloan receiver can perform arbitrary logic, but must approve the vault as an operator

@@ -80,7 +80,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -116,7 +116,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -160,7 +160,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -196,7 +196,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -233,7 +233,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -270,7 +270,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -308,7 +308,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -345,7 +345,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -385,7 +385,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -425,7 +425,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -473,7 +473,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -523,7 +523,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -570,7 +570,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -604,7 +604,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     );
 
     // asset is not withdrawn, try to add a new entitlement
-    uint256 expiration2 = block.timestamp + 10 days;
+    uint32 expiration2 = uint32(block.timestamp + 10 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -626,7 +626,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -660,7 +660,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       "there should not be any active entitlements"
     );
 
-    uint256 expiration2 = block.timestamp + 3 days;
+    uint32 expiration2 = uint32(block.timestamp + 3 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -683,7 +683,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(3333);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -711,7 +711,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       "there should be an active entitlement"
     );
 
-    uint256 expiration2 = block.timestamp + 3 days;
+    uint32 expiration2 = uint32(block.timestamp + 3 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -735,7 +735,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69420);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -781,7 +781,7 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -852,7 +852,7 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp + 1 days);
 
     (
       Entitlements.Entitlement memory entitlement,
