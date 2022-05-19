@@ -13,7 +13,7 @@ import "../mixin/EIP712.sol";
 
 import "./utils/mocks/FlashLoan.sol";
 
-contract HookVaultTests is HookProtocolTest {
+contract HookMultiVaultTests is HookProtocolTest {
   IHookERC721VaultFactory vault;
   uint256 tokenStartIndex = 300;
 
@@ -31,18 +31,19 @@ contract HookVaultTests is HookProtocolTest {
     tokenStartIndex += 1;
     tokenId = tokenStartIndex;
     token.mint(address(writer), tokenId);
-    IHookERC721Vault vaultAddress = vault.findOrCreateVault(
-      address(token),
-      tokenId
+    vault.makeMultiVault(address(token));
+    address vaultAddress = address(
+      vault.findOrCreateVault(address(token), tokenId)
     );
     vm.stopPrank();
-    return (address(vaultAddress), tokenId);
+    return (vaultAddress, tokenId);
   }
 
   function makeEntitlementAndSignature(
     uint256 ownerPkey,
     address operator,
     address vaultAddress,
+    uint256 tokenId,
     uint256 _expiry
   )
     internal
@@ -57,7 +58,7 @@ contract HookVaultTests is HookProtocolTest {
       beneficialOwner: ownerAdd,
       operator: operator,
       vaultAddress: vaultAddress,
-      assetId: 0,
+      assetId: tokenId,
       expiry: _expiry
     });
 
@@ -90,6 +91,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -102,18 +104,22 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     assertTrue(
-      vaultImpl.getHoldsAsset(0),
+      vaultImpl.getHoldsAsset(tokenId),
       "the token should be owned by the vault"
     );
     assertTrue(
-      vaultImpl.getBeneficialOwner(0) == writer,
+      vaultImpl.getBeneficialOwner(tokenId) == writer,
       "writer should be the beneficial owner"
     );
+    (bool active, address operator) = vaultImpl.getCurrentEntitlementOperator(
+      tokenId
+    );
+    assertTrue(active, "there should be an active entitlement");
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be an active entitlement"
+      operator == mockContract,
+      "active entitlement is to correct person"
     );
   }
 
@@ -130,6 +136,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -142,11 +149,11 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     IERC721FlashLoanReceiver flashLoan = new FlashLoanSuccess();
 
     vm.prank(writer);
-    vaultImpl.flashLoan(0, address(flashLoan), " ");
+    vaultImpl.flashLoan(tokenId, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -166,6 +173,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -178,7 +186,7 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     IERC721FlashLoanReceiver flashLoan = new FlashLoanSuccess();
     vm.prank(admin);
     protocol.setCollectionConfig(
@@ -190,7 +198,7 @@ contract HookVaultTests is HookProtocolTest {
     vm.expectRevert(
       "flashLoan -- flashLoan feature disabled for this contract"
     );
-    vaultImpl.flashLoan(0, address(flashLoan), " ");
+    vaultImpl.flashLoan(tokenId, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -210,6 +218,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -222,11 +231,11 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     IERC721FlashLoanReceiver flashLoan = new FlashLoanApproveForAll();
 
     vm.prank(writer);
-    vaultImpl.flashLoan(0, address(flashLoan), " ");
+    vaultImpl.flashLoan(tokenId, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -246,6 +255,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -258,12 +268,12 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     IERC721FlashLoanReceiver flashLoan = new FlashLoanReturnsFalse();
 
     vm.prank(writer);
     vm.expectRevert("flashLoan -- the flash loan contract must return true");
-    vaultImpl.flashLoan(0, address(flashLoan), " ");
+    vaultImpl.flashLoan(tokenId, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -283,6 +293,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -295,12 +306,12 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     IERC721FlashLoanReceiver flashLoan = new FlashLoanDoesNotApprove();
 
     vm.prank(writer);
     vm.expectRevert("ERC721: transfer caller is not owner nor approved");
-    vaultImpl.flashLoan(0, address(flashLoan), " ");
+    vaultImpl.flashLoan(tokenId, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
       "good flashloan should work"
@@ -320,6 +331,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -332,12 +344,12 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     IERC721FlashLoanReceiver flashLoan = new FlashLoanBurnsAsset();
 
     vm.prank(writer);
     vm.expectRevert("ERC721: operator query for nonexistent token");
-    vaultImpl.flashLoan(0, address(flashLoan), " ");
+    vaultImpl.flashLoan(tokenId, address(flashLoan), " ");
     // operation reverted, so we can still mess with the asset
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
@@ -358,6 +370,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -370,11 +383,11 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     IERC721FlashLoanReceiver flashLoan = new FlashLoanVerifyCalldata();
 
     vm.prank(writer);
-    vaultImpl.flashLoan(0, address(flashLoan), "hello world");
+    vaultImpl.flashLoan(tokenId, address(flashLoan), "hello world");
     // operation reverted, so we can still mess with the asset
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
@@ -395,6 +408,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -407,12 +421,12 @@ contract HookVaultTests is HookProtocolTest {
       abi.encode(entitlement, sig)
     );
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
     IERC721FlashLoanReceiver flashLoan = new FlashLoanVerifyCalldata();
 
     vm.prank(writer);
     vm.expectRevert("should check helloworld");
-    vaultImpl.flashLoan(0, address(flashLoan), "hello world wrong!");
+    vaultImpl.flashLoan(tokenId, address(flashLoan), "hello world wrong!");
     // operation reverted, so we can still mess with the asset
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
@@ -433,6 +447,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -440,23 +455,27 @@ contract HookVaultTests is HookProtocolTest {
 
     token.safeTransferFrom(writer, vaultAddress, tokenId);
 
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
     // impose the entitlement onto the vault
     vm.prank(mockContract);
     vaultImpl.imposeEntitlement(entitlement, sig);
 
     assertTrue(
-      vaultImpl.getHoldsAsset(0),
+      vaultImpl.getHoldsAsset(tokenId),
       "the token should be owned by the vault"
     );
     assertTrue(
-      vaultImpl.getBeneficialOwner(0) == writer,
+      vaultImpl.getBeneficialOwner(tokenId) == writer,
       "writer should be the beneficial owner"
     );
+    (bool active, address operator) = vaultImpl.getCurrentEntitlementOperator(
+      tokenId
+    );
+    assertTrue(active, "there should be an active entitlement");
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be an active entitlement"
+      operator == mockContract,
+      "active entitlement is to correct person"
     );
 
     // verify that beneficial owner cannot withdrawl
@@ -465,7 +484,7 @@ contract HookVaultTests is HookProtocolTest {
       "withdrawalAsset -- the asset canot be withdrawn with an active entitlement"
     );
     vm.prank(writer);
-    vaultImpl.withdrawalAsset(0);
+    vaultImpl.withdrawalAsset(tokenId);
   }
 
   function testEntitlementGoesAwayAfterExpiration() public {
@@ -481,6 +500,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -491,24 +511,25 @@ contract HookVaultTests is HookProtocolTest {
       tokenId,
       abi.encode(entitlement, sig)
     );
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
-    assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be an active entitlement"
+    (bool active, address operator) = vaultImpl.getCurrentEntitlementOperator(
+      tokenId
     );
-
+    assertTrue(active, "there should be an active entitlement");
+    assertTrue(
+      operator == mockContract,
+      "active entitlement is to correct person"
+    );
     vm.warp(block.timestamp + 2 days);
 
-    assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
-      "there should not be any active entitlements"
-    );
+    (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
+    assertTrue(!active, "there should not be an active entitlement");
 
     vm.prank(writer);
-    vaultImpl.withdrawalAsset(0);
+    vaultImpl.withdrawalAsset(tokenId);
     assertTrue(
-      !vaultImpl.getHoldsAsset(0),
+      !vaultImpl.getHoldsAsset(tokenId),
       "the token should not be owned by the vault"
     );
 
@@ -531,6 +552,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -541,21 +563,21 @@ contract HookVaultTests is HookProtocolTest {
       tokenId,
       abi.encode(entitlement, sig)
     );
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
     vm.prank(mockContract);
-    vaultImpl.clearEntitlement(0);
+    vaultImpl.clearEntitlement(tokenId);
 
-    assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
-      "there should not be any active entitlements"
+    (bool active, address operator) = vaultImpl.getCurrentEntitlementOperator(
+      tokenId
     );
+    assertTrue(!active, "there should not be an active entitlement");
 
     // check that the owner can actually withdrawl
     vm.prank(writer);
-    vaultImpl.withdrawalAsset(0);
+    vaultImpl.withdrawalAsset(tokenId);
     assertTrue(
-      !vaultImpl.getHoldsAsset(0),
+      !vaultImpl.getHoldsAsset(tokenId),
       "the token should not be owned by the vault"
     );
 
@@ -578,6 +600,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -588,19 +611,17 @@ contract HookVaultTests is HookProtocolTest {
       tokenId,
       abi.encode(entitlement, sig)
     );
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
-    assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be an active entitlement"
+    (bool active, address operator) = vaultImpl.getCurrentEntitlementOperator(
+      tokenId
     );
+    assertTrue(active, "there should be an active entitlement");
 
     vm.warp(block.timestamp + 2 days);
 
-    assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
-      "there should not be any active entitlements"
-    );
+    (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
+    assertTrue(!active, "there should not be an active entitlement");
 
     // asset is not withdrawn, try to add a new entitlement
     uint256 expiration2 = block.timestamp + 10 days;
@@ -612,13 +633,12 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration2
       );
     vaultImpl.imposeEntitlement(entitlement2, sig2);
-    assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be a new active entitlement"
-    );
+    (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
+    assertTrue(active, "there should be an active entitlement");
   }
 
   function testNewEntitlementPossibleAfterClearedEntitlement() public {
@@ -634,6 +654,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -644,20 +665,17 @@ contract HookVaultTests is HookProtocolTest {
       tokenId,
       abi.encode(entitlement, sig)
     );
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
-    assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be an active entitlement"
+    (bool active, address operator) = vaultImpl.getCurrentEntitlementOperator(
+      tokenId
     );
-
+    assertTrue(active, "there should be an active entitlement");
     vm.prank(mockContract);
-    vaultImpl.clearEntitlement(0);
+    vaultImpl.clearEntitlement(tokenId);
 
-    assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
-      "there should not be any active entitlements"
-    );
+    (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
+    assertTrue(!active, "there should not be an active entitlement");
 
     uint256 expiration2 = block.timestamp + 3 days;
 
@@ -668,14 +686,13 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration2
       );
 
     vaultImpl.imposeEntitlement(entitlement2, sig2);
-    assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be a new active entitlement"
-    );
+    (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
+    assertTrue(active, "there should  be an active entitlement");
   }
 
   function testOnlyOneEntitlementAllowed() public {
@@ -691,6 +708,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -702,13 +720,13 @@ contract HookVaultTests is HookProtocolTest {
       tokenId,
       abi.encode(entitlement, sig)
     );
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
     address mockContract2 = address(35553445);
-    assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be an active entitlement"
+    (bool active, address operator) = vaultImpl.getCurrentEntitlementOperator(
+      tokenId
     );
+    assertTrue(active, "there should  be an active entitlement");
 
     uint256 expiration2 = block.timestamp + 3 days;
 
@@ -719,6 +737,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract2,
         vaultAddress,
+        tokenId,
         expiration2
       );
 
@@ -743,6 +762,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -754,27 +774,27 @@ contract HookVaultTests is HookProtocolTest {
       tokenId,
       abi.encode(entitlement, sig)
     );
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
-    assertTrue(
-      vaultImpl.hasActiveEntitlement(),
-      "there should be an active entitlement"
+    (bool active, address operator) = vaultImpl.getCurrentEntitlementOperator(
+      tokenId
     );
+    assertTrue(active, "there should  be an active entitlement");
 
     vm.prank(writer);
     vm.expectRevert(
       "clearEntitlement -- only the entitled address can clear the entitlement"
     );
-    vaultImpl.clearEntitlement(0);
+    vaultImpl.clearEntitlement(tokenId);
 
     vm.prank(address(55566677788899911));
     vm.expectRevert(
       "clearEntitlement -- only the entitled address can clear the entitlement"
     );
-    vaultImpl.clearEntitlement(0);
+    vaultImpl.clearEntitlement(tokenId);
   }
 
-  function testClearAndDistributeReturnsNFT() public {
+  function testClearAndDistributeReturnsNFT2() public {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
@@ -787,6 +807,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -797,15 +818,14 @@ contract HookVaultTests is HookProtocolTest {
       tokenId,
       abi.encode(entitlement, sig)
     );
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
+    vaultImpl.getBeneficialOwner(tokenId);
     vm.prank(mockContract);
-    vaultImpl.clearEntitlementAndDistribute(0, writer);
+    vaultImpl.clearEntitlementAndDistribute(tokenId, writer);
 
-    assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
-      "there should not be any active entitlements"
-    );
+    (bool active, ) = vaultImpl.getCurrentEntitlementOperator(tokenId);
+    assertTrue(!active, "there should not be an active entitlement");
 
     assertTrue(
       token.ownerOf(tokenId) == writer,
@@ -858,6 +878,7 @@ contract HookVaultTests is HookProtocolTest {
         writerpkey,
         mockContract,
         vaultAddress,
+        tokenId,
         expiration
       );
 
@@ -868,7 +889,7 @@ contract HookVaultTests is HookProtocolTest {
       tokenId,
       abi.encode(entitlement, sig)
     );
-    HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
+    IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
     vm.expectRevert(
       "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"

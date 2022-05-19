@@ -54,7 +54,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
   function test_MintOptionWithVault() public {
     vm.startPrank(address(writer));
-    try vaultFactory.makeVault(address(token), underlyingTokenId) {} catch {}
+    try
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    {} catch {}
 
     IHookERC721Vault vault = IHookERC721Vault(
       vaultFactory.getVault(address(token), underlyingTokenId)
@@ -96,7 +98,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
   function test_MintOptionWithVaultFailsExpiration() public {
     vm.startPrank(address(writer));
-    try vaultFactory.makeVault(address(token), underlyingTokenId) {} catch {}
+    try
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    {} catch {}
 
     IHookERC721Vault vault = IHookERC721Vault(
       vaultFactory.getVault(address(token), underlyingTokenId)
@@ -127,7 +131,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
   function test_MintOptionWithVaultFailsEmptyVault() public {
     vm.startPrank(address(writer));
-    try vaultFactory.makeVault(address(token), underlyingTokenId) {} catch {}
+    try
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    {} catch {}
 
     IHookERC721Vault vault = IHookERC721Vault(
       vaultFactory.getVault(address(token), underlyingTokenId)
@@ -153,7 +159,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
   function test_MintOptionWithVaultFailsUnsupportedCollection() public {
     vm.startPrank(address(writer));
-    try vaultFactory.makeVault(address(calls), underlyingTokenId) {} catch {}
+    try
+      vaultFactory.findOrCreateVault(address(calls), underlyingTokenId)
+    {} catch {}
 
     IHookERC721Vault vault = IHookERC721Vault(
       vaultFactory.getVault(address(calls), underlyingTokenId)
@@ -282,7 +290,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
   function testCannotMintOptionInvalidSignature() public {
     vm.startPrank(address(writer));
 
-    try vaultFactory.makeVault(address(token), underlyingTokenId) {} catch {}
+    try
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    {} catch {}
 
     IHookERC721Vault vault = IHookERC721Vault(
       vaultFactory.getVault(address(token), underlyingTokenId)
@@ -919,12 +929,12 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     uint256 buyerStartBalance = buyer.balance;
     uint256 writerStartBalance = writer.balance;
 
-    address vaultAddress = vaultFactory.getVault(
+    IHookERC721Vault vault = vaultFactory.getVault(
       address(token),
       underlyingTokenId
     );
     vm.expectCall(
-      vaultAddress,
+      address(vault),
       abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
     );
 
@@ -1233,12 +1243,12 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
 
     vm.startPrank(writer);
 
-    address vaultAddress = vaultFactory.getVault(
+    IHookERC721Vault vault = vaultFactory.getVault(
       address(token),
       underlyingTokenId
     );
     vm.expectCall(
-      vaultAddress,
+      address(vault),
       abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
     );
     calls.reclaimAsset(optionTokenId, true);
@@ -1326,12 +1336,12 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
 
     vm.startPrank(writer);
 
-    address vaultAddress = vaultFactory.getVault(
+    IHookERC721Vault vault = vaultFactory.getVault(
       address(token),
       underlyingTokenId
     );
     vm.expectCall(
-      vaultAddress,
+      address(vault),
       abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
     );
     calls.reclaimAsset(optionTokenId, true);
@@ -1378,12 +1388,12 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.warp(block.timestamp + 1 days);
 
     vm.startPrank(writer);
-    address vaultAddress = vaultFactory.getVault(
+    IHookERC721Vault vault = vaultFactory.getVault(
       address(token),
       underlyingTokenId
     );
     vm.expectCall(
-      vaultAddress,
+      address(vault),
       abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
     );
     calls.reclaimAsset(optionTokenId, true);
@@ -1433,12 +1443,12 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.warp(block.timestamp + 1 days);
 
     vm.startPrank(writer);
-    address vaultAddress = vaultFactory.getVault(
+    IHookERC721Vault vault = vaultFactory.getVault(
       address(token),
       underlyingTokenId
     );
     vm.expectCall(
-      vaultAddress,
+      address(vault),
       abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
     );
     calls.reclaimAsset(optionTokenId, true);
