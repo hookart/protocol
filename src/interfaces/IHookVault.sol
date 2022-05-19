@@ -28,7 +28,7 @@ interface IHookVault {
   /// @notice emitted when an entitlement is placed on an asset
   event EntitlementImposed(
     uint256 assetId,
-    address entitledAccout,
+    address entitledAccount,
     uint256 expiry,
     address beneficialOwner
   );
@@ -53,6 +53,8 @@ interface IHookVault {
     uint256 tokenId,
     uint256 assetId
   );
+
+  event AssetWithdrawn(uint256 assetId, address to, address beneficialOwner);
 
   /// @notice Withdrawal an unencumbered asset from this vault
   /// @param assetId the asset to remove from the vault

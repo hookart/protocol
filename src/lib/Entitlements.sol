@@ -3,8 +3,6 @@ pragma solidity ^0.8.10;
 import "./Signatures.sol";
 
 library Entitlements {
-  // TODO: Should we add a nonce to this struct? This would allow us to make the
-  // tokenIds cancelable.
   uint256 private constant _ENTITLEMENT_TYPEHASH =
     uint256(
       keccak256(

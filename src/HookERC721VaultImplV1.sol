@@ -25,6 +25,8 @@ contract HookERC721VaultImplV1 is
   Initializable,
   ReentrancyGuard
 {
+  uint256 private constant ASSET_ID = 0;
+
   /// ----------------  STORAGE ---------------- ///
 
   /// @dev these are the NFT contract address and tokenId the vault is covering
@@ -65,7 +67,7 @@ contract HookERC721VaultImplV1 is
 
   /// @dev See {IHookERC721Vault-withdrawalAsset}.
   /// @dev withdrawals can only be performed by the beneficial owner if there are no entitlements
-  function withdrawalAsset() external {
+  function withdrawalAsset(uint256) external {
     // require(msg.sender == beneficialOwner, "the beneficial owner is the only one able to withdrawl");
     require(
       !hasActiveEntitlement(),
@@ -74,7 +76,7 @@ contract HookERC721VaultImplV1 is
 
     _nftContract.safeTransferFrom(address(this), beneficialOwner, _tokenId);
 
-    emit AssetWithdrawn(msg.sender, beneficialOwner);
+    emit AssetWithdrawn(ASSET_ID, msg.sender, beneficialOwner);
   }
 
   /// @dev See {IHookERC721Vault-imposeEntitlement}.
@@ -166,7 +168,7 @@ contract HookERC721VaultImplV1 is
         "onERC721Received -- non-escrow asset returned when airdrops are disabled"
       );
     }
-    emit AssetReceived(from, operator, msg.sender, tokenId);
+    emit AssetReceived(from, operator, msg.sender, tokenId, ASSET_ID);
     return this.onERC721Received.selector;
   }
 
@@ -206,15 +208,15 @@ contract HookERC721VaultImplV1 is
   }
 
   /// @dev See {IHookERC721Vault-flashLoan}.
-  function flashLoan(address receiverAddress, bytes calldata params)
-    external
-    override
-    nonReentrant
-  {
+  function flashLoan(
+    uint256 assetId,
+    address receiverAddress,
+    bytes calldata params
+  ) external override nonReentrant {
     IERC721FlashLoanReceiver receiver = IERC721FlashLoanReceiver(
       receiverAddress
     );
-
+    require(assetId == ASSET_ID, "flashLoan -- invalid asset id");
     require(receiverAddress != address(0), "flashLoan -- zero address");
     require(
       msg.sender == beneficialOwner,
@@ -261,7 +263,11 @@ contract HookERC721VaultImplV1 is
   /// @notice Looks up the address of the currently entitled operator
   /// @dev returns the null address if there is no active entitlement
   /// @return operator the address of the current operator
-  function entitledOperatorContract() external view returns (address operator) {
+  function entitledOperatorContract(uint256)
+    external
+    view
+    returns (address operator)
+  {
     if (!hasActiveEntitlement()) {
       return address(0);
     } else {
@@ -270,7 +276,11 @@ contract HookERC721VaultImplV1 is
   }
 
   /// @dev See {IHookVault-entitlementExpiration}.
-  function entitlementExpiration() external view returns (uint256 expiry) {
+  function entitlementExpiration(uint256)
+    external
+    view
+    returns (uint256 expiry)
+  {
     if (!hasActiveEntitlement()) {
       return 0;
     } else {
@@ -279,26 +289,28 @@ contract HookERC721VaultImplV1 is
   }
 
   /// @dev See {IHookERC721Vault-getBeneficialOwner}.
-  function getBeneficialOwner() external view returns (address) {
+  function getBeneficialOwner(uint256) external view returns (address) {
     return beneficialOwner;
   }
 
   /// @dev See {IHookERC721Vault-getHoldsAsset}.
-  function getHoldsAsset() external view returns (bool holdsAsset) {
+  function getHoldsAsset(uint256) external view returns (bool holdsAsset) {
     return _nftContract.ownerOf(_tokenId) == address(this);
   }
 
-  function assetAddress() external view returns (address) {
+  function assetAddress(uint256) external view returns (address) {
     return address(_nftContract);
   }
 
-  function assetTokenId() external view returns (uint256) {
+  function assetTokenId(uint256) external view returns (uint256) {
     return _tokenId;
   }
 
   /// @dev See {IHookERC721Vault-setBeneficialOwner}.
   /// setBeneficialOwner can only be called by the entitlementContract if there is an activeEntitlement.
-  function setBeneficialOwner(address newBeneficialOwner) external {
+  function setBeneficialOwner(uint256 assetId, address newBeneficialOwner)
+    external
+  {
     if (hasActiveEntitlement()) {
       require(
         msg.sender == _currentEntitlement.operator,
@@ -310,12 +322,16 @@ contract HookERC721VaultImplV1 is
         "setBeneficialOwner -- only the current owner can update the beneficial owner"
       );
     }
+    require(
+      assetId == ASSET_ID,
+      "setBeneficialOwner -- this contract only contains one asset"
+    );
     _setBeneficialOwner(newBeneficialOwner);
   }
 
   /// @dev See {IHookERC721Vault-clearEntitlement}.
   /// @dev This can only be called if an entitlement currently exists, otherwise it would be a no-op
-  function clearEntitlement() public {
+  function clearEntitlement(uint256) public {
     require(
       hasActiveEntitlement(),
       "clearEntitlement -- an active entitlement must exist"
@@ -332,7 +348,7 @@ contract HookERC721VaultImplV1 is
   /// intended reciever, which should match the beneficialOwner. The function will throw if
   /// the reciever and owner do not match.
   /// @param reciever the intended reciever of the asset
-  function clearEntitlementAndDistribute(address reciever)
+  function clearEntitlementAndDistribute(uint256, address reciever)
     external
     nonReentrant
   {
@@ -340,9 +356,9 @@ contract HookERC721VaultImplV1 is
       beneficialOwner == reciever,
       "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
     );
-    clearEntitlement();
+    clearEntitlement(ASSET_ID);
     IERC721(_nftContract).safeTransferFrom(address(this), reciever, _tokenId);
-    emit AssetWithdrawn(msg.sender, beneficialOwner);
+    emit AssetWithdrawn(ASSET_ID, msg.sender, beneficialOwner);
   }
 
   /// @dev Get the EIP-712 hash of an Entitlement.
@@ -397,9 +413,14 @@ contract HookERC721VaultImplV1 is
       entitlement.vaultAddress == address(this),
       "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
     );
+    require(
+      entitlement.assetId == ASSET_ID,
+      "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
+    );
     _currentEntitlement = entitlement;
     _hasEntitlement = true;
     emit EntitlementImposed(
+      ASSET_ID,
       entitlement.operator,
       entitlement.expiry,
       beneficialOwner
@@ -411,17 +432,18 @@ contract HookERC721VaultImplV1 is
       address(0),
       address(0),
       address(0),
+      ASSET_ID,
       0
     );
     _hasEntitlement = false;
-    emit EntitlementCleared(beneficialOwner);
+    emit EntitlementCleared(ASSET_ID, beneficialOwner);
   }
 
   function hasActiveEntitlement() public view returns (bool) {
     return block.timestamp < _currentEntitlement.expiry && _hasEntitlement;
   }
 
-  function getCurrentEntitlementOperator()
+  function getCurrentEntitlementOperator(uint256)
     external
     view
     returns (bool isActive, address operator)
@@ -436,6 +458,6 @@ contract HookERC721VaultImplV1 is
       "_setBeneficialOwner -- new owner is the zero address"
     );
     beneficialOwner = newBeneficialOwner;
-    emit BeneficialOwnerSet(newBeneficialOwner, msg.sender);
+    emit BeneficialOwnerSet(ASSET_ID, newBeneficialOwner, msg.sender);
   }
 }

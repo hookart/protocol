@@ -39,8 +39,8 @@ contract HookCoveredCallImplV1 is
   /// @notice The metadata for each covered call option
   /// @param writer The address of the writer that created the call option
   /// @param owner The address of the current owner of the underlying, updated as bidding occurs
-  /// @param tokenAddress The address of the NFT that the option is on
-  /// @param tokenId The tokenId of the NFT that the option is on
+  /// @param vaultAddress the address of the vault holding the underlying asset
+  /// @param assetId the asset id of the underlying within the vault
   /// @param strike The strike price to exercise the call option
   /// @param expiration The expiration time of the call option
   /// @param settled a flag that marks when a settlement action has taken place successfully
@@ -49,6 +49,7 @@ contract HookCoveredCallImplV1 is
   struct CallOption {
     address writer;
     address vaultAddress;
+    uint256 assetId;
     uint256 strike;
     uint256 expiration;
     uint256 bid;
@@ -71,9 +72,9 @@ contract HookCoveredCallImplV1 is
   /// @dev storage of all existing options contracts.
   mapping(uint256 => CallOption) public optionParams;
 
-  /// @dev the address of the ERC-721 contract that can serve as underlying assets for this
+  /// @dev the address of the token contract permitted to serve as underlying assets for this
   /// instrument.
-  address public allowedNftContract;
+  address public allowedUnderlyingAddress;
 
   /// @dev the address of WETH on the chain where this contract is deployed
   address public weth;
@@ -131,7 +132,7 @@ contract HookCoveredCallImplV1 is
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();
-    allowedNftContract = nftContract;
+    allowedUnderlyingAddress = nftContract;
 
     /// Initialize basic configuration.
     /// Even though these are defaults, we cannot set them in the constructor because
@@ -148,6 +149,7 @@ contract HookCoveredCallImplV1 is
   /// @dev See {IHookCoveredCall-mintWithVault}.
   function mintWithVault(
     address vaultAddress,
+    uint256 assetId,
     uint256 strikePrice,
     uint256 expirationTime,
     Signatures.Signature calldata signature
@@ -155,57 +157,79 @@ contract HookCoveredCallImplV1 is
     IHookVault vault = IHookVault(vaultAddress);
 
     require(
-      allowedNftContract == vault.assetAddress(),
+      allowedUnderlyingAddress == vault.assetAddress(assetId),
       "mintWithVault -- token must be on the project allowlist"
     );
-    require(vault.getHoldsAsset(), "mintWithVault-- asset must be in vault");
+    require(
+      vault.getHoldsAsset(assetId),
+      "mintWithVault-- asset must be in vault"
+    );
 
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
-    address writer = vault.getBeneficialOwner();
+    address writer = vault.getBeneficialOwner(assetId);
     Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
       beneficialOwner: writer,
       operator: address(this),
       vaultAddress: address(vault),
+      assetId: assetId,
       expiry: expirationTime
     });
 
     vault.imposeEntitlement(entitlement, signature);
 
     return
-      _mintOptionWithVault(writer, address(vault), strikePrice, expirationTime);
+      _mintOptionWithVault(
+        writer,
+        address(vault),
+        assetId,
+        strikePrice,
+        expirationTime
+      );
   }
 
   /// @dev See {IHookCoveredCall-mintWithEntitledVault}.
   function mintWithEntitledVault(
     address vaultAddress,
+    uint256 assetId,
     uint256 strikePrice,
     uint256 expirationTime
   ) external whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
 
     require(
-      allowedNftContract == vault.assetAddress(),
+      allowedUnderlyingAddress == vault.assetAddress(assetId),
       "mintWithVault -- token must be on the project allowlist"
     );
-    require(vault.getHoldsAsset(), "mintWithVault-- asset must be in vault");
-    (bool active, address operator) = vault.getCurrentEntitlementOperator();
+    require(
+      vault.getHoldsAsset(assetId),
+      "mintWithVault-- asset must be in vault"
+    );
+    (bool active, address operator) = vault.getCurrentEntitlementOperator(
+      assetId
+    );
     require(
       active && operator == address(this),
       "mintWithVault -- call contact must be the entitled operator"
     );
 
     require(
-      expirationTime == vault.entitlementExpiration(),
+      expirationTime == vault.entitlementExpiration(assetId),
       "mintWithVault -- entitlement expiration must match call expiration"
     );
 
     // the beneficial owner owns the asset so
     // they should recieve the option.
-    address writer = vault.getBeneficialOwner();
+    address writer = vault.getBeneficialOwner(assetId);
 
     return
-      _mintOptionWithVault(writer, vaultAddress, strikePrice, expirationTime);
+      _mintOptionWithVault(
+        writer,
+        vaultAddress,
+        assetId,
+        strikePrice,
+        expirationTime
+      );
   }
 
   /// @dev See {IHookCoveredCall-mintWithErc721}.
@@ -216,8 +240,9 @@ contract HookCoveredCallImplV1 is
     uint256 expirationTime
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
+    uint256 assetId = 0; /// assume that the token is using an individual vault.
     require(
-      allowedNftContract == tokenAddress,
+      allowedUnderlyingAddress == tokenAddress,
       "mintWithErc721 -- token must be on the project allowlist"
     );
 
@@ -246,6 +271,7 @@ contract HookCoveredCallImplV1 is
       beneficialOwner: tokenOwner,
       operator: address(this),
       vaultAddress: vault,
+      assetId: assetId, /// assume that the asset within the vault has assetId 0
       expiry: expirationTime
     });
 
@@ -260,11 +286,18 @@ contract HookCoveredCallImplV1 is
 
     // make sure that the vault actually has the asset.
     require(
-      IHookVault(vault).getHoldsAsset(),
+      IHookVault(vault).getHoldsAsset(assetId),
       "mintWithErc712 -- asset must be in vault"
     );
 
-    return _mintOptionWithVault(tokenOwner, vault, strikePrice, expirationTime);
+    return
+      _mintOptionWithVault(
+        tokenOwner,
+        vault,
+        assetId,
+        strikePrice,
+        expirationTime
+      );
   }
 
   /// @notice internal use function to record the option and mint it
@@ -272,11 +305,13 @@ contract HookCoveredCallImplV1 is
   /// has a valid entitlement, and has the asset inside it
   /// @param writer the writer of the call option, usually the current owner of the underlying asset
   /// @param vaultAddress the address of the IHookVault which contains the underlying asset
+  /// @param assetId the id of the underlying asset
   /// @param strikePrice the strike price for this current option, in ETH
   /// @param expirationTime the time after which the option will be considered expired
   function _mintOptionWithVault(
     address writer,
     address vaultAddress,
+    uint256 assetId,
     uint256 strikePrice,
     uint256 expirationTime
   ) private returns (uint256) {
@@ -294,6 +329,7 @@ contract HookCoveredCallImplV1 is
     optionParams[newOptionId] = CallOption({
       writer: writer,
       vaultAddress: vaultAddress,
+      assetId: assetId,
       strike: strikePrice,
       expiration: expirationTime,
       bid: 0,
@@ -313,6 +349,7 @@ contract HookCoveredCallImplV1 is
     emit CallCreated(
       writer,
       vaultAddress,
+      assetId,
       newOptionId,
       strikePrice,
       expirationTime
@@ -373,7 +410,7 @@ contract HookCoveredCallImplV1 is
     // the new high bidder is the beneficial owner of the asset.
     // The beneficial owner must be set here instead of with a final bid
     // because the ability to
-    IHookVault(call.vaultAddress).setBeneficialOwner(msg.sender);
+    IHookVault(call.vaultAddress).setBeneficialOwner(call.assetId, msg.sender);
 
     // emit event
     emit Bid(optionId, bidAmt, msg.sender);
@@ -429,7 +466,7 @@ contract HookCoveredCallImplV1 is
     _safeTransferETHWithFallback(ownerOf(optionId), spread);
 
     if (returnNft) {
-      IHookVault(call.vaultAddress).withdrawalAsset();
+      IHookVault(call.vaultAddress).withdrawalAsset(call.assetId);
     }
 
     // burn nft
@@ -481,17 +518,21 @@ contract HookCoveredCallImplV1 is
       _safeTransferETHWithFallback(call.highBidder, call.bid);
 
       // if we have a bid, we may have set the bidder, so make sure to revert it here.
-      IHookVault(call.vaultAddress).setBeneficialOwner(call.writer);
+      IHookVault(call.vaultAddress).setBeneficialOwner(
+        call.assetId,
+        call.writer
+      );
     }
 
     if (returnNft) {
       // Because the call is not expired, we should be able to reclaim the asset from the vault
       if (call.expiration > block.timestamp) {
         IHookVault(call.vaultAddress).clearEntitlementAndDistribute(
+          call.assetId,
           call.writer
         );
       } else {
-        IHookVault(call.vaultAddress).withdrawalAsset();
+        IHookVault(call.vaultAddress).withdrawalAsset(call.assetId);
       }
     }
 
@@ -507,9 +548,6 @@ contract HookCoveredCallImplV1 is
     /// the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer
     /// could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for
     /// the current bidder to reclaim their money.
-    ///
-    /// TODO: To fix this, we're specifically sending that high bidder's money back; however, we should verify that
-    /// there are not patterns we need to watch here.
   }
 
   //// ---- Administrative Fns.
@@ -593,11 +631,15 @@ contract HookCoveredCallImplV1 is
     '.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill='
     '"black" /><text x="10" y="20" class="base">';
 
-    parts[1] = HookStrings.toAsciiString(vault.assetAddress());
+    parts[1] = HookStrings.toAsciiString(
+      vault.assetAddress(optionParams[tokenId].assetId)
+    );
 
     parts[2] = '</text><text x="10" y="40" class="base">';
 
-    parts[3] = HookStrings.toString(vault.assetTokenId());
+    parts[3] = HookStrings.toString(
+      vault.assetTokenId(optionParams[tokenId].assetId)
+    );
 
     parts[4] = "</text></svg>";
 
