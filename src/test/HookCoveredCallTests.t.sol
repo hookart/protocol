@@ -4,7 +4,7 @@ pragma solidity ^0.8.10;
 import "ds-test/test.sol";
 import "forge-std/Test.sol";
 
-import "./utils/base.sol";
+import "./utils/base.t.sol";
 
 /// Mint ///
 contract HookCoveredCallMintTests is HookProtocolTest {
@@ -120,13 +120,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.expectRevert(
       "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
-    uint256 optionId = calls.mintWithVault(
-      address(vault),
-      0,
-      1000,
-      expiration,
-      sig
-    );
+    calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
   }
 
   function test_MintOptionWithVaultFailsEmptyVault() public {
@@ -148,13 +142,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     vm.expectRevert("mintWithVault-- asset must be in vault");
-    uint256 optionId = calls.mintWithVault(
-      address(vault),
-      0,
-      1000,
-      expiration,
-      sig
-    );
+    calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
   }
 
   function test_MintOptionWithVaultFailsUnsupportedCollection() public {
@@ -176,13 +164,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     vm.expectRevert("mintWithVault -- token must be on the project allowlist");
-    uint256 optionId = calls.mintWithVault(
-      address(vault),
-      0,
-      1000,
-      expiration,
-      sig
-    );
+    calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
   }
 
   function testMintMultipleOptions() public {
@@ -193,11 +175,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint256 expiration = block.timestamp + 3 days;
 
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      expiration,
-      writer
-    );
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
@@ -320,11 +297,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     token.setApprovalForAll(address(calls), true);
 
     uint256 expiration = block.timestamp + 1 hours;
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      expiration,
-      writer
-    );
     vm.expectRevert(
       "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
@@ -340,11 +312,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     token.setApprovalForAll(address(calls), true);
 
     uint256 expiration = block.timestamp + 1 hours;
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      expiration,
-      writer
-    );
+
     vm.expectRevert(
       "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
@@ -360,12 +328,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     token.setApprovalForAll(address(calls), true);
 
     uint256 expiration = block.timestamp + 5 hours;
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      expiration,
-      writer
-    );
-
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -374,11 +336,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     protocol.pause();
 
     uint256 expiration = block.timestamp + 3 days;
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      expiration,
-      writer
-    );
 
     vm.expectRevert("Pausable: paused");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
@@ -389,11 +346,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     callInternal.setMarketPaused(true);
 
     uint256 expiration = block.timestamp + 3 days;
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      expiration,
-      writer
-    );
 
     vm.expectRevert("whenNotPaused -- market is paused");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
@@ -476,11 +428,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
 
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      expiration,
-      writer
-    );
     // Vault is now owner of the underlying token so this fails.
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
@@ -512,11 +459,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.stopPrank();
     vm.startPrank(operator);
 
-    Signatures.Signature memory sig = makeSignature(
-      underlyingTokenId,
-      expiration,
-      writer
-    );
     // Vault is now owner of the underlying token so this fails.
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
@@ -546,11 +488,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       expiration
     );
 
-    Signatures.Signature memory sig = makeSignature(
-      optionId,
-      expiration,
-      writer
-    );
     // Minting should only work for TestERC721
     vm.expectRevert("mintWithErc721 -- token must be on the project allowlist");
     calls.mintWithErc721(address(calls), optionId, 1000, expiration);
@@ -815,7 +752,6 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     vm.deal(writer, 1 ether);
 
     uint256 firstBidderStartBalance = firstBidder.balance;
-    uint256 writerStartBalance = writer.balance;
 
     vm.warp(block.timestamp + 2.1 days);
 
@@ -853,7 +789,6 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     vm.deal(writer, 1 ether);
 
     uint256 firstBidderStartBalance = firstBidder.balance;
-    uint256 writerStartBalance = writer.balance;
 
     vm.warp(block.timestamp + 2.1 days);
 
@@ -1304,9 +1239,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.deal(writer, 1 ether);
     vm.deal(firstBidder, 1 ether);
 
-    uint256 buyerStartBalance = buyer.balance;
-    uint256 writerStartBalance = writer.balance;
-
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
 
@@ -1354,9 +1286,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     token.mint(writer, underlyingTokenId2);
     vm.deal(writer, 1 ether);
     vm.deal(firstBidder, 1 ether);
-
-    uint256 buyerStartBalance = buyer.balance;
-    uint256 writerStartBalance = writer.balance;
 
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
@@ -1406,9 +1335,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     token.mint(writer, underlyingTokenId2);
     vm.deal(writer, 1 ether);
     vm.deal(firstBidder, 1 ether);
-
-    uint256 buyerStartBalance = buyer.balance;
-    uint256 writerStartBalance = writer.balance;
 
     // Writer approve operator and covered call
     token.setApprovalForAll(address(calls), true);
