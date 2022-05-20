@@ -1,6 +1,6 @@
 pragma solidity ^0.8.10;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
 import "../lib/Signatures.sol";
 
@@ -30,7 +30,7 @@ import "../lib/Signatures.sol";
 /// place a bid. If, at settlement, the high bid is greater than the strike, (bid - strike) is transferred to the holder
 /// of the instrument NFT, the strike price is transferred to the writer. The high bid is transferred to the holder of
 /// the option.
-interface IHookCoveredCall is IERC721 {
+interface IHookCoveredCall is IERC721Metadata {
   /// @notice emitted when a new call option is successfully minted with a specific underlying vault
   event CallCreated(
     address writer,

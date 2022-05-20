@@ -2,6 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "../lib/Entitlements.sol";
+import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title Generic Hook Vault -- a vault designed to contain a single asset to be used as escrow.
 /// @author Jake Nyquist -- j@hook.xyz
@@ -23,7 +24,7 @@ import "../lib/Entitlements.sol";
 ///     (4) the entitled entity can modify the beneficial owner of the asset, but cannot withdrawal.
 ///     (5) the beneficial owner cannot modify the beneficial owner while an entitlement is in place
 ///
-interface IHookVault {
+interface IHookVault is IERC165 {
   /// @notice emitted when an entitlement is placed on an asset
   event EntitlementImposed(
     uint256 assetId,

@@ -55,6 +55,20 @@ contract HookERC721MultiVaultImplV1 is
 
   /// ---------------- PUBLIC FUNCTIONS ---------------- ///
 
+  ///
+  /// @dev See {IERC165-supportsInterface}.
+  ///
+  function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    returns (bool)
+  {
+    return
+      interfaceId == type(IHookERC721Vault).interfaceId ||
+      interfaceId == type(IERC165).interfaceId;
+  }
+
   /// @dev See {IHookERC721Vault-withdrawalAsset}.
   /// @dev withdrawals can only be performed to the beneficial owner if there are no entitlements
   function withdrawalAsset(uint256 assetId) external {
