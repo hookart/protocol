@@ -52,6 +52,33 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
   }
 
+  function testTransferApproval() public {
+    vm.startPrank(address(writer));
+
+    // Writer approve covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    uint256 optionId = calls.mintWithErc721(
+      address(token),
+      underlyingTokenId,
+      1000,
+      expiration
+    );
+
+    vm.stopPrank();
+    vm.expectRevert("ERC721: transfer caller is not owner nor approved");
+    calls.safeTransferFrom(writer, address(55), optionId);
+
+    vm.prank(preapprovedOperator);
+    calls.safeTransferFrom(writer, address(55), optionId);
+    assertTrue(
+      calls.ownerOf(optionId) == address(55),
+      "the transfer should work"
+    );
+  }
+
   function test_MintOptionWithVault() public {
     vm.startPrank(address(writer));
     try

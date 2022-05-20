@@ -123,12 +123,12 @@ contract HookCoveredCallImplV1 is
     address protocol,
     address nftContract,
     address hookVaultFactory,
-    address approvedMarketplace
+    address preapprovedMarketplace
   ) public initializer {
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();
-    _approvedMarketplace = approvedMarketplace;
+    _preapprovedMarketplace = preapprovedMarketplace;
     allowedUnderlyingAddress = nftContract;
 
     /// Initialize basic configuration.
