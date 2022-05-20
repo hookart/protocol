@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "./utils/base.sol";
+import "./utils/base.t.sol";
 
 contract HookCoveredCallIntegrationTest is HookProtocolTest {
   function setUp() public {

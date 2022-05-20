@@ -281,7 +281,7 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev returns the underlying token ID for a given asset. In this case
   /// the tokenId == the assetId
-  function assetTokenId(uint256 assetId) external view returns (uint256) {
+  function assetTokenId(uint256 assetId) external pure returns (uint256) {
     return assetId;
   }
 
