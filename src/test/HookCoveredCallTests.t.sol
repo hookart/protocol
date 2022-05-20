@@ -262,6 +262,11 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       calls.getApproved(optionId) == address(operator),
       "operator should be approved for option"
     );
+
+    assertTrue(
+      bytes(calls.tokenURI(optionId)).length > 100,
+      "tokenURI should be long"
+    );
   }
 
   function testCannotMintOptionInvalidSignature() public {
