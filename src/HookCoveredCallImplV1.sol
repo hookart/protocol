@@ -594,17 +594,15 @@ contract HookCoveredCallImplV1 is
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ///
 
-  function getTokenAddress(uint256 optionId)
-    public
-    view
-    override
-    returns (address)
-  {
-    return optionParams[optionId].tokenAddress;
+  function getTokenAddress(uint256) public view override returns (address) {
+    return allowedUnderlyingAddress;
   }
 
   function getTokenId(uint256 optionId) public view override returns (uint256) {
-    return optionParams[optionId].tokenId;
+    return
+      IHookERC721Vault(optionParams[optionId].vaultAddress).assetTokenId(
+        optionParams[optionId].assetId
+      );
   }
 
   function getStrikePrice(uint256 optionId)
