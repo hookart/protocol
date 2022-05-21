@@ -111,7 +111,7 @@ contract HookCoveredCallImplV1 is
 
   /// --- Constructor
   // the constructor cannot have arugments in proxied contracts.
-  constructor() ERC721("CallOption", "CALL") {}
+  constructor() HookInsturmentERC721("Call") {}
 
   /// @notice Initializes the specific instance of the instrument contract.
   /// @dev Because the deployed contract is proxied, arguments unique to each deployment
@@ -122,11 +122,13 @@ contract HookCoveredCallImplV1 is
   function initialize(
     address protocol,
     address nftContract,
-    address hookVaultFactory
-  ) external initializer {
+    address hookVaultFactory,
+    address preapprovedMarketplace
+  ) public initializer {
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();
+    _preapprovedMarketplace = preapprovedMarketplace;
     allowedUnderlyingAddress = nftContract;
 
     /// Initialize basic configuration.

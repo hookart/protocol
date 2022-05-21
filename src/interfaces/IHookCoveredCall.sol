@@ -6,6 +6,7 @@ import "../lib/Signatures.sol";
 
 /// @title A covered call instrument
 /// @author Jake Nyquist -- j@hook.xyz
+///
 /// @notice This contract implements a "Covered Call Option". A call option gives the holder the right, but not
 /// the obligation to purchase an asset at a fixed time in the future (the expiry) for a fixed price (the strike).
 /// The call option implementation here is similar to a "european" call option because the asset can

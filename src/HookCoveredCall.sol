@@ -12,15 +12,17 @@ contract HookCoveredCall is BeaconProxy {
     address beacon,
     address nftAddress,
     address protocol,
-    address hookVaultFactory
+    address hookVaultFactory,
+    address preapprovedMarketplace
   )
     BeaconProxy(
       beacon,
       abi.encodeWithSignature(
-        "initialize(address,address,address)",
+        "initialize(address,address,address,address)",
         protocol,
         nftAddress,
-        hookVaultFactory
+        hookVaultFactory,
+        preapprovedMarketplace
       )
     )
   {}

@@ -42,6 +42,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   address internal protocolAddress;
   HookProtocol protocol;
   uint256 internal optionTokenId;
+  address internal preapprovedOperator;
   HookERC721VaultFactory vaultFactory;
 
   event CallCreated(
@@ -72,6 +73,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     weth = new WETH();
     protocol = new HookProtocol(admin, address(weth));
     protocolAddress = address(protocol);
+    preapprovedOperator = address(8845603894908);
     setAddressForEipDomain(protocolAddress);
 
     // Deploy new vault factory
@@ -108,7 +110,8 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     );
     HookCoveredCallFactory callFactory = new HookCoveredCallFactory(
       protocolAddress,
-      address(callBeacon)
+      address(callBeacon),
+      preapprovedOperator
     );
     vm.prank(address(admin));
     protocol.setCoveredCallFactory(address(callFactory));
