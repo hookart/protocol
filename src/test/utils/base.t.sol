@@ -7,15 +7,15 @@ import "forge-std/Test.sol";
 import "./tokens/TestERC721.sol";
 import "./tokens/WETH.sol";
 import "../../HookCoveredCall.sol";
-import "../../HookCoveredCallBeacon.sol";
+import "../../HookUpgradeableBeacon.sol";
 import "../../HookCoveredCallFactory.sol";
 import "../../HookCoveredCallImplV1.sol";
 import "../../HookERC721Vault.sol";
-import "../../HookERC721VaultBeacon.sol";
+import "../../HookUpgradeableBeacon.sol";
 import "../../HookERC721VaultFactory.sol";
 import "../../HookERC721VaultImplV1.sol";
 import "../../HookERC721MultiVaultImplV1.sol";
-import "../../HookERC721MultiVaultBeacon.sol";
+import "../../HookUpgradeableBeacon.sol";
 import "../../HookProtocol.sol";
 
 import "../../lib/Entitlements.sol";
@@ -79,7 +79,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     // Deploy new vault factory
     HookERC721VaultImplV1 vaultImpl = new HookERC721VaultImplV1();
 
-    HookERC721VaultBeacon vaultBeacon = new HookERC721VaultBeacon(
+    HookUpgradeableBeacon vaultBeacon = new HookUpgradeableBeacon(
       address(vaultImpl),
       address(protocol),
       PermissionConstants.VAULT_UPGRADER
@@ -87,11 +87,11 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
     HookERC721MultiVaultImplV1 multiVaultImpl = new HookERC721MultiVaultImplV1();
 
-    HookERC721MultiVaultBeacon multiVaultBeacon = new HookERC721MultiVaultBeacon(
-        address(multiVaultImpl),
-        address(protocol),
-        PermissionConstants.VAULT_UPGRADER
-      );
+    HookUpgradeableBeacon multiVaultBeacon = new HookUpgradeableBeacon(
+      address(multiVaultImpl),
+      address(protocol),
+      PermissionConstants.VAULT_UPGRADER
+    );
 
     vaultFactory = new HookERC721VaultFactory(
       protocolAddress,
@@ -103,7 +103,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
     // Deploy a new Covered Call Factory
     HookCoveredCallImplV1 callImpl = new HookCoveredCallImplV1();
-    HookCoveredCallBeacon callBeacon = new HookCoveredCallBeacon(
+    HookUpgradeableBeacon callBeacon = new HookUpgradeableBeacon(
       address(callImpl),
       address(protocol),
       PermissionConstants.CALL_UPGRADER
