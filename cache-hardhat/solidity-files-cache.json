@@ -1,8 +1,8 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/Users/jake/code/protocol/src/HookCoveredCall.sol": {
-      "lastModificationDate": 1653315425948,
+    "/Users/eliecerchicott/Work/protocol/src/HookCoveredCall.sol": {
+      "lastModificationDate": 1653310037610,
       "contentHash": "57f42c52336907d638d13a8789de8d3b",
       "sourceName": "src/HookCoveredCall.sol",
       "solcConfig": {
@@ -38,8 +38,8 @@
         "HookCoveredCall"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol": {
-      "lastModificationDate": 1653316140657,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol": {
+      "lastModificationDate": 1653329287829,
       "contentHash": "0d71075819600720f2c99ed4b31d88e0",
       "sourceName": "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol",
       "solcConfig": {
@@ -77,8 +77,8 @@
         "BeaconProxy"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/proxy/beacon/IBeacon.sol": {
-      "lastModificationDate": 1653316140657,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/proxy/beacon/IBeacon.sol": {
+      "lastModificationDate": 1653329287830,
       "contentHash": "b6bd23bf19e90b771337037706470933",
       "sourceName": "@openzeppelin/contracts/proxy/beacon/IBeacon.sol",
       "solcConfig": {
@@ -112,8 +112,8 @@
         "IBeacon"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/proxy/Proxy.sol": {
-      "lastModificationDate": 1653316138139,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/proxy/Proxy.sol": {
+      "lastModificationDate": 1653329286500,
       "contentHash": "40b3d81a836d50ff47e03893dcaaf204",
       "sourceName": "@openzeppelin/contracts/proxy/Proxy.sol",
       "solcConfig": {
@@ -147,8 +147,8 @@
         "Proxy"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol": {
-      "lastModificationDate": 1653316140656,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol": {
+      "lastModificationDate": 1653329287829,
       "contentHash": "6baa887a798e95b14f34e093f117e9b2",
       "sourceName": "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol",
       "solcConfig": {
@@ -187,8 +187,8 @@
         "ERC1967Upgrade"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/interfaces/draft-IERC1822.sol": {
-      "lastModificationDate": 1653316138136,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/interfaces/draft-IERC1822.sol": {
+      "lastModificationDate": 1653329286502,
       "contentHash": "2858d98e74e67987ec81b39605230b74",
       "sourceName": "@openzeppelin/contracts/interfaces/draft-IERC1822.sol",
       "solcConfig": {
@@ -222,8 +222,8 @@
         "IERC1822Proxiable"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/Address.sol": {
-      "lastModificationDate": 1653316138137,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/Address.sol": {
+      "lastModificationDate": 1653329286502,
       "contentHash": "ad714a6368ee7d43cded6bbe8af0b155",
       "sourceName": "@openzeppelin/contracts/utils/Address.sol",
       "solcConfig": {
@@ -257,8 +257,8 @@
         "Address"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": {
-      "lastModificationDate": 1653316138137,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": {
+      "lastModificationDate": 1653329286503,
       "contentHash": "187a01c1e4e638014509dfee3ac6faa9",
       "sourceName": "@openzeppelin/contracts/utils/StorageSlot.sol",
       "solcConfig": {
@@ -292,8 +292,8 @@
         "StorageSlot"
       ]
     },
-    "/Users/jake/code/protocol/src/HookCoveredCallFactory.sol": {
-      "lastModificationDate": 1653315425949,
+    "/Users/eliecerchicott/Work/protocol/src/HookCoveredCallFactory.sol": {
+      "lastModificationDate": 1653310037611,
       "contentHash": "aeaef5f15e793afacc67267cdddcd021",
       "sourceName": "src/HookCoveredCallFactory.sol",
       "solcConfig": {
@@ -332,8 +332,8 @@
         "HookCoveredCallFactory"
       ]
     },
-    "/Users/jake/code/protocol/src/interfaces/IHookCoveredCallFactory.sol": {
-      "lastModificationDate": 1653066511505,
+    "/Users/eliecerchicott/Work/protocol/src/interfaces/IHookCoveredCallFactory.sol": {
+      "lastModificationDate": 1653310037614,
       "contentHash": "0510de783bbac078f0f89da967bf1e4b",
       "sourceName": "src/interfaces/IHookCoveredCallFactory.sol",
       "solcConfig": {
@@ -367,8 +367,8 @@
         "IHookCoveredCallFactory"
       ]
     },
-    "/Users/jake/code/protocol/src/interfaces/IHookProtocol.sol": {
-      "lastModificationDate": 1653066511506,
+    "/Users/eliecerchicott/Work/protocol/src/interfaces/IHookProtocol.sol": {
+      "lastModificationDate": 1653310037615,
       "contentHash": "953d6ec0ede97d5ef53f1977d27f43ab",
       "sourceName": "src/interfaces/IHookProtocol.sol",
       "solcConfig": {
@@ -404,8 +404,8 @@
         "IHookProtocol"
       ]
     },
-    "/Users/jake/code/protocol/src/mixin/PermissionConstants.sol": {
-      "lastModificationDate": 1653066511507,
+    "/Users/eliecerchicott/Work/protocol/src/mixin/PermissionConstants.sol": {
+      "lastModificationDate": 1653310037616,
       "contentHash": "05f5be15bb7398667805e2c2888a2e7a",
       "sourceName": "src/mixin/PermissionConstants.sol",
       "solcConfig": {
@@ -439,8 +439,8 @@
         "PermissionConstants"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/access/IAccessControl.sol": {
-      "lastModificationDate": 1653316138127,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/access/IAccessControl.sol": {
+      "lastModificationDate": 1653329286500,
       "contentHash": "57c84298234411cea19c7c284d86be8b",
       "sourceName": "@openzeppelin/contracts/access/IAccessControl.sol",
       "solcConfig": {
@@ -474,8 +474,8 @@
         "IAccessControl"
       ]
     },
-    "/Users/jake/code/protocol/src/HookProtocol.sol": {
-      "lastModificationDate": 1653066511505,
+    "/Users/eliecerchicott/Work/protocol/src/HookProtocol.sol": {
+      "lastModificationDate": 1653310037613,
       "contentHash": "01de2aa9d87af5eafe349eca4c89fa80",
       "sourceName": "src/HookProtocol.sol",
       "solcConfig": {
@@ -514,8 +514,8 @@
         "HookProtocol"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/access/AccessControl.sol": {
-      "lastModificationDate": 1653316138125,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/access/AccessControl.sol": {
+      "lastModificationDate": 1653329286499,
       "contentHash": "08101487003fda67e21e6d2cfe35bb2e",
       "sourceName": "@openzeppelin/contracts/access/AccessControl.sol",
       "solcConfig": {
@@ -554,8 +554,8 @@
         "AccessControl"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/security/Pausable.sol": {
-      "lastModificationDate": 1653316138130,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/security/Pausable.sol": {
+      "lastModificationDate": 1653329286503,
       "contentHash": "9c2dccab8e3a43a18c41e358763fe4d8",
       "sourceName": "@openzeppelin/contracts/security/Pausable.sol",
       "solcConfig": {
@@ -591,8 +591,8 @@
         "Pausable"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/Context.sol": {
-      "lastModificationDate": 1653316138137,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "lastModificationDate": 1653329286503,
       "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
@@ -626,8 +626,8 @@
         "Context"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/Strings.sol": {
-      "lastModificationDate": 1653316138138,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/Strings.sol": {
+      "lastModificationDate": 1653329286503,
       "contentHash": "9c54c6c065d9e590fdcdd72c451425b9",
       "sourceName": "@openzeppelin/contracts/utils/Strings.sol",
       "solcConfig": {
@@ -661,8 +661,8 @@
         "Strings"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": {
-      "lastModificationDate": 1653316140628,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+      "lastModificationDate": 1653329287833,
       "contentHash": "0e7db055ce108f9da7bb6686a00287c0",
       "sourceName": "@openzeppelin/contracts/utils/introspection/ERC165.sol",
       "solcConfig": {
@@ -698,8 +698,8 @@
         "ERC165"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
-      "lastModificationDate": 1653316140628,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "lastModificationDate": 1653329287834,
       "contentHash": "03e6768535ac4da0e9756f1d8a4a018a",
       "sourceName": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
       "solcConfig": {
@@ -733,8 +733,8 @@
         "IERC165"
       ]
     },
-    "/Users/jake/code/protocol/src/HookERC721VaultImplV1.sol": {
-      "lastModificationDate": 1653091146133,
+    "/Users/eliecerchicott/Work/protocol/src/HookERC721VaultImplV1.sol": {
+      "lastModificationDate": 1653310037612,
       "contentHash": "2d718aea956c2502283321b37ea1b8b0",
       "sourceName": "src/HookERC721VaultImplV1.sol",
       "solcConfig": {
@@ -778,8 +778,8 @@
         "HookERC721VaultImplV1"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
-      "lastModificationDate": 1653316140625,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+      "lastModificationDate": 1653329287830,
       "contentHash": "cd8e72e5859bddd5fd26b2fb5c51c846",
       "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721.sol",
       "solcConfig": {
@@ -815,8 +815,8 @@
         "IERC721"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/proxy/utils/Initializable.sol": {
-      "lastModificationDate": 1653316140657,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/proxy/utils/Initializable.sol": {
+      "lastModificationDate": 1653329287830,
       "contentHash": "f0c92df5bfd98a90d0eda04719bafda5",
       "sourceName": "@openzeppelin/contracts/proxy/utils/Initializable.sol",
       "solcConfig": {
@@ -852,8 +852,8 @@
         "Initializable"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol": {
-      "lastModificationDate": 1653316138130,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol": {
+      "lastModificationDate": 1653329286503,
       "contentHash": "92f9448b23a90ea3bb932ee55cc3ccce",
       "sourceName": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
       "solcConfig": {
@@ -887,8 +887,8 @@
         "ReentrancyGuard"
       ]
     },
-    "/Users/jake/code/protocol/src/interfaces/IHookERC721Vault.sol": {
-      "lastModificationDate": 1653071100245,
+    "/Users/eliecerchicott/Work/protocol/src/interfaces/IHookERC721Vault.sol": {
+      "lastModificationDate": 1653310037614,
       "contentHash": "88dfc0fdf3f721bef2145b1ce53725ed",
       "sourceName": "src/interfaces/IHookERC721Vault.sol",
       "solcConfig": {
@@ -925,8 +925,8 @@
         "IHookERC721Vault"
       ]
     },
-    "/Users/jake/code/protocol/src/interfaces/IERC721FlashLoanReceiver.sol": {
-      "lastModificationDate": 1653066511505,
+    "/Users/eliecerchicott/Work/protocol/src/interfaces/IERC721FlashLoanReceiver.sol": {
+      "lastModificationDate": 1652364378234,
       "contentHash": "0a7da1352e170e23aa235358af403730",
       "sourceName": "src/interfaces/IERC721FlashLoanReceiver.sol",
       "solcConfig": {
@@ -963,8 +963,8 @@
         "IERC721FlashLoanReceiver"
       ]
     },
-    "/Users/jake/code/protocol/src/lib/Entitlements.sol": {
-      "lastModificationDate": 1653066511507,
+    "/Users/eliecerchicott/Work/protocol/src/lib/Entitlements.sol": {
+      "lastModificationDate": 1653310037615,
       "contentHash": "1d91e86dd52c546333428b4935e5c01a",
       "sourceName": "src/lib/Entitlements.sol",
       "solcConfig": {
@@ -1000,8 +1000,8 @@
         "Entitlements"
       ]
     },
-    "/Users/jake/code/protocol/src/lib/Signatures.sol": {
-      "lastModificationDate": 1652212515048,
+    "/Users/eliecerchicott/Work/protocol/src/lib/Signatures.sol": {
+      "lastModificationDate": 1651266222893,
       "contentHash": "5087a8c1357c38bb238410e3459bb23f",
       "sourceName": "src/lib/Signatures.sol",
       "solcConfig": {
@@ -1035,8 +1035,8 @@
         "Signatures"
       ]
     },
-    "/Users/jake/code/protocol/src/mixin/EIP712.sol": {
-      "lastModificationDate": 1652394418681,
+    "/Users/eliecerchicott/Work/protocol/src/mixin/EIP712.sol": {
+      "lastModificationDate": 1651266222893,
       "contentHash": "c2075a9341d4c1dc7a9cb1fbf9044d36",
       "sourceName": "src/mixin/EIP712.sol",
       "solcConfig": {
@@ -1070,8 +1070,8 @@
         "EIP712"
       ]
     },
-    "/Users/jake/code/protocol/src/interfaces/IHookVault.sol": {
-      "lastModificationDate": 1653091146134,
+    "/Users/eliecerchicott/Work/protocol/src/interfaces/IHookVault.sol": {
+      "lastModificationDate": 1653310037615,
       "contentHash": "32501c577a9a8095c37942ac4de8d22c",
       "sourceName": "src/interfaces/IHookVault.sol",
       "solcConfig": {
@@ -1108,8 +1108,8 @@
         "IHookVault"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": {
-      "lastModificationDate": 1653316140625,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": {
+      "lastModificationDate": 1653329287830,
       "contentHash": "c22d4395e33763de693fd440c6fd10e1",
       "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
       "solcConfig": {
@@ -1143,8 +1143,8 @@
         "IERC721Receiver"
       ]
     },
-    "/Users/jake/code/protocol/src/HookERC721MultiVaultImplV1.sol": {
-      "lastModificationDate": 1653091146133,
+    "/Users/eliecerchicott/Work/protocol/src/HookERC721MultiVaultImplV1.sol": {
+      "lastModificationDate": 1653310037612,
       "contentHash": "4612a23cadb1dc671814057c3d8ac009",
       "sourceName": "src/HookERC721MultiVaultImplV1.sol",
       "solcConfig": {
@@ -1188,8 +1188,8 @@
         "HookERC721MultiVaultImplV1"
       ]
     },
-    "/Users/jake/code/protocol/src/interfaces/IHookCoveredCall.sol": {
-      "lastModificationDate": 1653091212602,
+    "/Users/eliecerchicott/Work/protocol/src/interfaces/IHookCoveredCall.sol": {
+      "lastModificationDate": 1653310037613,
       "contentHash": "2fcc03b1d619bd9806a9a64ccd687d04",
       "sourceName": "src/interfaces/IHookCoveredCall.sol",
       "solcConfig": {
@@ -1226,8 +1226,8 @@
         "IHookCoveredCall"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": {
-      "lastModificationDate": 1653316142368,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": {
+      "lastModificationDate": 1653329288590,
       "contentHash": "efbc0d15b80a74e34dbe8da0f3e879bb",
       "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
       "solcConfig": {
@@ -1263,8 +1263,8 @@
         "IERC721Metadata"
       ]
     },
-    "/Users/jake/code/protocol/src/test/utils/mocks/MaliciousBidder.sol": {
-      "lastModificationDate": 1651611787468,
+    "/Users/eliecerchicott/Work/protocol/src/test/utils/mocks/MaliciousBidder.sol": {
+      "lastModificationDate": 1651587955453,
       "contentHash": "d8e5ce9e5b37f437a656ae60f0296092",
       "sourceName": "src/test/utils/mocks/MaliciousBidder.sol",
       "solcConfig": {
@@ -1300,8 +1300,8 @@
         "MaliciousBidder"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
-      "lastModificationDate": 1653316140625,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
+      "lastModificationDate": 1653329287830,
       "contentHash": "21b9f3bdb3e60f56ea81361c37420136",
       "sourceName": "@openzeppelin/contracts/token/ERC721/ERC721.sol",
       "solcConfig": {
@@ -1343,8 +1343,8 @@
         "ERC721"
       ]
     },
-    "/Users/jake/code/protocol/src/test/utils/tokens/TestERC721.sol": {
-      "lastModificationDate": 1653066511509,
+    "/Users/eliecerchicott/Work/protocol/src/test/utils/tokens/TestERC721.sol": {
+      "lastModificationDate": 1652364378244,
       "contentHash": "c841cbb303fe53eea0bae084672ab651",
       "sourceName": "src/test/utils/tokens/TestERC721.sol",
       "solcConfig": {
@@ -1381,8 +1381,8 @@
         "TestERC721"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
-      "lastModificationDate": 1653316138127,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1653329286500,
       "contentHash": "8398972af73b4e9e5ff3b31cad86234f",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
@@ -1418,8 +1418,8 @@
         "Ownable"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/introspection/ERC165Checker.sol": {
-      "lastModificationDate": 1653316140628,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/introspection/ERC165Checker.sol": {
+      "lastModificationDate": 1653329287833,
       "contentHash": "1abe3767b27223b96a265645cb2a56e3",
       "sourceName": "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol",
       "solcConfig": {
@@ -1455,8 +1455,8 @@
         "ERC165Checker"
       ]
     },
-    "/Users/jake/code/protocol/src/mixin/HookInstrumentERC721.sol": {
-      "lastModificationDate": 1653091212603,
+    "/Users/eliecerchicott/Work/protocol/src/mixin/HookInstrumentERC721.sol": {
+      "lastModificationDate": 1653310037616,
       "contentHash": "9c210ed4bf5ecf6ff50fbe3b71d9c98b",
       "sourceName": "src/mixin/HookInstrumentERC721.sol",
       "solcConfig": {
@@ -1497,8 +1497,8 @@
         "HookInsturmentERC721"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol": {
-      "lastModificationDate": 1653316142368,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol": {
+      "lastModificationDate": 1653329288590,
       "contentHash": "7bbd5ca6e396f0ad628cfbf0031d9e32",
       "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol",
       "solcConfig": {
@@ -1535,8 +1535,8 @@
         "ERC721Burnable"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/Base64.sol": {
-      "lastModificationDate": 1653316138137,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/Base64.sol": {
+      "lastModificationDate": 1653329286502,
       "contentHash": "077d9664b0b4a2fd2033cea2663530f4",
       "sourceName": "@openzeppelin/contracts/utils/Base64.sol",
       "solcConfig": {
@@ -1570,8 +1570,8 @@
         "Base64"
       ]
     },
-    "/Users/jake/code/protocol/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
-      "lastModificationDate": 1653316138137,
+    "/Users/eliecerchicott/Work/protocol/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
+      "lastModificationDate": 1653329286502,
       "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
       "sourceName": "@openzeppelin/contracts/utils/Counters.sol",
       "solcConfig": {
@@ -1605,8 +1605,8 @@
         "Counters"
       ]
     },
-    "/Users/jake/code/protocol/src/lib/HookStrings.sol": {
-      "lastModificationDate": 1652100466761,
+    "/Users/eliecerchicott/Work/protocol/src/lib/HookStrings.sol": {
+      "lastModificationDate": 1652364378237,
       "contentHash": "31858eb59c19d99b89cfd2b1bcd9d80a",
       "sourceName": "src/lib/HookStrings.sol",
       "solcConfig": {
@@ -1640,8 +1640,8 @@
         "HookStrings"
       ]
     },
-    "/Users/jake/code/protocol/src/HookERC721VaultFactory.sol": {
-      "lastModificationDate": 1653315425951,
+    "/Users/eliecerchicott/Work/protocol/src/HookERC721VaultFactory.sol": {
+      "lastModificationDate": 1653310037612,
       "contentHash": "2349bc3eed22f08d1192d3fc1ceb7295",
       "sourceName": "src/HookERC721VaultFactory.sol",
       "solcConfig": {
@@ -1682,8 +1682,8 @@
         "HookERC721VaultFactory"
       ]
     },
-    "/Users/jake/code/protocol/src/HookERC721Vault.sol": {
-      "lastModificationDate": 1653315425950,
+    "/Users/eliecerchicott/Work/protocol/src/HookERC721Vault.sol": {
+      "lastModificationDate": 1652364378233,
       "contentHash": "ae920f259b67b3637c8bed0b86b826ac",
       "sourceName": "src/HookERC721Vault.sol",
       "solcConfig": {
@@ -1719,8 +1719,8 @@
         "HookERC721Vault"
       ]
     },
-    "/Users/jake/code/protocol/src/HookERC721MultiVault.sol": {
-      "lastModificationDate": 1653315425950,
+    "/Users/eliecerchicott/Work/protocol/src/HookERC721MultiVault.sol": {
+      "lastModificationDate": 1653310037611,
       "contentHash": "ba92a7cc388fb295d4c7640766b6b0af",
       "sourceName": "src/HookERC721MultiVault.sol",
       "solcConfig": {
@@ -1756,8 +1756,8 @@
         "HookERC721MultiVault"
       ]
     },
-    "/Users/jake/code/protocol/src/interfaces/IHookERC721VaultFactory.sol": {
-      "lastModificationDate": 1653066511506,
+    "/Users/eliecerchicott/Work/protocol/src/interfaces/IHookERC721VaultFactory.sol": {
+      "lastModificationDate": 1653310037614,
       "contentHash": "7c8b30f6f5f3a95bf52addf2cbccc8b4",
       "sourceName": "src/interfaces/IHookERC721VaultFactory.sol",
       "solcConfig": {
@@ -1793,8 +1793,8 @@
         "IHookERC721VaultFactory"
       ]
     },
-    "/Users/jake/code/protocol/src/HookCoveredCallImplV1.sol": {
-      "lastModificationDate": 1653315425949,
+    "/Users/eliecerchicott/Work/protocol/src/HookCoveredCallImplV1.sol": {
+      "lastModificationDate": 1653310037611,
       "contentHash": "640ed26def405ecae3e705c142e5e786",
       "sourceName": "src/HookCoveredCallImplV1.sol",
       "solcConfig": {
@@ -1842,8 +1842,8 @@
         "HookCoveredCallImplV1"
       ]
     },
-    "/Users/jake/code/protocol/src/interfaces/IWETH.sol": {
-      "lastModificationDate": 1651611787466,
+    "/Users/eliecerchicott/Work/protocol/src/interfaces/IWETH.sol": {
+      "lastModificationDate": 1651587955451,
       "contentHash": "bb570f1fe9602dc577ea83ba06ac8dd0",
       "sourceName": "src/interfaces/IWETH.sol",
       "solcConfig": {
@@ -1877,8 +1877,8 @@
         "IWETH"
       ]
     },
-    "/Users/jake/code/protocol/src/test/utils/mocks/FlashLoan.sol": {
-      "lastModificationDate": 1653070395214,
+    "/Users/eliecerchicott/Work/protocol/src/test/utils/mocks/FlashLoan.sol": {
+      "lastModificationDate": 1653310037618,
       "contentHash": "3e85c4c3d7c55ed7e32ad88e916571da",
       "sourceName": "src/test/utils/mocks/FlashLoan.sol",
       "solcConfig": {
@@ -1921,8 +1921,8 @@
         "FlashLoanVerifyCalldata"
       ]
     },
-    "/Users/jake/code/protocol/src/HookUpgradeableBeacon.sol": {
-      "lastModificationDate": 1652100466759,
+    "/Users/eliecerchicott/Work/protocol/src/HookUpgradeableBeacon.sol": {
+      "lastModificationDate": 1652364378234,
       "contentHash": "c6e0804f1bdf1cd93105cdf0ce60015d",
       "sourceName": "src/HookUpgradeableBeacon.sol",
       "solcConfig": {
@@ -1961,8 +1961,8 @@
         "HookUpgradeableBeacon"
       ]
     },
-    "/Users/jake/code/protocol/src/HookERC721VaultBeacon.sol": {
-      "lastModificationDate": 1653315425950,
+    "/Users/eliecerchicott/Work/protocol/src/HookERC721VaultBeacon.sol": {
+      "lastModificationDate": 1651266222892,
       "contentHash": "6d14bba728b8a11cb56a8e0db19049d7",
       "sourceName": "src/HookERC721VaultBeacon.sol",
       "solcConfig": {
@@ -1998,8 +1998,8 @@
         "HookERC721VaultBeacon"
       ]
     },
-    "/Users/jake/code/protocol/src/HookERC721MultiVaultBeacon.sol": {
-      "lastModificationDate": 1653315425950,
+    "/Users/eliecerchicott/Work/protocol/src/HookERC721MultiVaultBeacon.sol": {
+      "lastModificationDate": 1653310037612,
       "contentHash": "dfb0b530d74f6cea954789e48969d442",
       "sourceName": "src/HookERC721MultiVaultBeacon.sol",
       "solcConfig": {
@@ -2035,8 +2035,8 @@
         "HookERC721MultiVaultBeacon"
       ]
     },
-    "/Users/jake/code/protocol/src/HookCoveredCallBeacon.sol": {
-      "lastModificationDate": 1653315425948,
+    "/Users/eliecerchicott/Work/protocol/src/HookCoveredCallBeacon.sol": {
+      "lastModificationDate": 1651266222892,
       "contentHash": "f8308891714b1b2832eb1ea3fe862a11",
       "sourceName": "src/HookCoveredCallBeacon.sol",
       "solcConfig": {
@@ -2072,8 +2072,8 @@
         "HookCoveredCallBeacon"
       ]
     },
-    "/Users/jake/code/protocol/src/test/utils/tokens/WETH.sol": {
-      "lastModificationDate": 1651249286113,
+    "/Users/eliecerchicott/Work/protocol/src/test/utils/tokens/WETH.sol": {
+      "lastModificationDate": 1651266222894,
       "contentHash": "537a821459baf56e6dcd5836b90960a5",
       "sourceName": "src/test/utils/tokens/WETH.sol",
       "solcConfig": {
