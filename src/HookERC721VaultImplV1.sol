@@ -278,12 +278,12 @@ contract HookERC721VaultImplV1 is
   function entitlementExpiration(uint256)
     external
     view
-    returns (uint256 expiry)
+    returns (uint256)
   {
     if (!hasActiveEntitlement()) {
       return 0;
     } else {
-      _currentEntitlement.expiry;
+      return _currentEntitlement.expiry;
     }
   }
 
@@ -414,7 +414,7 @@ contract HookERC721VaultImplV1 is
     );
     require(
       entitlement.assetId == ASSET_ID,
-      "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
+      "_verifyAndRegisterEntitlement -- the asset id must match an actual asset id"
     );
     _currentEntitlement = entitlement;
     _hasEntitlement = true;
