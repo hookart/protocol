@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "./HookERC721Vault.sol";
-import "./HookERC721MultiVault.sol";
+import "@openzeppelin/contracts/utils/Create2.sol";
+
 import "./interfaces/IHookERC721VaultFactory.sol";
 import "./interfaces/IHookERC721Vault.sol";
 import "./interfaces/IHookProtocol.sol";
+import "./interfaces/IInitializeableBeacon.sol";
+import "./HookBeaconProxy.sol";
 
 import "./mixin/PermissionConstants.sol";
 
@@ -56,15 +58,25 @@ contract HookERC721VaultFactory is
       "makeMultiVault -- vault cannot already exist"
     );
 
-    getMultiVault[nftAddress] = IHookERC721Vault(
-      address(
-        new HookERC721MultiVault{salt: keccak256(abi.encode(nftAddress))}(
-          _multiBeacon,
-          nftAddress,
-          _hookProtocol
-        )
+    IInitializeableBeacon bp = IInitializeableBeacon(
+      Create2.deploy(
+        0,
+        _multiVaultSalt(nftAddress),
+        type(HookBeaconProxy).creationCode
       )
     );
+
+    bp.initializeBeacon(
+      _multiBeacon,
+      /// This is the ABI encoded initializer on the IHookERC721Vault.sol
+      abi.encodeWithSignature(
+        "initialize(address,address)",
+        nftAddress,
+        _hookProtocol
+      )
+    );
+
+    getMultiVault[nftAddress] = IHookERC721Vault(address(bp));
 
     return getMultiVault[nftAddress];
   }
@@ -78,18 +90,27 @@ contract HookERC721VaultFactory is
       getVault[nftAddress][tokenId] == IHookERC721Vault(address(0)),
       "makeVault -- a vault cannot already exist"
     );
-    // use the salt here to attempt to pre-compute the address where the vault will live.
-    // we don't leverage this predictability for now.
-    getVault[nftAddress][tokenId] = IHookERC721Vault(
-      address(
-        new HookERC721Vault{salt: keccak256(abi.encode(nftAddress, tokenId))}(
-          _beacon,
-          nftAddress,
-          tokenId,
-          _hookProtocol
-        )
+
+    IInitializeableBeacon bp = IInitializeableBeacon(
+      Create2.deploy(
+        0,
+        _soloVaultSalt(nftAddress, tokenId),
+        type(HookBeaconProxy).creationCode
       )
     );
+
+    bp.initializeBeacon(
+      _beacon,
+      /// This is the ABI encoded initializer on the IHookERC721MultiVault.sol
+      abi.encodeWithSignature(
+        "initialize(address,uint256,address)",
+        nftAddress,
+        tokenId,
+        _hookProtocol
+      )
+    );
+
+    getVault[nftAddress][tokenId] = IHookERC721Vault(address(bp));
 
     emit ERC721VaultCreated(
       nftAddress,
@@ -117,4 +138,6 @@ contract HookERC721VaultFactory is
 
     return makeSoloVault(nftAddress, tokenId);
   }
+
+
 }

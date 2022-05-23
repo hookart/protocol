@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 import "./lib/Entitlements.sol";
+import "./lib/BeaconSalts.sol";
 
 import "./interfaces/IHookERC721VaultFactory.sol";
 import "./interfaces/IHookVault.sol";
@@ -161,7 +162,14 @@ contract HookCoveredCallImplV1 is
       vault.getHoldsAsset(assetId),
       "mintWithVault-- asset must be in vault"
     );
-
+    require(
+      _allowedVaultImplementation(
+        vaultAddress,
+        allowedUnderlyingAddress,
+        assetId
+      ),
+      "mintWithVault -- can only mint with vaults created in protocol"
+    );
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
     address writer = vault.getBeneficialOwner(assetId);
@@ -360,6 +368,35 @@ contract HookCoveredCallImplV1 is
       "biddingEnabled -- the owner has already settled the call option"
     );
     _;
+  }
+
+  function _allowedVaultImplementation(
+    address vaultAddress,
+    address underlyingAddress,
+    uint256 assetId
+  ) internal returns (bool) {
+    if (
+      vaultAddress ==
+      Create2.computeAddress(
+        Create2BeaconSalts.soloVaultSalt(underlyingAddress, assetId),
+        HookBeaconProxy.bytecodeHash,
+        _erc721VaultFactory
+      )
+    ) {
+      return true;
+    }
+
+    if (
+      vaultAddress ==
+      Create2.computeAddress(
+        Create2BeaconSalts.multiVaultSalt(underlyingAddress),
+        HookBeaconProxy.bytecodeHash,
+        _erc721VaultFactory
+      )
+    ) {
+      return true;
+    }
+    return false;
   }
 
   /// @dev See {IHookCoveredCall-bid}.
