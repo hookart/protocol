@@ -81,6 +81,8 @@ describe("Integrations", function () {
       multiVaultBeacon.address
     );
 
+    protocol.setVaultFactory(vaultFactory.address);
+
     // COVERED CALL DEPLOY
     const coveredCallImpl = await coveredCallImplFactory.deploy();
     const coveredCallBeacon = await coveredCallBeaconFactory.deploy(
