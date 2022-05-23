@@ -2,9 +2,9 @@ import { ethers } from "hardhat";
 import { expect, use } from "chai";
 import { Contract, Signer } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import waffle from "@nomiclabs/hardhat-waffle";
+
 import { solidity } from "ethereum-waffle";
-import { assert } from "console";
+
 use(solidity);
 describe("Vault", function () {
   let vaultFactory: Contract, protocol: Contract, testNFT: Contract;
@@ -318,6 +318,211 @@ describe("Vault", function () {
         );
       });
     });
-    describe("Entitlement", function () {});
+    describe("Entitlement", function () {
+      let vaultInstance: Contract;
+      const SECS_IN_A_DAY = 60 * 60 * 24;
+      this.beforeEach(async function () {
+        expect(await vaultFactory.makeSoloVault(testNFT.address, 1)).not.eq(
+          "0"
+        );
+        const vault = await vaultFactory.getVault(testNFT.address, 1);
+        vaultInstance = await ethers.getContractAt(
+          "HookERC721VaultImplV1",
+          vault
+        );
+      });
+
+      it("applies entitlement transferred in with the relevant NFT", async function () {
+        const nowEpoch = Date.now() / 1000;
+        await testNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256,bytes)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            1,
+            ethers.utils.defaultAbiCoder.encode(
+              ["tuple(address, address, address, uint256, uint256)"],
+              [
+                [
+                  beneficialOwner.address,
+                  runner.address,
+                  vaultInstance.address,
+                  0,
+                  Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+                ],
+              ]
+            )
+          );
+
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+        expect(
+          (await vaultInstance.getCurrentEntitlementOperator(0))["operator"]
+        ).eq(runner.address);
+        expect(
+          (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
+        ).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
+        expect(await vaultInstance.entitlementExpiration(0)).eq(
+          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
+        );
+      });
+      it("cannot impose entitlment with invalid asset id", async function () {
+        const nowEpoch = Date.now() / 1000;
+        await expect(
+          testNFT
+            .connect(beneficialOwner)
+            ["safeTransferFrom(address,address,uint256,bytes)"](
+              beneficialOwner.address,
+              vaultInstance.address,
+              1,
+              ethers.utils.defaultAbiCoder.encode(
+                ["tuple(address, address, address, uint256, uint256)"],
+                [
+                  [
+                    beneficialOwner.address,
+                    runner.address,
+                    vaultInstance.address,
+                    10,
+                    Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+                  ],
+                ]
+              )
+            )
+        ).to.be.revertedWith(
+          "_verifyAndRegisterEntitlement -- the asset id must match an actual asset id"
+        );
+      });
+
+      it("cannot impose entitlment with for a different vault", async function () {
+        const nowEpoch = Date.now() / 1000;
+        await expect(
+          testNFT
+            .connect(beneficialOwner)
+            ["safeTransferFrom(address,address,uint256,bytes)"](
+              beneficialOwner.address,
+              vaultInstance.address,
+              1,
+              ethers.utils.defaultAbiCoder.encode(
+                ["tuple(address, address, address, uint256, uint256)"],
+                [
+                  [
+                    beneficialOwner.address,
+                    runner.address,
+                    runner.address,
+                    0,
+                    Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+                  ],
+                ]
+              )
+            )
+        ).to.be.revertedWith(
+          "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
+        );
+      });
+
+      it("allows the beneficial owner to specify an entitlement", async function () {
+        const nowEpoch = Date.now() / 1000;
+        await testNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            1
+          );
+
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+
+        await vaultInstance.connect(beneficialOwner).grantEntitlement({
+          beneficialOwner: beneficialOwner.address,
+          operator: runner.address,
+          vaultAddress: vaultInstance.address,
+          assetId: 0,
+          expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+        });
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+
+        expect(
+          (await vaultInstance.getCurrentEntitlementOperator(0))["operator"]
+        ).eq(runner.address);
+        expect(
+          (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
+        ).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
+        expect(await vaultInstance.entitlementExpiration(0)).eq(
+          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
+        );
+      });
+      it("prevents the beneficial owner to specify another entitlement", async function () {
+        const nowEpoch = Date.now() / 1000;
+        await testNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            1
+          );
+
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+
+        await vaultInstance.connect(beneficialOwner).grantEntitlement({
+          beneficialOwner: beneficialOwner.address,
+          operator: runner.address,
+          vaultAddress: vaultInstance.address,
+          assetId: 0,
+          expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+        });
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+
+        await expect(
+          vaultInstance.connect(beneficialOwner).grantEntitlement({
+            beneficialOwner: beneficialOwner.address,
+            operator: vaultInstance.address,
+            vaultAddress: vaultInstance.address,
+            assetId: 0,
+            expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+          })
+        ).to.be.revertedWith(
+          "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
+        );
+      });
+      it("allows operator to clear entitlement", async function () {
+        const nowEpoch = Date.now() / 1000;
+        await testNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            1
+          );
+
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+
+        await vaultInstance.connect(beneficialOwner).grantEntitlement({
+          beneficialOwner: beneficialOwner.address,
+          operator: runner.address,
+          vaultAddress: vaultInstance.address,
+          assetId: 0,
+          expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+        });
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+
+        await vaultInstance.connect(runner).clearEntitlement(0);
+        await vaultInstance.connect(beneficialOwner).withdrawalAsset(0);
+      });
+    });
   });
 });

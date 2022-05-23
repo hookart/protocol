@@ -5,7 +5,7 @@ import type {
 } from "@ethersproject/abstract-signer";
 import type { Web3Provider } from "@ethersproject/providers";
 
-interface Entitlement {
+export interface Entitlement {
   beneficialOwner: string;
   operator: string;
   nftContract: string;
