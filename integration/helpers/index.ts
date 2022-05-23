@@ -81,7 +81,7 @@ export async function signEntitlement(
   };
   const { domain, types, value } = genEntitlementTypedData(
     entitlement,
-    1, // TODO
+    1337, // pulled from hardhat.config.ts
     hookProtocol
   );
   const signature = await signTypedData(
