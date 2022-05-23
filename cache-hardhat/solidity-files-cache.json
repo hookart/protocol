@@ -1773,8 +1773,8 @@
       ]
     },
     "/Users/jake/code/protocol/src/HookERC721VaultFactory.sol": {
-      "lastModificationDate": 1653315425951,
-      "contentHash": "2349bc3eed22f08d1192d3fc1ceb7295",
+      "lastModificationDate": 1653332654226,
+      "contentHash": "c3f2519317c084492f254491c6c49215",
       "sourceName": "src/HookERC721VaultFactory.sol",
       "solcConfig": {
         "version": "0.8.10",
