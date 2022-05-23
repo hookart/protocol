@@ -263,17 +263,61 @@ describe("Vault", function () {
       it("accepts the relevant NFT", async function () {
         await testNFT
           .connect(beneficialOwner)
-          .safeTransferFrom(
+          ["safeTransferFrom(address,address,uint256)"](
             beneficialOwner.address,
             vaultInstance.address,
-            1,
-            ""
+            1
           );
 
         expect(await vaultInstance.getBeneficialOwner(0)).eq(
           beneficialOwner.address
         );
       });
+
+      it("accepts the airdropped NFT", async function () {
+        const erc721 = await ethers.getContractFactory("TestERC721");
+        const newNFT = await erc721.deploy();
+
+        newNFT.mint(beneficialOwner.address, 3);
+        await newNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            3
+          );
+
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          "0x0000000000000000000000000000000000000000"
+        );
+      });
+
+      it("blocks airdrops if the protocol blocks them", async function () {
+        const erc721 = await ethers.getContractFactory("TestERC721");
+        const newNFT = await erc721.deploy();
+
+        newNFT.mint(beneficialOwner.address, 3);
+
+        await protocol
+          .connect(admin)
+          .setCollectionConfig(
+            testNFT.address,
+            ethers.utils.id("vault.airdropsProhibited"),
+            true
+          );
+        await expect(
+          newNFT
+            .connect(beneficialOwner)
+            ["safeTransferFrom(address,address,uint256)"](
+              beneficialOwner.address,
+              vaultInstance.address,
+              3
+            )
+        ).to.be.revertedWith(
+          "onERC721Received -- non-escrow asset returned when airdrops are disabled"
+        );
+      });
     });
+    describe("Entitlement", function () {});
   });
 });
