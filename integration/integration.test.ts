@@ -6,17 +6,17 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 describe("Integrations", function () {
   let vaultFactory: Contract,
     protocol: Contract,
-    erc721TestNFT: Contract,
+    token: Contract,
     coveredCallImplInstance: Contract;
 
   let admin: SignerWithAddress,
-    beneficialOwner: SignerWithAddress,
+    writer: SignerWithAddress,
     runner: SignerWithAddress;
 
   let callInstrument: string;
 
   before(async function () {
-    [admin, beneficialOwner, runner] = await ethers.getSigners();
+    [admin, writer, runner] = await ethers.getSigners();
 
     const erc721TokenFactory = await ethers.getContractFactory("TestERC721");
 
@@ -56,7 +56,7 @@ describe("Integrations", function () {
 
     // EXTERNAL CONTRACTS DEPLOYS
     const weth = await wethFactory.deploy();
-    erc721TestNFT = await erc721TokenFactory.deploy();
+    token = await erc721TokenFactory.deploy();
 
     // PROTOCOL DEPLOY
     protocol = await protocolFactory.deploy(admin.address, weth.address);
@@ -81,7 +81,8 @@ describe("Integrations", function () {
       multiVaultBeacon.address
     );
 
-    protocol.setVaultFactory(vaultFactory.address);
+    await protocol.setVaultFactory(vaultFactory.address);
+    await vaultFactory.makeMultiVault(token.address);
 
     // COVERED CALL DEPLOY
     const coveredCallImpl = await coveredCallImplFactory.deploy();
@@ -97,10 +98,10 @@ describe("Integrations", function () {
       "0x0000000000000000000000000000000000000000" // preapproved marketplace
     );
 
-    await coveredCall.makeCallInstrument(erc721TestNFT.address);
+    await coveredCall.makeCallInstrument(token.address);
 
     // get call instrument for collection
-    callInstrument = await coveredCall.getCallInstrument(erc721TestNFT.address);
+    callInstrument = await coveredCall.getCallInstrument(token.address);
 
     console.log("callInstrument", callInstrument);
 
@@ -110,62 +111,79 @@ describe("Integrations", function () {
     );
   });
 
-  it("the factory should be able to make a multi vault", async function () {
-    const tx = await vaultFactory.makeMultiVault(erc721TestNFT.address);
-    const receipt = await tx?.wait();
-
-    console.log("makeMultiVault - receipt", receipt);
-  });
-
   it("multiple options minted for different assets in a collection expiring at differet times", async function () {
     // mint NFTs
     await Promise.all([
-      erc721TestNFT.mint(beneficialOwner.address, 1),
-      erc721TestNFT.mint(beneficialOwner.address, 2),
-      erc721TestNFT.mint(beneficialOwner.address, 3),
+      token.mint(writer.address, 1),
+      token.mint(writer.address, 2),
+      token.mint(writer.address, 3),
     ]);
 
     // check ownership
     const [ownerOf1, ownerOf2, ownerOf3] = await Promise.all([
-      erc721TestNFT.ownerOf(1),
-      erc721TestNFT.ownerOf(2),
-      erc721TestNFT.ownerOf(3),
+      token.ownerOf(1),
+      token.ownerOf(2),
+      token.ownerOf(3),
     ]);
 
-    expect(ownerOf1).to.equal(beneficialOwner.address);
-    expect(ownerOf2).to.equal(beneficialOwner.address);
-    expect(ownerOf3).to.equal(beneficialOwner.address);
+    expect(ownerOf1).to.equal(
+      writer.address,
+      "Owner of minted token didn't match."
+    );
+    expect(ownerOf2).to.equal(
+      writer.address,
+      "Owner of minted token didn't match."
+    );
+    expect(ownerOf3).to.equal(
+      writer.address,
+      "Owner of minted token didn't match."
+    );
 
     // Approve callInstrument
-    await erc721TestNFT
-      .connect(beneficialOwner)
-      .setApprovalForAll(callInstrument, true);
+    await token.connect(writer).setApprovalForAll(callInstrument, true);
 
-    const isApproved = await erc721TestNFT
-      .connect(beneficialOwner)
-      .isApprovedForAll(beneficialOwner.address, callInstrument);
+    const isApproved = await token
+      .connect(writer)
+      .isApprovedForAll(writer.address, callInstrument);
 
-    expect(isApproved).to.equal(true);
+    expect(isApproved).to.equal(true, "Call instrument approval didn't work.");
 
     const nowEpoch = Date.now() / 1000;
     const SECS_IN_A_DAY = 60 * 60 * 24;
+    // needs extra gas limit since proxied contracts are hard to calculate
     const overrides: PayableOverrides = {
-      gasLimit: "3000000",
+      gasLimit: "1000000",
     };
 
-    const tx = await coveredCallImplInstance
-      .connect(beneficialOwner)
-      .mintWithErc721(
-        erc721TestNFT.address, // collection address
-        "1", // tokenId
-        "1000", // strike price in wei
-        String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)), // expiry
+    const expiryArr = [
+      Math.floor(nowEpoch + SECS_IN_A_DAY * 2), // around 2 days from now
+      Math.floor(nowEpoch + SECS_IN_A_DAY * 15), // around 15 days from now
+      Math.floor(nowEpoch + SECS_IN_A_DAY * 30), // around 30 days from now
+    ];
+
+    for (let i = 0; i < expiryArr.length; i++) {
+      const currentTokenId = i + 1; // should be same as optionId
+      const currentExpiry = expiryArr[i];
+
+      const tx = await coveredCallImplInstance.connect(writer).mintWithErc721(
+        token.address, // collection address
+        currentTokenId, // tokenId
+        1000, // strike price in wei
+        currentExpiry, // expiry
         overrides
       );
+      const receipt = await tx?.wait();
+      // Get the option id out off result
+      const event = (receipt as any)?.events?.find(
+        ({ event }: any) => event === "CallCreated"
+      );
+      const optionId = event?.args?.optionId?.toNumber();
 
-    console.log("tx", tx);
-    const receipt = await tx?.wait();
-    console.log("receipt", receipt);
+      expect(optionId).to.equal(
+        currentTokenId,
+        "OptionId after mint does not match expected one."
+      );
+    }
   });
 
   //   it("protocol was deployed", async function () {
@@ -174,6 +192,6 @@ describe("Integrations", function () {
   //   });
 
   //   it("the factory should be able to make a vault", async function () {
-  //     vaultFactory.callStatic["makeSoloVault"].call(erc721TestNFT.address, 1);
+  //     vaultFactory.callStatic["makeSoloVault"].call(token.address, 1);
   //   });
 });

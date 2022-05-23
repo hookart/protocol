@@ -225,7 +225,7 @@ contract HookCoveredCallImplV1 is
     uint256 expirationTime
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
-    uint256 assetId = 0; /// assume that the token is using an individual vault.
+    uint256 assetId = tokenId; /// assume that the token is using an individual vault.
     require(
       allowedUnderlyingAddress == tokenAddress,
       "mintWithErc721 -- token must be on the project allowlist"
