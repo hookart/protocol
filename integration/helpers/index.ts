@@ -3,13 +3,13 @@ import type {
   TypedDataDomain,
   TypedDataField,
 } from "@ethersproject/abstract-signer";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { Web3Provider } from "@ethersproject/providers";
 
-export interface Entitlement {
+interface Entitlement {
   beneficialOwner: string;
   operator: string;
-  vaultAddress: string;
-  assetId: string;
+  nftContract: string;
+  nftTokenId: string;
   expiry: string;
 }
 
@@ -17,11 +17,12 @@ const signTypedData = async (
   domain: TypedDataDomain,
   types: Record<string, TypedDataField[]>,
   value: Record<string, any>,
-  signer: SignerWithAddress,
+  provider: Web3Provider,
   // TODO: Validate we might not need this for "getSigner" it's optional
   // we need to make sure that it always uses the correct one when not sending.
   address: string
 ) => {
+  const signer = provider.getSigner(address);
   const rawSignature = await signer._signTypedData(domain, types, value);
   const { v, r, s } = ethers.utils.splitSignature(rawSignature);
   const signature = {
@@ -35,6 +36,7 @@ const signTypedData = async (
 
 function genEntitlementTypedData(
   entitlement: Entitlement,
+  chainId: number,
   verifyingContract: string
 ) {
   return {
@@ -42,7 +44,7 @@ function genEntitlementTypedData(
     domain: {
       name: "Hook",
       version: "1.0.0",
-      chainId: 1337, // pulled from hardhat.config.ts
+      chainId,
       verifyingContract, // Hook Protocol
     },
     // The named list of all type definitions
@@ -50,8 +52,8 @@ function genEntitlementTypedData(
       Entitlement: [
         { name: "beneficialOwner", type: "address" },
         { name: "operator", type: "address" },
-        { name: "vaultAddress", type: "address" },
-        { name: "assetId", type: "uint256" },
+        { name: "nftContract", type: "address" },
+        { name: "nftTokenId", type: "uint256" },
         { name: "expiry", type: "uint256" },
       ],
     },
@@ -63,29 +65,30 @@ function genEntitlementTypedData(
 export async function signEntitlement(
   beneficialOwner: string,
   operator: string,
-  vaultAddress: string,
-  assetId: string,
+  nftContract: string,
+  nftTokenId: string,
   expiry: string,
-  signer: SignerWithAddress,
+  provider: Web3Provider,
   hookProtocol: string // Hook Protocol
 ) {
   // Sign Entitlement
   const entitlement = {
     beneficialOwner,
     operator,
-    vaultAddress,
-    assetId,
+    nftContract,
+    nftTokenId,
     expiry,
   };
   const { domain, types, value } = genEntitlementTypedData(
     entitlement,
+    1, // TODO
     hookProtocol
   );
   const signature = await signTypedData(
     domain,
     types,
     value,
-    signer,
+    provider,
     beneficialOwner
   );
 
