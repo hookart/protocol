@@ -3,7 +3,7 @@ import type {
   TypedDataDomain,
   TypedDataField,
 } from "@ethersproject/abstract-signer";
-import type { JsonRpcProvider } from "@ethersproject/providers";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 export interface Entitlement {
   beneficialOwner: string;
@@ -17,12 +17,11 @@ const signTypedData = async (
   domain: TypedDataDomain,
   types: Record<string, TypedDataField[]>,
   value: Record<string, any>,
-  provider: JsonRpcProvider,
+  signer: SignerWithAddress,
   // TODO: Validate we might not need this for "getSigner" it's optional
   // we need to make sure that it always uses the correct one when not sending.
   address: string
 ) => {
-  const signer = provider.getSigner(address);
   const rawSignature = await signer._signTypedData(domain, types, value);
   const { v, r, s } = ethers.utils.splitSignature(rawSignature);
   const signature = {
@@ -67,7 +66,7 @@ export async function signEntitlement(
   vaultAddress: string,
   assetId: string,
   expiry: string,
-  provider: JsonRpcProvider,
+  signer: SignerWithAddress,
   hookProtocol: string // Hook Protocol
 ) {
   // Sign Entitlement
@@ -86,7 +85,7 @@ export async function signEntitlement(
     domain,
     types,
     value,
-    provider,
+    signer,
     beneficialOwner
   );
 

@@ -239,7 +239,7 @@ describe("Integrations", function () {
       vault,
       String(tokenId),
       String(expiry),
-      ethers.provider,
+      writer,
       protocol.address
     );
 
