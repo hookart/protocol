@@ -2987,7 +2987,10 @@ describe("Call Instrument Tests", function () {
           0
         );
 
-      expiration = BigNumber.from(Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5));
+      const blockNumber = await ethers.provider.getBlockNumber();
+      const block = await ethers.provider.getBlock(blockNumber);
+      const blockTimestamp = block.timestamp;
+      expiration = BigNumber.from(Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5));
 
       await multiVault.connect(writer).grantEntitlement({
         beneficialOwner: writer.address,
@@ -2996,6 +2999,9 @@ describe("Call Instrument Tests", function () {
         assetId: 0,
         expiry: expiration,
       });
+
+      console.log(await multiVault.getCurrentEntitlementOperator(0));
+      console.log(calls.address);
 
       // Mint call option
       const createCall = await calls
