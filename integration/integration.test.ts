@@ -3133,9 +3133,6 @@ describe("Call Instrument Tests", function () {
         expiry: expiration,
       });
 
-      console.log(await multiVault.getCurrentEntitlementOperator(0));
-      console.log(calls.address);
-
       // Mint call option
       const createCall = await calls
         .connect(writer)
