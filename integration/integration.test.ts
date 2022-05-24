@@ -2736,6 +2736,18 @@ describe("Call Instrument Tests", function () {
       );
     });
 
+    it("should settle auction and return nft", async function () {
+      // Move forward to after auction period ends
+      await ethers.provider.send("evm_increaseTime", [1 * SECS_IN_A_DAY]);
+
+      const settleCall = calls
+        .connect(writer)
+        .settleOption(optionTokenId, true);
+      await expect(settleCall).to.emit(calls, "CallDestroyed");
+
+      expect(await token.ownerOf(0)).to.eq(writer.address);
+    });
+
     it("should settle auction when option writer is high bidder", async function () {
       // Move forward to after auction period ends
       await ethers.provider.send("evm_increaseTime", [1 * SECS_IN_A_DAY]);
