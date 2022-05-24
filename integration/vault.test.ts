@@ -1043,7 +1043,7 @@ describe("Vault", function () {
     });
     it("should implement supportsInterface", async () => {
       expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
-      const vault = vaultFactory.getMultiVault(testNFT.address, 1);
+      const vault = vaultFactory.getMultiVault(testNFT.address);
       const vaultInstance = await ethers.getContractAt(
         "HookERC721MultiVaultImplV1",
         vault
@@ -1052,22 +1052,18 @@ describe("Vault", function () {
     });
     describe("Emtpy State", function () {
       it("should not think it contains a NFT", async () => {
-        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq(
-          "0"
-        );
-        const vault = vaultFactory.getMultiVault(testNFT.address, 1);
+        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
+        const vault = vaultFactory.getMultiVault(testNFT.address);
         const vaultInstance = await ethers.getContractAt(
           "HookERC721MultiVaultImplV1",
           vault
         );
 
-        expect(await vaultInstance.getHoldsAsset(0)).to.eq(false);
+        expect(await vaultInstance.getHoldsAsset(1)).to.eq(false);
       });
 
       it("should return a vaild asset address", async () => {
-        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq(
-          "0"
-        );
+        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
         const vault = vaultFactory.getMultiVault(testNFT.address);
         const vaultInstance = await ethers.getContractAt(
           "HookERC721MultiVaultImplV1",
@@ -1078,9 +1074,7 @@ describe("Vault", function () {
       });
 
       it("should return a vaild beneficial owner", async () => {
-        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq(
-          "0"
-        );
+        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
         const vault = vaultFactory.getMultiVault(testNFT.address);
         const vaultInstance = await ethers.getContractAt(
           "HookERC721MultiVaultImplV1",
@@ -1092,9 +1086,7 @@ describe("Vault", function () {
       });
 
       it("should not show an entitlementExpiration", async () => {
-        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq(
-          "0"
-        );
+        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
         const vault = vaultFactory.getMultiVault(testNFT.address);
         const vaultInstance = await ethers.getContractAt(
           "HookERC721MultiVaultImplV1",
@@ -1104,9 +1096,7 @@ describe("Vault", function () {
       });
 
       it("should not successfully flash loan", async () => {
-        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq(
-          "0"
-        );
+        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
         const vault = vaultFactory.getMultiVault(testNFT.address);
         const vaultInstance = await ethers.getContractAt(
           "HookERC721MultiVaultImplV1",
@@ -1124,9 +1114,7 @@ describe("Vault", function () {
     describe("Deposit", function () {
       let vaultInstance: Contract;
       this.beforeEach(async function () {
-        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq(
-          "0"
-        );
+        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
         const vault = vaultFactory.getMultiVault(testNFT.address);
         vaultInstance = await ethers.getContractAt(
           "HookERC721MultiVaultImplV1",
@@ -1213,7 +1201,7 @@ describe("Vault", function () {
           );
         await vaultInstance
           .connect(beneficialOwner)
-          .setBeneficialOwner(0, runner.address);
+          .setBeneficialOwner(1, runner.address);
         expect(await vaultInstance.getBeneficialOwner(1)).to.eq(runner.address);
       });
 
@@ -1247,17 +1235,16 @@ describe("Vault", function () {
             .connect(beneficialOwner)
             .setBeneficialOwner(10, runner.address)
         ).to.be.revertedWith(
-          "setBeneficialOwner -- this contract only contains one asset"
+          "setBeneficialOwner -- only the current owner can update the beneficial owner"
         );
       });
     });
+
     describe("Entitlement", function () {
       let vaultInstance: Contract;
       const SECS_IN_A_DAY = 60 * 60 * 24;
       this.beforeEach(async function () {
-        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq(
-          "0"
-        );
+        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
         const vault = await vaultFactory.getMultiVault(testNFT.address);
         vaultInstance = await ethers.getContractAt(
           "HookERC721MultiVaultImplV1",
@@ -1300,7 +1287,7 @@ describe("Vault", function () {
           String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
         );
       });
-      it("cannot impose entitlment with invalid asset id", async function () {
+      it("cannot impose entitlment with different entitlement id", async function () {
         const nowEpoch = Date.now() / 1000;
         await expect(
           testNFT
@@ -1323,7 +1310,7 @@ describe("Vault", function () {
               )
             )
         ).to.be.revertedWith(
-          "_verifyAndRegisterEntitlement -- the asset id must match an actual asset id"
+          "onERC721Recieved -- cannot impose an entitlement on an asset other than the asset deposited in the transfer"
         );
       });
 
@@ -1364,7 +1351,7 @@ describe("Vault", function () {
             1
           );
 
-        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+        expect(await vaultInstance.getBeneficialOwner(1)).eq(
           beneficialOwner.address
         );
 
@@ -1375,7 +1362,7 @@ describe("Vault", function () {
           assetId: 1,
           expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
         });
-        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+        expect(await vaultInstance.getBeneficialOwner(1)).eq(
           beneficialOwner.address
         );
 
@@ -1419,19 +1406,18 @@ describe("Vault", function () {
           )
         );
 
-        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+        expect(await vaultInstance.getBeneficialOwner(1)).eq(
           beneficialOwner.address
         );
 
         expect(
-          (await vaultInstance.getCurrentEntitlementOperator(0))["operator"]
+          (await vaultInstance.getCurrentEntitlementOperator(1))["operator"]
         ).eq(runner.address);
         expect(
-          (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
+          (await vaultInstance.getCurrentEntitlementOperator(1))["isActive"]
         ).to.be.true;
 
-        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
-        expect(await vaultInstance.entitlementExpiration(0)).eq(
+        expect(await vaultInstance.entitlementExpiration(1)).eq(
           String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
         );
       });
@@ -1589,7 +1575,7 @@ describe("Vault", function () {
           beneficialOwner: beneficialOwner.address,
           operator: runner.address,
           vaultAddress: vaultInstance.address,
-          assetId: 0,
+          assetId: 1,
           expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
         });
         expect(await vaultInstance.getBeneficialOwner(1)).eq(
@@ -1598,7 +1584,7 @@ describe("Vault", function () {
 
         await vaultInstance
           .connect(runner)
-          .clearEntitlementAndDistribute(0, beneficialOwner.address);
+          .clearEntitlementAndDistribute(1, beneficialOwner.address);
         expect(await testNFT.ownerOf(1)).to.eq(beneficialOwner.address);
       });
 
@@ -1620,7 +1606,7 @@ describe("Vault", function () {
           beneficialOwner: beneficialOwner.address,
           operator: runner.address,
           vaultAddress: vaultInstance.address,
-          assetId: 0,
+          assetId: 1,
           expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
         });
         expect(await vaultInstance.getBeneficialOwner(1)).eq(
@@ -1654,7 +1640,7 @@ describe("Vault", function () {
           beneficialOwner: beneficialOwner.address,
           operator: runner.address,
           vaultAddress: vaultInstance.address,
-          assetId: 0,
+          assetId: 1,
           expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
         });
 
@@ -1664,9 +1650,44 @@ describe("Vault", function () {
 
         await vaultInstance
           .connect(runner)
-          .setBeneficialOwner(0, vaultInstance.address);
+          .setBeneficialOwner(1, vaultInstance.address);
         expect(await vaultInstance.getBeneficialOwner(1)).to.eq(
           vaultInstance.address
+        );
+      });
+
+      it("prevents operator to set a new beneficial owner on different asset", async function () {
+        const nowEpoch = Date.now() / 1000;
+        await testNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            1
+          );
+
+        expect(await vaultInstance.getBeneficialOwner(1)).eq(
+          beneficialOwner.address
+        );
+
+        await vaultInstance.connect(beneficialOwner).grantEntitlement({
+          beneficialOwner: beneficialOwner.address,
+          operator: runner.address,
+          vaultAddress: vaultInstance.address,
+          assetId: 1,
+          expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+        });
+
+        expect(await vaultInstance.getBeneficialOwner(1)).eq(
+          beneficialOwner.address
+        );
+
+        await expect(
+          vaultInstance
+            .connect(runner)
+            .setBeneficialOwner(12, vaultInstance.address)
+        ).to.be.revertedWith(
+          "setBeneficialOwner -- only the current owner can update the beneficial owner"
         );
       });
 
@@ -1708,10 +1729,8 @@ describe("Vault", function () {
       let vaultInstance: Contract;
       const SECS_IN_A_DAY = 60 * 60 * 24;
       this.beforeEach(async function () {
-        expect(await vaultFactory.makeSoloVault(testNFT.address, 1)).not.eq(
-          "0"
-        );
-        const vault = await vaultFactory.getVault(testNFT.address, 1);
+        expect(await vaultFactory.makeMultiVault(testNFT.address)).not.eq("0");
+        const vault = await vaultFactory.getMultiVault(testNFT.address);
         vaultInstance = await ethers.getContractAt(
           "HookERC721VaultImplV1",
           vault
@@ -1732,61 +1751,6 @@ describe("Vault", function () {
           assetId: 1,
           expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
         });
-      });
-
-      it("doesn't allow transactions to be sent to the contract address", async function () {
-        await expect(
-          vaultInstance
-            .connect(beneficialOwner)
-            .execTransaction(
-              testNFT.address,
-              "0x0000000000000000000000000000000000000000"
-            )
-        ).to.be.revertedWith(
-          "execTransaction -- cannot send transactions to the NFT contract itself"
-        );
-      });
-      it("doesn't allow transactions to be sent if disabled for a collection", async function () {
-        await protocol.setCollectionConfig(
-          testNFT.address,
-          ethers.utils.id("vault.execTransactionDisabled"),
-          true
-        );
-        await expect(
-          vaultInstance
-            .connect(beneficialOwner)
-            .execTransaction(
-              runner.address,
-              "0x0000000000000000000000000000000000000000"
-            )
-        ).to.be.revertedWith(
-          "execTransaction -- feature is disabled for this collection"
-        );
-      });
-      it("blocks exec transactions targeting the vault itself", async function () {
-        await expect(
-          vaultInstance
-            .connect(beneficialOwner)
-            .execTransaction(
-              vaultInstance.address,
-              "0x0000000000000000000000000000000000000000"
-            )
-        ).to.be.revertedWith(
-          "execTransaction -- cannot call the vault contract"
-        );
-      });
-
-      it("execs transactions ", async function () {
-        await expect(
-          vaultInstance
-            .connect(beneficialOwner)
-            .execTransaction(
-              weth.address,
-              new ethers.utils.Interface([
-                "function totalSupply()",
-              ]).encodeFunctionData("totalSupply")
-            )
-        );
       });
 
       it("doesn't allow flashloans if disabled for a collection", async function () {
@@ -1829,7 +1793,7 @@ describe("Vault", function () {
               runner.address,
               "0x0000000000000000000000000000000000000000"
             )
-        ).to.be.revertedWith("flashLoan -- invalid asset id");
+        ).to.be.revertedWith("ERC721: owner query for nonexistent token");
       });
 
       it("allows basic flashloans", async function () {
