@@ -3,6 +3,8 @@ import { ethers } from "hardhat";
 import type { Contract, PayableOverrides } from "ethers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
+import { signEntitlement } from "./helpers";
+
 // TODO: move to helpers later
 const SECS_IN_A_DAY = 60 * 60 * 24;
 
@@ -199,15 +201,17 @@ describe("Integrations", function () {
     const tokenId = 4;
     await token.mint(writer.address, tokenId);
 
-    const ownerOf4 = await token.ownerOf(tokenId);
+    const tokenOwner = await token.ownerOf(tokenId);
 
-    expect(ownerOf4).to.equal(
+    expect(tokenOwner).to.equal(
       writer.address,
       "Owner of minted token didn't match."
     );
 
     // Put in vault
-    const tx = await vaultFactory.makeSoloVault(token.address, tokenId);
+    const tx = await vaultFactory
+      .connect(writer)
+      .makeSoloVault(token.address, tokenId);
     const receipt = await tx?.wait();
     const event = (receipt as any)?.events?.find(
       ({ event }: any) => event === "ERC721VaultCreated"
@@ -226,35 +230,141 @@ describe("Integrations", function () {
     );
 
     expect(await vaultInstance.getBeneficialOwner(tokenId)).eq(writer.address);
-   
 
     // Sign Entitlement
-    // const signature = await signEntitlement(
-    //   address,
-    //   callInstrument,
-    //   tokenContractAddress,
-    //   tokenId,
-    //   expiry,
-    //   provider
-    // );
+    const expiry = Math.floor(getEpochTimestampDaysFromNow(2));
+    const signature = await signEntitlement(
+      writer.address,
+      callInstrument,
+      vault,
+      String(tokenId),
+      String(expiry),
+      ethers.provider,
+      protocol.address
+    );
 
     // Mint with vault
     const mintTx = await coveredCallImplInstance.connect(writer).mintWithVault(
       vault,
       tokenId,
       1000, // strike price in wei
-      Math.floor(getEpochTimestampDaysFromNow(2)), // expiry
-      ,
+      expiry, // expiry
+      signature,
       overrides
     );
     const mintReceipt = await mintTx?.wait();
+    // Get the option id out off result
+    const mintEvent = (mintReceipt as any)?.events?.find(
+      ({ event }: any) => event === "CallCreated"
+    );
+    const optionId = mintEvent?.args?.optionId?.toNumber();
+    console.log("mintWithVault - optionId", optionId);
   });
 
-  it("mint option using an entitled vault", async function () {});
+  it("mint option using an entitled vault", async function () {
+    // Mint NFT
+    const tokenId = 5;
+    await token.mint(writer.address, tokenId);
+    const tokenOwner = await token.ownerOf(tokenId);
 
-  it("mint option using an unentitled vault and a signature", async function () {});
+    expect(tokenOwner).to.equal(
+      writer.address,
+      "Owner of minted token didn't match."
+    );
 
-  it("reclaim asset", async function () {});
+    // Put asset in vault
+    const tx = await vaultFactory
+      .connect(writer)
+      .makeSoloVault(token.address, tokenId);
+    const receipt = await tx?.wait();
+    const event = (receipt as any)?.events?.find(
+      ({ event }: any) => event === "ERC721VaultCreated"
+    );
+    const vault = event?.args?.vaultAddress;
+    await token
+      .connect(writer)
+      ["safeTransferFrom(address,address,uint256)"](
+        writer.address,
+        vault,
+        tokenId
+      );
+    const vaultInstance = await ethers.getContractAt(
+      "HookERC721VaultImplV1",
+      vault
+    );
+
+    expect(await vaultInstance.getBeneficialOwner(tokenId)).eq(writer.address);
+
+    // Set Entitlement
+    const expiry = Math.floor(getEpochTimestampDaysFromNow(2));
+    await vaultInstance.connect(writer).grantEntitlement({
+      beneficialOwner: writer.address,
+      operator: callInstrument,
+      vaultAddress: vault,
+      assetId: tokenId,
+      expiry,
+    });
+
+    // Mint with vault
+    const mintTx = await coveredCallImplInstance
+      .connect(writer)
+      .mintWithEntitledVault(
+        vault,
+        tokenId,
+        1000, // strike price in wei
+        expiry, // expiry
+        overrides
+      );
+    const mintReceipt = await mintTx?.wait();
+    // Get the option id out off result
+    const mintEvent = (mintReceipt as any)?.events?.find(
+      ({ event }: any) => event === "CallCreated"
+    );
+    const optionId = mintEvent?.args?.optionId?.toNumber();
+    console.log("mintWithEntitledVault - optionId", optionId);
+  });
+
+  it("write should be able to reclaim asset", async function () {
+    // Mint NFT
+    const tokenId = 6;
+    await token.mint(writer.address, tokenId);
+
+    const tokenOwner = await token.ownerOf(tokenId);
+
+    expect(tokenOwner).to.equal(
+      writer.address,
+      "Owner of minted token didn't match."
+    );
+
+    // Mint option
+    const expiry = Math.floor(getEpochTimestampDaysFromNow(2));
+    const tx = await coveredCallImplInstance.connect(writer).mintWithErc721(
+      token.address, // collection address
+      tokenId, // tokenId
+      1000, // strike price in wei
+      expiry, // expiry
+      overrides
+    );
+    const receipt = await tx?.wait();
+    // Get the option id out off result
+    const event = (receipt as any)?.events?.find(
+      ({ event }: any) => event === "CallCreated"
+    );
+    const optionId = event?.args?.optionId?.toNumber();
+    const optionParams = await coveredCallImplInstance.optionParams(optionId);
+
+    expect(await token.ownerOf(tokenId)).to.equal(
+      optionParams.vaultAddress,
+      "Owner of undelying token didn't match after option minting."
+    );
+
+    await coveredCallImplInstance.connect(writer).reclaimAsset(optionId, true);
+
+    expect(await token.ownerOf(tokenId)).to.equal(
+      writer.address,
+      "Owner of undelying token didn't match after reclaim."
+    );
+  });
 
   //   it("protocol was deployed", async function () {
   //     const confirmations = await protocol?.deployTransaction?.confirmations;

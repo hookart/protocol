@@ -3,13 +3,13 @@ import type {
   TypedDataDomain,
   TypedDataField,
 } from "@ethersproject/abstract-signer";
-import type { Web3Provider } from "@ethersproject/providers";
+import type { JsonRpcProvider } from "@ethersproject/providers";
 
 export interface Entitlement {
   beneficialOwner: string;
   operator: string;
-  nftContract: string;
-  nftTokenId: string;
+  vaultAddress: string;
+  assetId: string;
   expiry: string;
 }
 
@@ -17,7 +17,7 @@ const signTypedData = async (
   domain: TypedDataDomain,
   types: Record<string, TypedDataField[]>,
   value: Record<string, any>,
-  provider: Web3Provider,
+  provider: JsonRpcProvider,
   // TODO: Validate we might not need this for "getSigner" it's optional
   // we need to make sure that it always uses the correct one when not sending.
   address: string
@@ -36,7 +36,6 @@ const signTypedData = async (
 
 function genEntitlementTypedData(
   entitlement: Entitlement,
-  chainId: number,
   verifyingContract: string
 ) {
   return {
@@ -44,7 +43,7 @@ function genEntitlementTypedData(
     domain: {
       name: "Hook",
       version: "1.0.0",
-      chainId,
+      chainId: 1337, // pulled from hardhat.config.ts
       verifyingContract, // Hook Protocol
     },
     // The named list of all type definitions
@@ -52,8 +51,8 @@ function genEntitlementTypedData(
       Entitlement: [
         { name: "beneficialOwner", type: "address" },
         { name: "operator", type: "address" },
-        { name: "nftContract", type: "address" },
-        { name: "nftTokenId", type: "uint256" },
+        { name: "vaultAddress", type: "address" },
+        { name: "assetId", type: "uint256" },
         { name: "expiry", type: "uint256" },
       ],
     },
@@ -65,23 +64,22 @@ function genEntitlementTypedData(
 export async function signEntitlement(
   beneficialOwner: string,
   operator: string,
-  nftContract: string,
-  nftTokenId: string,
+  vaultAddress: string,
+  assetId: string,
   expiry: string,
-  provider: Web3Provider,
+  provider: JsonRpcProvider,
   hookProtocol: string // Hook Protocol
 ) {
   // Sign Entitlement
   const entitlement = {
     beneficialOwner,
     operator,
-    nftContract,
-    nftTokenId,
+    vaultAddress,
+    assetId,
     expiry,
   };
   const { domain, types, value } = genEntitlementTypedData(
     entitlement,
-    1337, // pulled from hardhat.config.ts
     hookProtocol
   );
   const signature = await signTypedData(
