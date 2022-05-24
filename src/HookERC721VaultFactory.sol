@@ -79,9 +79,9 @@ contract HookERC721VaultFactory is
       )
     );
 
-    getMultiVault[nftAddress] = IHookERC721Vault(address(bp));
-
-    return getMultiVault[nftAddress];
+    vault = IHookERC721Vault(address(bp));
+    getMultiVault[nftAddress] = vault;
+    emit ERC721MultiVaultCreated(nftAddress, address(bp));
   }
 
   /// @notice make a new vault that can contain a single asset only
@@ -112,15 +112,10 @@ contract HookERC721VaultFactory is
         _hookProtocol
       )
     );
+    vault = IHookERC721Vault(address(bp));
+    getVault[nftAddress][tokenId] = vault;
 
-    getVault[nftAddress][tokenId] = IHookERC721Vault(address(bp));
-
-    emit ERC721VaultCreated(
-      nftAddress,
-      tokenId,
-      address(getVault[nftAddress][tokenId])
-    );
-    return getVault[nftAddress][tokenId];
+    emit ERC721VaultCreated(nftAddress, tokenId, address(vault));
   }
 
   /// @notice creates a vault for a specific tokenId. If there
