@@ -2,10 +2,6 @@ pragma solidity ^0.8.10;
 
 /// @dev A library for validating signatures from ZeroEx
 library Signatures {
-  // '\x19Ethereum Signed Message:\n32\x00\x00\x00\x00'.
-  uint256 private constant ETH_SIGN_HASH_PREFIX =
-    0x19457468657265756d205369676e6564204d6573736167653a0a333200000000;
-
   /// @dev Allowed signature types.
   enum SignatureType {
     EIP712,
