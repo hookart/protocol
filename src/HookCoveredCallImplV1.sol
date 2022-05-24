@@ -391,11 +391,28 @@ contract HookCoveredCallImplV1 is
     _;
   }
 
+  /// @dev method to verify that a particular vault was created by the protocol's vault factory
+  /// @param vaultAddress location where the vault is deployed
+  /// @param underlyingAddress address of underlying asset
+  /// @param assetId id of the asset within the vault
   function _allowedVaultImplementation(
     address vaultAddress,
     address underlyingAddress,
     uint256 assetId
-  ) internal returns (bool) {
+  ) internal view returns (bool) {
+    // First check if the multiVault is the one to save a bit of gas
+    // in the case the user is optimizing for gas savings (by using MultiVault)
+    if (
+      vaultAddress ==
+      Create2.computeAddress(
+        BeaconSalts.multiVaultSalt(underlyingAddress),
+        BeaconSalts.ByteCodeHash,
+        address(_erc721VaultFactory)
+      )
+    ) {
+      return true;
+    }
+
     if (
       vaultAddress ==
       Create2.computeAddress(
@@ -407,16 +424,6 @@ contract HookCoveredCallImplV1 is
       return true;
     }
 
-    if (
-      vaultAddress ==
-      Create2.computeAddress(
-        BeaconSalts.multiVaultSalt(underlyingAddress),
-        BeaconSalts.ByteCodeHash,
-        address(_erc721VaultFactory)
-      )
-    ) {
-      return true;
-    }
     return false;
   }
 
