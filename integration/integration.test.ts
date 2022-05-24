@@ -2894,4 +2894,56 @@ describe("Call Instrument Tests", function () {
       expect(await token.ownerOf(0)).to.eq(writer.address);
     });
   });
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~~ config ~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  describe("config", function () {
+    let marketController: SignerWithAddress
+
+    this.beforeEach(async function () {
+      [marketController] = await ethers.getSigners();
+
+      const MARKET_CONF_ROLE = calls.MARKET_CONF();
+      protocol.connect(admin).grantRole(MARKET_CONF_ROLE, marketController.address);
+    });
+
+    it("should not modify configuration as non market controller", async function () {
+      const setMinOptionDuration = calls.connect(writer).setMinOptionDuration(0);
+      await expect(setMinOptionDuration).to.be.revertedWith("onlyMarketController -- caller does not have the MARKET_CONF protocol role")
+    });
+
+    it("should set min option duration as market controller", async function () {
+      await expect(calls.connect(marketController).setMinOptionDuration(100))
+      .to.emit(calls, 'MinOptionDurationUpdated')
+      .withArgs(100);
+    });
+
+    it("should set bid increment as market controller", async function () {
+      await expect(calls.connect(marketController).setBidIncrement(37))
+      .to.emit(calls, 'MinBidIncrementUpdated')
+      .withArgs(37);
+    });
+
+    it("should set settlement auction start offset as market controller", async function () {
+      await expect(calls.connect(marketController).setSettlementAuctionStartOffset(6))
+      .to.emit(calls, 'SettlementAuctionStartOffsetUpdated')
+      .withArgs(6);
+    });
+
+    it("should no set settlement auction start offset when more than minimum option duration", async function () {
+      await calls.connect(marketController).setMinOptionDuration(100)
+
+      await expect(calls.connect(marketController).setSettlementAuctionStartOffset(101))
+      .to.be.revertedWith("the settlement auctions cannot start sooner than an option expired");
+    });
+
+    it("should set market paused as market controller", async function () {
+      await expect(calls.connect(marketController).setMarketPaused(true))
+      .to.emit(calls, 'MarketPauseUpdated')
+      .withArgs(true);
+    });
+  });
 });
