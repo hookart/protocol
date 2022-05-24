@@ -794,8 +794,8 @@
       ]
     },
     "/Users/jake/code/protocol/src/HookERC721VaultImplV1.sol": {
-      "lastModificationDate": 1653345197742,
-      "contentHash": "d2ae8c6cf6e432c19b1161540bfe738b",
+      "lastModificationDate": 1653366964341,
+      "contentHash": "51c026fa113b339ec764c5c0181b4961",
       "sourceName": "src/HookERC721VaultImplV1.sol",
       "solcConfig": {
         "version": "0.8.10",
@@ -1082,8 +1082,8 @@
       ]
     },
     "/Users/jake/code/protocol/src/lib/Signatures.sol": {
-      "lastModificationDate": 1652212515048,
-      "contentHash": "5087a8c1357c38bb238410e3459bb23f",
+      "lastModificationDate": 1653366926468,
+      "contentHash": "6bfa428f5899eccd78633cbb7292772d",
       "sourceName": "src/lib/Signatures.sol",
       "solcConfig": {
         "version": "0.8.10",
@@ -1158,8 +1158,8 @@
       ]
     },
     "/Users/jake/code/protocol/src/interfaces/IHookVault.sol": {
-      "lastModificationDate": 1653345435391,
-      "contentHash": "ee63adaaadd78fccc4ce7bad6beb28c2",
+      "lastModificationDate": 1653364217533,
+      "contentHash": "8c677b24eea1b7ab14ecf46146a8e2f0",
       "sourceName": "src/interfaces/IHookVault.sol",
       "solcConfig": {
         "version": "0.8.10",
@@ -1237,8 +1237,8 @@
       ]
     },
     "/Users/jake/code/protocol/src/HookERC721MultiVaultImplV1.sol": {
-      "lastModificationDate": 1653091146133,
-      "contentHash": "4612a23cadb1dc671814057c3d8ac009",
+      "lastModificationDate": 1653364952146,
+      "contentHash": "b541f509dacfa51dea68ca20f9075dba",
       "sourceName": "src/HookERC721MultiVaultImplV1.sol",
       "solcConfig": {
         "version": "0.8.10",
@@ -1773,7 +1773,7 @@
       ]
     },
     "/Users/jake/code/protocol/src/HookERC721VaultFactory.sol": {
-      "lastModificationDate": 1653341703079,
+      "lastModificationDate": 1653360934698,
       "contentHash": "c3f2519317c084492f254491c6c49215",
       "sourceName": "src/HookERC721VaultFactory.sol",
       "solcConfig": {
@@ -1938,7 +1938,7 @@
       ]
     },
     "/Users/jake/code/protocol/src/HookCoveredCallImplV1.sol": {
-      "lastModificationDate": 1653341421527,
+      "lastModificationDate": 1653364217530,
       "contentHash": "640ed26def405ecae3e705c142e5e786",
       "sourceName": "src/HookCoveredCallImplV1.sol",
       "solcConfig": {

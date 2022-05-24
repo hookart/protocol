@@ -94,8 +94,8 @@ contract HookERC721MultiVaultImplV1 is
   /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
   /// entitlement
   function imposeEntitlement(
-    Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature
+    Entitlements.Entitlement calldata entitlement,
+    Signatures.Signature calldata signature
   ) external {
     // check that the asset has a current beneficial owner
     // before creating a new entitlement
@@ -112,7 +112,7 @@ contract HookERC721MultiVaultImplV1 is
   /// @dev See {IHookERC721Vault-grantEntitlement}.
   /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
   /// entitlement
-  function grantEntitlement(Entitlements.Entitlement memory entitlement)
+  function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external
   {
     require(
@@ -358,7 +358,7 @@ contract HookERC721MultiVaultImplV1 is
   /// @dev Get the EIP-712 hash of an Entitlement.
   /// @param entitlement The entitlement to hash
   /// @return entitlementHash The hash of the entitlement.
-  function getEntitlementHash(Entitlements.Entitlement memory entitlement)
+  function getEntitlementHash(Entitlements.Entitlement calldata entitlement)
     public
     view
     returns (bytes32 entitlementHash)
@@ -369,8 +369,8 @@ contract HookERC721MultiVaultImplV1 is
   /// @dev Validates that a specific signature is actually the entitlement
   /// EIP-712 signed by the beneficial owner specified in the entitlement.
   function validateEntitlementSignature(
-    Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature
+    Entitlements.Entitlement calldata entitlement,
+    Signatures.Signature calldata signature
   ) public view {
     bytes32 entitlementHash = getEntitlementHash(entitlement);
     address signer = Signatures.getSignerOfHash(entitlementHash, signature);
@@ -387,8 +387,8 @@ contract HookERC721MultiVaultImplV1 is
   /// @param entitlement the entitlement to impose on the asset
   /// @param signature the EIP-712 signed entitlement by the beneficial owner
   function _verifyAndRegisterEntitlement(
-    Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature
+    Entitlements.Entitlement calldata entitlement,
+    Signatures.Signature calldata signature
   ) private {
     validateEntitlementSignature(entitlement, signature);
     _registerEntitlement(entitlement);

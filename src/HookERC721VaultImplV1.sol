@@ -107,13 +107,14 @@ contract HookERC721VaultImplV1 is
 
     // the beneficial owner of an asset is able to set any entitlement on their own asset
     // as long as it has not already been committed to someone else.
+    validateEntitlementSignature(entitlement, signature);
     _verifyAndRegisterEntitlement(entitlement, signature);
   }
 
   /// @dev See {IHookERC721Vault-grantEntitlement}.
   /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
   /// entitlement
-  function grantEntitlement(Entitlements.Entitlement memory entitlement)
+  function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external
   {
     require(
@@ -169,7 +170,15 @@ contract HookERC721VaultImplV1 is
         // equally, they could transfer the asset first to themselves and subsequently grant a specific
         // entitlement, which is equivalent to this.
         _setBeneficialOwner(entitlement.beneficialOwner);
-        _registerEntitlement(entitlement);
+        _registerEntitlement(
+          Entitlements.Entitlement(
+            entitlement.beneficialOwner,
+            entitlement.operator,
+            entitlement.vaultAddress,
+            entitlement.assetId,
+            entitlement.expiry
+          )
+        );
       }
     } else {
       // If we're recieving an airdrop or other asset uncovered by escrow to this address, we should ensure
@@ -387,8 +396,8 @@ contract HookERC721VaultImplV1 is
   }
 
   function validateEntitlementSignature(
-    Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature
+    Entitlements.Entitlement calldata entitlement,
+    Signatures.Signature calldata signature
   ) public view {
     bytes32 entitlementHash = getEntitlementHash(entitlement);
     address signer = Signatures.getSignerOfHash(entitlementHash, signature);
@@ -405,8 +414,8 @@ contract HookERC721VaultImplV1 is
   /// @param entitlement the entitlement to impose on the asset
   /// @param signature the EIP-712 signed entitlement by the beneficial owner
   function _verifyAndRegisterEntitlement(
-    Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature
+    Entitlements.Entitlement calldata entitlement,
+    Signatures.Signature calldata signature
   ) private {
     validateEntitlementSignature(entitlement, signature);
     _registerEntitlement(entitlement);
