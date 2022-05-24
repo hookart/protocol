@@ -2946,4 +2946,73 @@ describe("Call Instrument Tests", function () {
       .withArgs(true);
     });
   });
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~ getters ~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  describe("getters", function () {
+    let optionTokenId: BigNumber;
+    let multiVault: Contract;
+    let expiration: BigNumber;
+
+    this.beforeEach(async function () {
+      // Create multivault for token
+      await vaultFactory.makeMultiVault(token.address);
+      const multiValutAddress = await vaultFactory.getMultiVault(token.address);
+      multiVault = await ethers.getContractAt(
+        "HookERC721MultiVaultImplV1",
+        multiValutAddress
+      );
+
+      // Transfer token to vault
+      await token
+        .connect(writer)
+        ["safeTransferFrom(address,address,uint256)"](
+          writer.address,
+          multiVault.address,
+          0
+        );
+
+      expiration = BigNumber.from(Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5));
+
+      await multiVault.connect(writer).grantEntitlement({
+        beneficialOwner: writer.address,
+        operator: calls.address,
+        vaultAddress: multiVault.address,
+        assetId: 0,
+        expiry: expiration,
+      });
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
+      
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      optionTokenId = callCreatedEvent.args.optionId;
+    });
+
+    it("should get vault address", async function () {
+      expect(await calls.getVaultAddress(optionTokenId)).to.eq(multiVault.address);
+    });
+
+    it("should get asset id", async function () {
+      expect(await calls.getAssetId(optionTokenId)).to.eq(0);
+    });
+
+    it("should get strike price", async function () {
+      expect(await calls.getStrikePrice(optionTokenId)).to.eq(1000);
+    });
+
+    it("should get expiration", async function () {
+      expect(await calls.getExpiration(optionTokenId)).to.eq(expiration);
+    });
+  });
 });
