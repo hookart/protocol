@@ -5,10 +5,8 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/utils/Create2.sol";
 
 import "./lib/Entitlements.sol";
-import "./lib/BeaconSalts.sol";
 
 import "./interfaces/IHookERC721VaultFactory.sol";
 import "./interfaces/IHookVault.sol";
@@ -163,14 +161,7 @@ contract HookCoveredCallImplV1 is
       vault.getHoldsAsset(assetId),
       "mintWithVault-- asset must be in vault"
     );
-    require(
-      _allowedVaultImplementation(
-        vaultAddress,
-        allowedUnderlyingAddress,
-        assetId
-      ),
-      "mintWithVault -- can only mint with vaults created in protocol"
-    );
+
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
     address writer = vault.getBeneficialOwner(assetId);
@@ -217,14 +208,6 @@ contract HookCoveredCallImplV1 is
       expirationTime == vault.entitlementExpiration(assetId),
       "mintWithVault -- entitlement expiration must match call expiration"
     );
-    require(
-      _allowedVaultImplementation(
-        vaultAddress,
-        allowedUnderlyingAddress,
-        assetId
-      ),
-      "mintWithVault -- can only mint with vaults created in protocol"
-    );
 
     // the beneficial owner owns the asset so
     // they should recieve the option.
@@ -242,6 +225,7 @@ contract HookCoveredCallImplV1 is
     uint256 expirationTime
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
+    uint256 assetId = 0; /// assume that the token is using an individual vault.
     require(
       allowedUnderlyingAddress == tokenAddress,
       "mintWithErc721 -- token must be on the project allowlist"
@@ -264,19 +248,6 @@ contract HookCoveredCallImplV1 is
       tokenAddress,
       tokenId
     );
-    uint256 assetId = 0;
-    if (
-      address(vault) ==
-      Create2.computeAddress(
-        BeaconSalts.multiVaultSalt(tokenAddress),
-        BeaconSalts.ByteCodeHash,
-        address(_erc721VaultFactory)
-      )
-    ) {
-      // If the vault is a multi-vault, it requries that the assetId matches the
-      // tokenId, instead of having a standard assetI of 0
-      assetId = tokenId;
-    }
 
     /// IMPORTANT: the entitlement entitles the user to this contract address. That means that even if this
     // implementation code were upgraded, the contract at this address (i.e. with the new implementation) would
@@ -285,7 +256,7 @@ contract HookCoveredCallImplV1 is
       beneficialOwner: tokenOwner,
       operator: address(this),
       vaultAddress: address(vault),
-      assetId: assetId,
+      assetId: assetId, /// assume that the asset within the vault has assetId 0
       expiry: expirationTime
     });
 
@@ -389,42 +360,6 @@ contract HookCoveredCallImplV1 is
       "biddingEnabled -- the owner has already settled the call option"
     );
     _;
-  }
-
-  /// @dev method to verify that a particular vault was created by the protocol's vault factory
-  /// @param vaultAddress location where the vault is deployed
-  /// @param underlyingAddress address of underlying asset
-  /// @param assetId id of the asset within the vault
-  function _allowedVaultImplementation(
-    address vaultAddress,
-    address underlyingAddress,
-    uint256 assetId
-  ) internal view returns (bool) {
-    // First check if the multiVault is the one to save a bit of gas
-    // in the case the user is optimizing for gas savings (by using MultiVault)
-    if (
-      vaultAddress ==
-      Create2.computeAddress(
-        BeaconSalts.multiVaultSalt(underlyingAddress),
-        BeaconSalts.ByteCodeHash,
-        address(_erc721VaultFactory)
-      )
-    ) {
-      return true;
-    }
-
-    if (
-      vaultAddress ==
-      Create2.computeAddress(
-        BeaconSalts.soloVaultSalt(underlyingAddress, assetId),
-        BeaconSalts.ByteCodeHash,
-        address(_erc721VaultFactory)
-      )
-    ) {
-      return true;
-    }
-
-    return false;
   }
 
   /// @dev See {IHookCoveredCall-bid}.
@@ -542,26 +477,14 @@ contract HookCoveredCallImplV1 is
       !call.settled,
       "reclaimAsset -- the option has already been settled"
     );
-
-    if (call.writer != ownerOf(optionId)) {
-      // if the writer holds the option nft, there are more cases where they're able to reclaim.
-      require(
-        call.highBidder == address(0),
-        "reclaimAsset -- cannot reclaim a sold asset if the option is not writer-owned."
-      );
-      require(
-        call.expiration < block.timestamp,
-        "reclaimAsset -- the option must expired unless writer-owned"
-      );
-    }
-
-    if (call.expiration <= block.timestamp) {
-      require(
-        call.highBidder == address(0),
-        "reclaimAsset -- cannot reclaim a sold asset"
-      );
-      // send the call back to the owner (because we've refunded the high bidder)
-    }
+    require(
+      call.writer == ownerOf(optionId),
+      "reclaimAsset -- the option must be owned by the writer"
+    );
+    require(
+      call.expiration > block.timestamp,
+      "reclaimAsset -- the option must not be expired"
+    );
 
     if (call.highBidder != address(0)) {
       // return current bidder's money
@@ -576,14 +499,12 @@ contract HookCoveredCallImplV1 is
 
     if (returnNft) {
       // Because the call is not expired, we should be able to reclaim the asset from the vault
-      if (call.expiration > block.timestamp) {
-        IHookVault(call.vaultAddress).clearEntitlementAndDistribute(
-          call.assetId,
-          call.writer
-        );
-      } else {
-        IHookVault(call.vaultAddress).withdrawalAsset(call.assetId);
-      }
+      IHookVault(call.vaultAddress).clearEntitlementAndDistribute(
+        call.assetId,
+        call.writer
+      );
+    } else {
+      IHookVault(call.vaultAddress).clearEntitlement(call.assetId);
     }
 
     // burn the option NFT
