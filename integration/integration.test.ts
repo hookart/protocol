@@ -6,6 +6,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { solidity } from "ethereum-waffle";
 import { signEntitlement } from "./helpers";
 import { getAddress } from "ethers/lib/utils";
+import { writeHeapSnapshot } from "v8";
+import { create } from "domain";
 
 use(solidity);
 describe("Vault", function () {
@@ -1856,7 +1858,8 @@ describe("Call Instrument Tests", function () {
   let vaultFactory: Contract,
     protocol: Contract,
     token: Contract,
-    calls: Contract;
+    calls: Contract,
+    weth: Contract;
 
   // Signers
   let admin: SignerWithAddress,
@@ -1873,7 +1876,7 @@ describe("Call Instrument Tests", function () {
 
     // Deploy weth
     const wethFactory = await ethers.getContractFactory("WETH");
-    const weth = await wethFactory.deploy();
+    weth = await wethFactory.deploy();
 
     // Deploy test NFT
     const testNftFactory = await ethers.getContractFactory("TestERC721");
@@ -2207,7 +2210,34 @@ describe("Call Instrument Tests", function () {
       await expect(createCall).to.be.reverted;
     });
 
-    // TODO: mint with a valid signature
+    it("should mint covered call with valid signature", async function () {
+      await token
+        .connect(writer)
+        ["safeTransferFrom(address,address,uint256)"](
+          writer.address,
+          multiVault.address,
+          0
+        );
+
+      const expiration = Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5);
+
+      const signature = await signEntitlement(
+        writer.address,
+        calls.address,
+        multiVault.address,
+        "0",
+        String(expiration),
+        writer,
+        protocol.address
+      );
+
+      // Mint call option
+      const createCall = calls
+        .connect(writer)
+        .mintWithVault(multiVault.address, 0, 1000, expiration, signature);
+
+      await createCall;
+    });
   });
 
   /*
@@ -2478,6 +2508,37 @@ describe("Call Instrument Tests", function () {
         secondBidder.address
       );
       expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+    });
+
+    it("should bid and outbid as with malicious bidder", async function () {
+      // Move forward to auction period
+      await ethers.provider.send("evm_increaseTime", [2.1 * SECS_IN_A_DAY]);
+
+      const maliciousBidder = await ethers.getContractFactory(
+        "MaliciousBidder"
+      );
+      const deployedMaliciousBidder = await maliciousBidder.deploy(
+        calls.address
+      );
+
+      const bid = deployedMaliciousBidder.bid(optionTokenId, { value: 1001 });
+      await expect(bid).to.emit(calls, "Bid");
+
+      expect(await calls.currentBidder(optionTokenId)).to.equal(
+        deployedMaliciousBidder.address
+      );
+      expect(await calls.currentBid(optionTokenId)).to.equal(1001);
+
+      const secondBid = calls
+        .connect(secondBidder)
+        .bid(optionTokenId, { value: 1002 });
+      await expect(secondBid).to.emit(calls, "Bid");
+
+      expect(await calls.currentBidder(optionTokenId)).to.equal(
+        secondBidder.address
+      );
+      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await weth.balanceOf(deployedMaliciousBidder.address)).to.eq(1001);
     });
 
     it("should bid and outbid as option writer", async function () {

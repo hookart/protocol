@@ -107,7 +107,6 @@ contract HookERC721VaultImplV1 is
 
     // the beneficial owner of an asset is able to set any entitlement on their own asset
     // as long as it has not already been committed to someone else.
-    validateEntitlementSignature(entitlement, signature);
     _verifyAndRegisterEntitlement(entitlement, signature);
   }
 
