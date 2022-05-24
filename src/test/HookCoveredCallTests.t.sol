@@ -123,6 +123,34 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
   }
 
+  function test_MintOptionWithAlienVault() public {
+    vm.startPrank(address(writer));
+
+    HookERC721VaultImplV1 alienVault = new HookERC721VaultImplV1();
+
+    alienVault.initialize(address(token), underlyingTokenId, address(protocol));
+
+    // place token in the vault
+    token.safeTransferFrom(
+      address(writer),
+      address(alienVault),
+      underlyingTokenId
+    );
+
+    uint256 expiration = block.timestamp + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+
+    vm.expectRevert(
+      "mintWithVault -- can only mint with vaults created in protocol"
+    );
+    calls.mintWithVault(address(alienVault), 0, 1000, expiration, sig);
+  }
+
   function test_MintOptionWithVaultFailsExpiration() public {
     vm.startPrank(address(writer));
     try

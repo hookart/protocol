@@ -6,11 +6,9 @@ import "forge-std/Test.sol";
 
 import "./tokens/TestERC721.sol";
 import "./tokens/WETH.sol";
-import "../../HookCoveredCall.sol";
 import "../../HookUpgradeableBeacon.sol";
 import "../../HookCoveredCallFactory.sol";
 import "../../HookCoveredCallImplV1.sol";
-import "../../HookERC721Vault.sol";
 import "../../HookUpgradeableBeacon.sol";
 import "../../HookERC721VaultFactory.sol";
 import "../../HookERC721VaultImplV1.sol";

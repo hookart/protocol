@@ -1,11 +1,15 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "./HookCoveredCall.sol";
 import "./interfaces/IHookCoveredCallFactory.sol";
 import "./interfaces/IHookProtocol.sol";
 
+import "./interfaces/IInitializeableBeacon.sol";
+import "./HookBeaconProxy.sol";
+
 import "./mixin/PermissionConstants.sol";
+
+import "@openzeppelin/contracts/utils/Create2.sol";
 
 /// @dev See {IHookCoveredCallFactory}.
 /// @dev Operating the factory requires specific permissions within the protocol.
@@ -52,15 +56,27 @@ contract HookCoveredCallFactory is
       "makeCallInstrument -- Only admins can make instruments"
     );
 
-    getCallInstrument[assetAddress] = address(
-      new HookCoveredCall{salt: keccak256(abi.encode(assetAddress))}(
-        _beacon,
+    IInitializeableBeacon bp = IInitializeableBeacon(
+      Create2.deploy(
+        0,
+        _callInsturmentSalt(assetAddress),
+        type(HookBeaconProxy).creationCode
+      )
+    );
+
+    bp.initializeBeacon(
+      _beacon,
+      /// This is the ABI encoded initializer on the IHookERC721Vault.sol
+      abi.encodeWithSignature(
+        "initialize(address,address,address,address)",
+        _protocol,
         assetAddress,
-        address(_protocol),
         _protocol.vaultContract(),
         _preapprovedMarketplace
       )
     );
+
+    getCallInstrument[assetAddress] = address(bp);
 
     emit CoveredCallInsturmentCreated(
       assetAddress,
@@ -68,5 +84,13 @@ contract HookCoveredCallFactory is
     );
 
     return getCallInstrument[assetAddress];
+  }
+
+  function _callInsturmentSalt(address underlyingAddress)
+    internal
+    pure
+    returns (bytes32)
+  {
+    return keccak256(abi.encode(underlyingAddress));
   }
 }
