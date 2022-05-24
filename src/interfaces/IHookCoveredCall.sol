@@ -43,10 +43,13 @@ interface IHookCoveredCall is IERC721Metadata {
   );
 
   /// @notice emitted when a call option is settled
-  event OptionSettled(uint256 optionId);
+  event CallSettled(uint256 optionId);
 
-  /// @notice emitted when a call option is destroyed
-  event CallDestroyed(uint256 optionId);
+  /// @notice emitted when a call option is reclaimed
+  event CallReclaimed(uint256 optionId);
+
+  /// @notice emitted when a expired call option is burned
+  event ExpiredCallBurned(uint256 optionId);
 
   /// @notice emitted when a call option settlement auction gets and accepts a new bid
   /// @param bidder the account placing the bid that is now the high bidder
@@ -129,4 +132,9 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @param optionId of the option to settle.
   /// @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
   function settleOption(uint256 optionId, bool returnNft) external;
+
+
+  /// @notice Allows anyone to burn the instrument NFT for an expired option.
+  /// @param optionId of the option to burn.
+  function burnExpiredOption(uint256 optionId) external;
 }
