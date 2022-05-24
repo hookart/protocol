@@ -5,8 +5,10 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/utils/Create2.sol";
 
 import "./lib/Entitlements.sol";
+import "./lib/BeaconSalts.sol";
 
 import "./interfaces/IHookERC721VaultFactory.sol";
 import "./interfaces/IHookVault.sol";
@@ -161,7 +163,14 @@ contract HookCoveredCallImplV1 is
       vault.getHoldsAsset(assetId),
       "mintWithVault-- asset must be in vault"
     );
-
+    require(
+      _allowedVaultImplementation(
+        vaultAddress,
+        allowedUnderlyingAddress,
+        assetId
+      ),
+      "mintWithVault -- can only mint with vaults created in protocol"
+    );
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
     address writer = vault.getBeneficialOwner(assetId);
@@ -208,6 +217,14 @@ contract HookCoveredCallImplV1 is
       expirationTime == vault.entitlementExpiration(assetId),
       "mintWithVault -- entitlement expiration must match call expiration"
     );
+    require(
+      _allowedVaultImplementation(
+        vaultAddress,
+        allowedUnderlyingAddress,
+        assetId
+      ),
+      "mintWithVault -- can only mint with vaults created in protocol"
+    );
 
     // the beneficial owner owns the asset so
     // they should recieve the option.
@@ -225,7 +242,6 @@ contract HookCoveredCallImplV1 is
     uint256 expirationTime
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
-    uint256 assetId = 0; /// assume that the token is using an individual vault.
     require(
       allowedUnderlyingAddress == tokenAddress,
       "mintWithErc721 -- token must be on the project allowlist"
@@ -248,6 +264,19 @@ contract HookCoveredCallImplV1 is
       tokenAddress,
       tokenId
     );
+    uint256 assetId = 0;
+    if (
+      address(vault) ==
+      Create2.computeAddress(
+        BeaconSalts.multiVaultSalt(tokenAddress),
+        BeaconSalts.ByteCodeHash,
+        address(_erc721VaultFactory)
+      )
+    ) {
+      // If the vault is a multi-vault, it requries that the assetId matches the
+      // tokenId, instead of having a standard assetI of 0
+      assetId = tokenId;
+    }
 
     /// IMPORTANT: the entitlement entitles the user to this contract address. That means that even if this
     // implementation code were upgraded, the contract at this address (i.e. with the new implementation) would
@@ -256,7 +285,7 @@ contract HookCoveredCallImplV1 is
       beneficialOwner: tokenOwner,
       operator: address(this),
       vaultAddress: address(vault),
-      assetId: assetId, /// assume that the asset within the vault has assetId 0
+      assetId: assetId,
       expiry: expirationTime
     });
 
@@ -360,6 +389,42 @@ contract HookCoveredCallImplV1 is
       "biddingEnabled -- the owner has already settled the call option"
     );
     _;
+  }
+
+  /// @dev method to verify that a particular vault was created by the protocol's vault factory
+  /// @param vaultAddress location where the vault is deployed
+  /// @param underlyingAddress address of underlying asset
+  /// @param assetId id of the asset within the vault
+  function _allowedVaultImplementation(
+    address vaultAddress,
+    address underlyingAddress,
+    uint256 assetId
+  ) internal view returns (bool) {
+    // First check if the multiVault is the one to save a bit of gas
+    // in the case the user is optimizing for gas savings (by using MultiVault)
+    if (
+      vaultAddress ==
+      Create2.computeAddress(
+        BeaconSalts.multiVaultSalt(underlyingAddress),
+        BeaconSalts.ByteCodeHash,
+        address(_erc721VaultFactory)
+      )
+    ) {
+      return true;
+    }
+
+    if (
+      vaultAddress ==
+      Create2.computeAddress(
+        BeaconSalts.soloVaultSalt(underlyingAddress, assetId),
+        BeaconSalts.ByteCodeHash,
+        address(_erc721VaultFactory)
+      )
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   /// @dev See {IHookCoveredCall-bid}.
