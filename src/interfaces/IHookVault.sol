@@ -70,8 +70,8 @@ interface IHookVault is IERC165 {
   /// @param entitlement The entitlement to impose onto the contract
   /// @param signature an EIP-712 signauture of the entitlement struct signed by the beneficial owner
   function imposeEntitlement(
-    Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature
+    Entitlements.Entitlement calldata entitlement,
+    Signatures.Signature calldata signature
   ) external;
 
   /// @notice Allows the beneficial owner to grant an entitlement to an asset within the contract

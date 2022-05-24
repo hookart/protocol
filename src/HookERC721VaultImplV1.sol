@@ -97,8 +97,8 @@ contract HookERC721VaultImplV1 is
   /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
   /// entitlement
   function imposeEntitlement(
-    Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature
+    Entitlements.Entitlement calldata entitlement,
+    Signatures.Signature calldata signature
   ) external {
     require(
       beneficialOwner != address(0),
@@ -201,10 +201,16 @@ contract HookERC721VaultImplV1 is
       "execTransaction -- only the beneficial owner can use the transaction"
     );
 
-    // block transactions to the NFT contract ot ensure that people cant set approvals as the owner.
+    // block transactions to the NFT contract to ensure that people cant set approvals as the owner.
     require(
       to != address(_nftContract),
       "execTransaction -- cannot send transactions to the NFT contract itself"
+    );
+
+    // block transactions to the vault to mitigate re-entrancy vulnerabilities
+    require(
+      to != address(this),
+      "execTransaction -- cannot call the vault contract"
     );
 
     require(
@@ -244,11 +250,13 @@ contract HookERC721VaultImplV1 is
       ),
       "flashLoan -- flashLoan feature disabled for this contract"
     );
+    // (1) store a hash of our current entitlement state
+    bytes32 startState = keccak256(abi.encode(_currentEntitlement));
 
-    // (1) send the flashloan contract the vaulted NFT
+    // (2) send the flashloan contract the vaulted NFT
     _nftContract.safeTransferFrom(address(this), receiverAddress, _tokenId);
 
-    // (2) call the flashloan contract, giving it a chance to do whatever it wants
+    // (3) call the flashloan contract, giving it a chance to do whatever it wants
     // NOTE: The flashloan contract MUST approve this vault contract as an operator
     // for the nft, such that we're able to make sure it has arrived.
     require(
@@ -262,24 +270,31 @@ contract HookERC721VaultImplV1 is
       "flashLoan -- the flash loan contract must return true"
     );
 
-    // (3) return the nft back into the vault
+    // (4) return the nft back into the vault
+    //      NOTE: If the loaner does not approve this vault to transfer the asset
+    //      this call will revert.
     _nftContract.safeTransferFrom(receiverAddress, address(this), _tokenId);
 
-    // (4) sanity check to ensure the asset was actually returned to the vault.
+    // (5) sanity check to ensure the asset was actually returned to the vault.
     // this is a concern because its possible that the safeTransferFrom implemented by
     // some contract fails silently
     require(_nftContract.ownerOf(_tokenId) == address(this));
 
-    // (5) emit an event to record the flashloan
+    // (6) additional sanity check to ensure that the internal state of
+    // the entitlement has not somehow been modified during the flash loan, for example
+    // via some re-entrancy attack or by sending the asset back into the contract
+    // prematurely
+    require(
+      startState == keccak256(abi.encode(_currentEntitlement)),
+      "flashLoan -- entitlement state cannot be modified"
+    );
+
+    // (7) emit an event to record the flashloan
     emit AssetFlashLoaned(beneficialOwner, _tokenId, receiverAddress);
   }
 
   /// @dev See {IHookVault-entitlementExpiration}.
-  function entitlementExpiration(uint256)
-    external
-    view
-    returns (uint256)
-  {
+  function entitlementExpiration(uint256) external view returns (uint256) {
     if (!hasActiveEntitlement()) {
       return 0;
     } else {
