@@ -2852,7 +2852,9 @@ describe("Call Instrument Tests", function () {
       const settleCall = calls
         .connect(writer)
         .settleOption(optionTokenId, false);
-      await expect(settleCall).to.emit(calls, "CallDestroyed");
+      await expect(settleCall)
+      .to.emit(calls, "CallDestroyed")
+      .to.emit(calls, "OptionSettled");
 
       const vaultAddress = await calls.getVaultAddress(optionTokenId);
       const vault = await ethers.getContractAt(
@@ -2884,7 +2886,9 @@ describe("Call Instrument Tests", function () {
       const settleCall = calls
         .connect(secondBidder)
         .settleOption(secondOptionTokenId, false);
-      await expect(settleCall).to.emit(calls, "CallDestroyed");
+      await expect(settleCall)
+      .to.emit(calls, "CallDestroyed")
+      .to.emit(calls, "OptionSettled");
 
       const vaultAddress = await calls.getVaultAddress(secondOptionTokenId);
       const vault = await ethers.getContractAt(

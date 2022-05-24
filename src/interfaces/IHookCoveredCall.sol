@@ -42,6 +42,9 @@ interface IHookCoveredCall is IERC721Metadata {
     uint256 expiration
   );
 
+  /// @notice emitted when a call option is settled
+  event OptionSettled(uint256 optionId);
+
   /// @notice emitted when a call option is destroyed
   event CallDestroyed(uint256 optionId);
 

@@ -525,6 +525,7 @@ contract HookCoveredCallImplV1 is
     // set settled to prevent an additional attempt to settle the option
     optionParams[optionId].settled = true;
 
+    emit OptionSettled(optionId);
     emit CallDestroyed(optionId);
   }
 
