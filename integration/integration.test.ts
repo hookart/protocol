@@ -2814,7 +2814,7 @@ describe("Call Instrument Tests", function () {
       );
     });
 
-    it("should not reclaim sold asset as buyer", async function () {
+    it("should not reclaim asset when writer is not option owner", async function () {
       // Transfer option NFT to buyer (assume this is a purchase)
       await calls
         .connect(writer)
@@ -2824,18 +2824,74 @@ describe("Call Instrument Tests", function () {
           optionTokenId
         );
 
+      const reclaimAsset = calls
+        .connect(writer)
+        .reclaimAsset(optionTokenId, false);
+      await expect(reclaimAsset).to.be.revertedWith(
+        "reclaimAsset -- the option must be owned by the writer"
+      );
+    });
+
+    it("should not reclaim asset from expired option", async function () {
+      // Move forward to auction period
+      await ethers.provider.send("evm_increaseTime", [3.1 * SECS_IN_A_DAY]);
+
+      const reclaimAsset = calls
+        .connect(writer)
+        .reclaimAsset(optionTokenId, false);
+      await expect(reclaimAsset).to.be.revertedWith(
+        "reclaimAsset -- the option must not be expired"
+      );
+    });
+
+    it("should reclaim asset with an active bid", async function () {
       // Move forward to auction period
       await ethers.provider.send("evm_increaseTime", [2.1 * SECS_IN_A_DAY]);
 
-      // Bid as writer
-      await calls.connect(writer).bid(optionTokenId, { value: 2 });
+      // Bid as firstBidder
+      await calls.connect(firstBidder).bid(optionTokenId, { value: 1001 });
 
       const reclaimAsset = calls
-        .connect(buyer)
+        .connect(writer)
         .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith(
-        "reclaimAsset -- asset can only be reclaimed by the writer"
+
+      await expect(reclaimAsset).to.emit(calls, "CallDestroyed");
+
+      // Check that there's no entitlment on the vault
+      const vaultAddress = await calls.getVaultAddress(optionTokenId);
+      const vault = await ethers.getContractAt(
+        "HookERC721MultiVaultImplV1",
+        vaultAddress
       );
+
+      const result = await vault.getCurrentEntitlementOperator(0);
+      expect(result.isActive).to.be.false;
+    });
+
+    it("should reclaim asset with no bids", async function () {
+      const reclaimAsset = calls
+        .connect(writer)
+        .reclaimAsset(optionTokenId, false);
+
+      await expect(reclaimAsset).to.emit(calls, "CallDestroyed");
+
+      // Check that there's no entitlment on the vault
+      const vaultAddress = await calls.getVaultAddress(optionTokenId);
+      const vault = await ethers.getContractAt(
+        "HookERC721MultiVaultImplV1",
+        vaultAddress
+      );
+
+      const result = await vault.getCurrentEntitlementOperator(0);
+      expect(result.isActive).to.be.false;
+    });
+
+    it("should reclaim asset with no bids and return nft", async function () {
+      await calls
+        .connect(writer)
+        .reclaimAsset(optionTokenId, true);
+
+      expect(await token.ownerOf(0)).to.eq(writer.address);
     });
   });
 });
