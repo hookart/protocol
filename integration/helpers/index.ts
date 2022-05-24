@@ -77,12 +77,10 @@ export async function signEntitlement(
     assetId,
     expiry,
   };
-  console.log("s1");
   const { domain, types, value } = genEntitlementTypedData(
     entitlement,
     hookProtocol
   );
-  console.log("s2");
   const signature = await signTypedData(
     domain,
     types,
@@ -90,7 +88,6 @@ export async function signEntitlement(
     signer,
     beneficialOwner
   );
-  console.log("s3");
 
   return signature;
 }

@@ -229,10 +229,19 @@ contract HookERC721MultiVaultImplV1 is
       "flashLoan -- flashLoan feature disabled for this contract"
     );
 
-    // (1) send the flashloan contract the vaulted NFT
+    // (1) store a hash of our current entitlement state as a snapshot to diff
+    bytes32 startState = keccak256(
+      abi.encode(
+        entitlements[assetId].beneficialOwner,
+        entitlements[assetId].operator,
+        entitlements[assetId].expiry
+      )
+    );
+
+    // (2) send the flashloan contract the vaulted NFT
     _nftContract.safeTransferFrom(address(this), receiverAddress, assetId);
 
-    // (2) call the flashloan contract, giving it a chance to do whatever it wants
+    // (3) call the flashloan contract, giving it a chance to do whatever it wants
     // NOTE: The flashloan contract MUST approve this vault contract as an operator
     // for the nft, such that we're able to make sure it has arrived.
     require(
@@ -246,15 +255,34 @@ contract HookERC721MultiVaultImplV1 is
       "flashLoan -- the flash loan contract must return true"
     );
 
-    // (3) return the nft back into the vault
-    _nftContract.safeTransferFrom(receiverAddress, address(this), assetId);
+    // (4) return the nft back into the vault
+    //        Use transferFrom instead of safeTransfer from because transferFrom
+    //        would modify our state ( it calls erc721Reciever ). and because we know
+    //        for sure that this contract can handle ERC-721s.
+    _nftContract.transferFrom(receiverAddress, address(this), assetId);
 
-    // (4) sanity check to ensure the asset was actually returned to the vault.
+    // (5) sanity check to ensure the asset was actually returned to the vault.
     // this is a concern because its possible that the safeTransferFrom implemented by
     // some contract fails silently
     require(_nftContract.ownerOf(assetId) == address(this));
 
-    // (5) emit an event to record the flashloan
+    // (6) additional sanity check to ensure that the internal state of
+    // the entitlement has not somehow been modified during the flash loan, for example
+    // via some re-entrancy attack or by sending the asset back into the contract
+    // prematurely
+    require(
+      startState ==
+        keccak256(
+          abi.encode(
+            entitlements[assetId].beneficialOwner,
+            entitlements[assetId].operator,
+            entitlements[assetId].expiry
+          )
+        ),
+      "flashLoan -- entitlement state cannot be modified"
+    );
+
+    // (7) emit an event to record the flashloan
     emit AssetFlashLoaned(
       entitlements[assetId].beneficialOwner,
       assetId,
@@ -271,7 +299,7 @@ contract HookERC721MultiVaultImplV1 is
     if (!hasActiveEntitlement(assetId)) {
       return 0;
     } else {
-      entitlements[assetId].expiry;
+      return entitlements[assetId].expiry;
     }
   }
 
