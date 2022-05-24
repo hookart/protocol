@@ -17,10 +17,7 @@ const signTypedData = async (
   domain: TypedDataDomain,
   types: Record<string, TypedDataField[]>,
   value: Record<string, any>,
-  signer: SignerWithAddress,
-  // TODO: Validate we might not need this for "getSigner" it's optional
-  // we need to make sure that it always uses the correct one when not sending.
-  address: string
+  signer: SignerWithAddress
 ) => {
   const rawSignature = await signer._signTypedData(domain, types, value);
   const { v, r, s } = ethers.utils.splitSignature(rawSignature);
@@ -81,13 +78,7 @@ export async function signEntitlement(
     entitlement,
     hookProtocol
   );
-  const signature = await signTypedData(
-    domain,
-    types,
-    value,
-    signer,
-    beneficialOwner
-  );
+  const signature = await signTypedData(domain, types, value, signer);
 
   return signature;
 }

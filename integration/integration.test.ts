@@ -1,5 +1,6 @@
-import { expect } from "chai";
 import { ethers } from "hardhat";
+import { expect, use } from "chai";
+import { solidity } from "ethereum-waffle";
 import type { Contract, PayableOverrides } from "ethers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -20,6 +21,7 @@ const overrides: PayableOverrides = {
   gasLimit: "1000000",
 };
 
+use(solidity);
 describe("Integrations", function () {
   let vaultFactory: Contract,
     protocol: Contract,
@@ -120,8 +122,6 @@ describe("Integrations", function () {
     // get call instrument for collection
     callInstrument = await coveredCall.getCallInstrument(token.address);
 
-    console.log("callInstrument", callInstrument);
-
     coveredCallImplInstance = await ethers.getContractAt(
       "HookCoveredCallImplV1",
       callInstrument
@@ -137,24 +137,18 @@ describe("Integrations", function () {
     ]);
 
     // check ownership
-    const [ownerOf1, ownerOf2, ownerOf3] = await Promise.all([
+    const result = await Promise.all([
       token.ownerOf(1),
       token.ownerOf(2),
       token.ownerOf(3),
     ]);
 
-    expect(ownerOf1).to.equal(
-      writer.address,
-      "Owner of minted token didn't match."
-    );
-    expect(ownerOf2).to.equal(
-      writer.address,
-      "Owner of minted token didn't match."
-    );
-    expect(ownerOf3).to.equal(
-      writer.address,
-      "Owner of minted token didn't match."
-    );
+    for (let i = 0; i < result.length; i++) {
+      expect(result[i]).to.equal(
+        writer.address,
+        "Owner of minted token didn't match."
+      );
+    }
 
     // Approve callInstrument
     await token.connect(writer).setApprovalForAll(callInstrument, true);
@@ -165,6 +159,7 @@ describe("Integrations", function () {
 
     expect(isApproved).to.equal(true, "Call instrument approval didn't work.");
 
+    // Mint covered call options
     const expiryArr = [
       Math.floor(getEpochTimestampDaysFromNow(2)), // around 2 days from now
       Math.floor(getEpochTimestampDaysFromNow(15)), // around 15 days from now
@@ -237,7 +232,7 @@ describe("Integrations", function () {
       writer.address,
       callInstrument,
       vault,
-      String(tokenId),
+      "0", // id in vault (always 0 for solo vault)
       String(expiry),
       writer,
       protocol.address
@@ -246,7 +241,7 @@ describe("Integrations", function () {
     // Mint with vault
     const mintTx = await coveredCallImplInstance.connect(writer).mintWithVault(
       vault,
-      tokenId,
+      0, // assetId - id in vault (always 0 for solo vault)
       1000, // strike price in wei
       expiry, // expiry
       signature,
@@ -258,7 +253,12 @@ describe("Integrations", function () {
       ({ event }: any) => event === "CallCreated"
     );
     const optionId = mintEvent?.args?.optionId?.toNumber();
-    console.log("mintWithVault - optionId", optionId);
+    const optionParams = await coveredCallImplInstance.optionParams(optionId);
+
+    expect(await writer.address).to.equal(
+      optionParams.writer,
+      "Option params writer doesn't match the signer used to mint the option."
+    );
   });
 
   it("mint option using an entitled vault", async function () {
@@ -301,7 +301,7 @@ describe("Integrations", function () {
       beneficialOwner: writer.address,
       operator: callInstrument,
       vaultAddress: vault,
-      assetId: tokenId,
+      assetId: 0, // id in vault (always 0 for solo vault)
       expiry,
     });
 
@@ -321,7 +321,12 @@ describe("Integrations", function () {
       ({ event }: any) => event === "CallCreated"
     );
     const optionId = mintEvent?.args?.optionId?.toNumber();
-    console.log("mintWithEntitledVault - optionId", optionId);
+    const optionParams = await coveredCallImplInstance.optionParams(optionId);
+
+    expect(await writer.address).to.equal(
+      optionParams.writer,
+      "Option params writer doesn't match the signer used to mint the option."
+    );
   });
 
   it("write should be able to reclaim asset", async function () {
@@ -365,13 +370,4 @@ describe("Integrations", function () {
       "Owner of undelying token didn't match after reclaim."
     );
   });
-
-  //   it("protocol was deployed", async function () {
-  //     const confirmations = await protocol?.deployTransaction?.confirmations;
-  //     expect(confirmations).to.equal(1);
-  //   });
-
-  //   it("the factory should be able to make a vault", async function () {
-  //     vaultFactory.callStatic["makeSoloVault"].call(token.address, 1);
-  //   });
 });
