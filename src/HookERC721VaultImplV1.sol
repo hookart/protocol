@@ -303,11 +303,7 @@ contract HookERC721VaultImplV1 is
   }
 
   /// @dev See {IHookVault-entitlementExpiration}.
-  function entitlementExpiration(uint256)
-    external
-    view
-    returns (uint256)
-  {
+  function entitlementExpiration(uint256) external view returns (uint256) {
     if (!hasActiveEntitlement()) {
       return 0;
     } else {
