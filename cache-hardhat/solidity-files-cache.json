@@ -734,8 +734,8 @@
       ]
     },
     "/Users/eliecerchicott/Work/protocol/src/HookERC721VaultImplV1.sol": {
-      "lastModificationDate": 1653346195439,
-      "contentHash": "2d718aea956c2502283321b37ea1b8b0",
+      "lastModificationDate": 1653356190028,
+      "contentHash": "d2ae8c6cf6e432c19b1161540bfe738b",
       "sourceName": "src/HookERC721VaultImplV1.sol",
       "solcConfig": {
         "version": "0.8.10",
@@ -1071,8 +1071,8 @@
       ]
     },
     "/Users/eliecerchicott/Work/protocol/src/interfaces/IHookVault.sol": {
-      "lastModificationDate": 1653346195439,
-      "contentHash": "32501c577a9a8095c37942ac4de8d22c",
+      "lastModificationDate": 1653356190029,
+      "contentHash": "ee63adaaadd78fccc4ce7bad6beb28c2",
       "sourceName": "src/interfaces/IHookVault.sol",
       "solcConfig": {
         "version": "0.8.10",
@@ -1641,8 +1641,8 @@
       ]
     },
     "/Users/eliecerchicott/Work/protocol/src/HookERC721VaultFactory.sol": {
-      "lastModificationDate": 1653346195438,
-      "contentHash": "2349bc3eed22f08d1192d3fc1ceb7295",
+      "lastModificationDate": 1653356190028,
+      "contentHash": "c3f2519317c084492f254491c6c49215",
       "sourceName": "src/HookERC721VaultFactory.sol",
       "solcConfig": {
         "version": "0.8.10",

@@ -56,7 +56,7 @@ contract HookERC721VaultFactory is
       "makeMultiVault -- vault cannot already exist"
     );
 
-    getMultiVault[nftAddress] = IHookERC721Vault(
+    vault = IHookERC721Vault(
       address(
         new HookERC721MultiVault{salt: keccak256(abi.encode(nftAddress))}(
           _multiBeacon,
@@ -66,6 +66,8 @@ contract HookERC721VaultFactory is
       )
     );
 
+    getMultiVault[nftAddress] = vault;
+    emit ERC721MultiVaultCreated(nftAddress, address(vault));
     return getMultiVault[nftAddress];
   }
 
