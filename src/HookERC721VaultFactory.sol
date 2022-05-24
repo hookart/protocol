@@ -3,13 +3,16 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
 
+import "./HookBeaconProxy.sol";
+
 import "./interfaces/IHookERC721VaultFactory.sol";
 import "./interfaces/IHookERC721Vault.sol";
 import "./interfaces/IHookProtocol.sol";
 import "./interfaces/IInitializeableBeacon.sol";
-import "./HookBeaconProxy.sol";
 
 import "./mixin/PermissionConstants.sol";
+
+import "./lib/BeaconSalts.sol";
 
 /// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
 /// created by this factory can be upgraded at one time via the beacon pattern.
@@ -61,7 +64,7 @@ contract HookERC721VaultFactory is
     IInitializeableBeacon bp = IInitializeableBeacon(
       Create2.deploy(
         0,
-        _multiVaultSalt(nftAddress),
+        BeaconSalts.multiVaultSalt(nftAddress),
         type(HookBeaconProxy).creationCode
       )
     );
@@ -94,7 +97,7 @@ contract HookERC721VaultFactory is
     IInitializeableBeacon bp = IInitializeableBeacon(
       Create2.deploy(
         0,
-        _soloVaultSalt(nftAddress, tokenId),
+        BeaconSalts.soloVaultSalt(nftAddress, tokenId),
         type(HookBeaconProxy).creationCode
       )
     );
@@ -138,6 +141,4 @@ contract HookERC721VaultFactory is
 
     return makeSoloVault(nftAddress, tokenId);
   }
-
-
 }

@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/utils/Create2.sol";
 
 import "./lib/Entitlements.sol";
 import "./lib/BeaconSalts.sol";
@@ -216,6 +217,14 @@ contract HookCoveredCallImplV1 is
       expirationTime == vault.entitlementExpiration(assetId),
       "mintWithVault -- entitlement expiration must match call expiration"
     );
+    require(
+      _allowedVaultImplementation(
+        vaultAddress,
+        allowedUnderlyingAddress,
+        assetId
+      ),
+      "mintWithVault -- can only mint with vaults created in protocol"
+    );
 
     // the beneficial owner owns the asset so
     // they should recieve the option.
@@ -233,7 +242,6 @@ contract HookCoveredCallImplV1 is
     uint256 expirationTime
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
-    uint256 assetId = 0; /// assume that the token is using an individual vault.
     require(
       allowedUnderlyingAddress == tokenAddress,
       "mintWithErc721 -- token must be on the project allowlist"
@@ -256,6 +264,19 @@ contract HookCoveredCallImplV1 is
       tokenAddress,
       tokenId
     );
+    uint256 assetId = 0;
+    if (
+      address(vault) ==
+      Create2.computeAddress(
+        BeaconSalts.multiVaultSalt(tokenAddress),
+        BeaconSalts.ByteCodeHash,
+        address(_erc721VaultFactory)
+      )
+    ) {
+      // If the vault is a multi-vault, it requries that the assetId matches the
+      // tokenId, instead of having a standard assetI of 0
+      assetId = tokenId;
+    }
 
     /// IMPORTANT: the entitlement entitles the user to this contract address. That means that even if this
     // implementation code were upgraded, the contract at this address (i.e. with the new implementation) would
@@ -264,7 +285,7 @@ contract HookCoveredCallImplV1 is
       beneficialOwner: tokenOwner,
       operator: address(this),
       vaultAddress: address(vault),
-      assetId: assetId, /// assume that the asset within the vault has assetId 0
+      assetId: assetId,
       expiry: expirationTime
     });
 
@@ -378,9 +399,9 @@ contract HookCoveredCallImplV1 is
     if (
       vaultAddress ==
       Create2.computeAddress(
-        Create2BeaconSalts.soloVaultSalt(underlyingAddress, assetId),
-        HookBeaconProxy.bytecodeHash,
-        _erc721VaultFactory
+        BeaconSalts.soloVaultSalt(underlyingAddress, assetId),
+        BeaconSalts.ByteCodeHash,
+        address(_erc721VaultFactory)
       )
     ) {
       return true;
@@ -389,9 +410,9 @@ contract HookCoveredCallImplV1 is
     if (
       vaultAddress ==
       Create2.computeAddress(
-        Create2BeaconSalts.multiVaultSalt(underlyingAddress),
-        HookBeaconProxy.bytecodeHash,
-        _erc721VaultFactory
+        BeaconSalts.multiVaultSalt(underlyingAddress),
+        BeaconSalts.ByteCodeHash,
+        address(_erc721VaultFactory)
       )
     ) {
       return true;
