@@ -33,13 +33,13 @@ describe("Vault", function () {
       "HookERC721VaultImplV1"
     );
     const vaultBeaconFactory = await ethers.getContractFactory(
-      "HookERC721VaultBeacon"
+      "HookUpgradeableBeacon"
     );
     const multiVaultImplFactory = await ethers.getContractFactory(
       "HookERC721MultiVaultImplV1"
     );
     const multiVaultBeaconFactory = await ethers.getContractFactory(
-      "HookERC721MultiVaultBeacon"
+      "HookUpgradeableBeacon"
     );
 
     weth = await weath.deploy();
@@ -1894,13 +1894,13 @@ describe("Call Instrument Tests", function () {
       "HookERC721VaultImplV1"
     );
     const vaultBeaconFactory = await ethers.getContractFactory(
-      "HookERC721VaultBeacon"
+      "HookUpgradeableBeacon"
     );
     const multiVaultImplFactory = await ethers.getContractFactory(
       "HookERC721MultiVaultImplV1"
     );
     const multiVaultBeaconFactory = await ethers.getContractFactory(
-      "HookERC721MultiVaultBeacon"
+      "HookUpgradeableBeacon"
     );
 
     const vaultImpl = await vaultImplFactory.deploy();
@@ -1934,7 +1934,7 @@ describe("Call Instrument Tests", function () {
       "HookCoveredCallImplV1"
     );
     const callBeaconFactory = await ethers.getContractFactory(
-      "HookCoveredCallBeacon"
+      "HookUpgradeableBeacon"
     );
 
     const callImpl = await callImplFactory.deploy();
