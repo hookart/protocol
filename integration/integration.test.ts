@@ -2736,6 +2736,18 @@ describe("Call Instrument Tests", function () {
       );
     });
 
+    it("should settle auction and return nft", async function () {
+      // Move forward to after auction period ends
+      await ethers.provider.send("evm_increaseTime", [1 * SECS_IN_A_DAY]);
+
+      const settleCall = calls
+        .connect(writer)
+        .settleOption(optionTokenId, true);
+      await expect(settleCall).to.emit(calls, "CallDestroyed");
+
+      expect(await token.ownerOf(0)).to.eq(writer.address);
+    });
+
     it("should settle auction when option writer is high bidder", async function () {
       // Move forward to after auction period ends
       await ethers.provider.send("evm_increaseTime", [1 * SECS_IN_A_DAY]);
@@ -2814,7 +2826,7 @@ describe("Call Instrument Tests", function () {
       );
     });
 
-    it("should not reclaim sold asset as buyer", async function () {
+    it("should not reclaim asset when writer is not option owner", async function () {
       // Transfer option NFT to buyer (assume this is a purchase)
       await calls
         .connect(writer)
@@ -2824,18 +2836,201 @@ describe("Call Instrument Tests", function () {
           optionTokenId
         );
 
+      const reclaimAsset = calls
+        .connect(writer)
+        .reclaimAsset(optionTokenId, false);
+      await expect(reclaimAsset).to.be.revertedWith(
+        "reclaimAsset -- the option must be owned by the writer"
+      );
+    });
+
+    it("should not reclaim asset from expired option", async function () {
+      // Move forward to auction period
+      await ethers.provider.send("evm_increaseTime", [3.1 * SECS_IN_A_DAY]);
+
+      const reclaimAsset = calls
+        .connect(writer)
+        .reclaimAsset(optionTokenId, false);
+      await expect(reclaimAsset).to.be.revertedWith(
+        "reclaimAsset -- the option must not be expired"
+      );
+    });
+
+    it("should reclaim asset with an active bid", async function () {
       // Move forward to auction period
       await ethers.provider.send("evm_increaseTime", [2.1 * SECS_IN_A_DAY]);
 
-      // Bid as writer
-      await calls.connect(writer).bid(optionTokenId, { value: 2 });
+      // Bid as firstBidder
+      await calls.connect(firstBidder).bid(optionTokenId, { value: 1001 });
 
       const reclaimAsset = calls
-        .connect(buyer)
+        .connect(writer)
         .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith(
-        "reclaimAsset -- asset can only be reclaimed by the writer"
+
+      await expect(reclaimAsset).to.emit(calls, "CallDestroyed");
+
+      // Check that there's no entitlment on the vault
+      const vaultAddress = await calls.getVaultAddress(optionTokenId);
+      const vault = await ethers.getContractAt(
+        "HookERC721MultiVaultImplV1",
+        vaultAddress
       );
+
+      const result = await vault.getCurrentEntitlementOperator(0);
+      expect(result.isActive).to.be.false;
+    });
+
+    it("should reclaim asset with no bids", async function () {
+      const reclaimAsset = calls
+        .connect(writer)
+        .reclaimAsset(optionTokenId, false);
+
+      await expect(reclaimAsset).to.emit(calls, "CallDestroyed");
+
+      // Check that there's no entitlment on the vault
+      const vaultAddress = await calls.getVaultAddress(optionTokenId);
+      const vault = await ethers.getContractAt(
+        "HookERC721MultiVaultImplV1",
+        vaultAddress
+      );
+
+      const result = await vault.getCurrentEntitlementOperator(0);
+      expect(result.isActive).to.be.false;
+    });
+
+    it("should reclaim asset with no bids and return nft", async function () {
+      await calls
+        .connect(writer)
+        .reclaimAsset(optionTokenId, true);
+
+      expect(await token.ownerOf(0)).to.eq(writer.address);
+    });
+  });
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~~ config ~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  describe("config", function () {
+    let marketController: SignerWithAddress
+
+    this.beforeEach(async function () {
+      [marketController] = await ethers.getSigners();
+
+      const MARKET_CONF_ROLE = calls.MARKET_CONF();
+      protocol.connect(admin).grantRole(MARKET_CONF_ROLE, marketController.address);
+    });
+
+    it("should not modify configuration as non market controller", async function () {
+      const setMinOptionDuration = calls.connect(writer).setMinOptionDuration(0);
+      await expect(setMinOptionDuration).to.be.revertedWith("onlyMarketController -- caller does not have the MARKET_CONF protocol role")
+    });
+
+    it("should set min option duration as market controller", async function () {
+      await expect(calls.connect(marketController).setMinOptionDuration(100))
+      .to.emit(calls, 'MinOptionDurationUpdated')
+      .withArgs(100);
+    });
+
+    it("should set bid increment as market controller", async function () {
+      await expect(calls.connect(marketController).setBidIncrement(37))
+      .to.emit(calls, 'MinBidIncrementUpdated')
+      .withArgs(37);
+    });
+
+    it("should set settlement auction start offset as market controller", async function () {
+      await expect(calls.connect(marketController).setSettlementAuctionStartOffset(6))
+      .to.emit(calls, 'SettlementAuctionStartOffsetUpdated')
+      .withArgs(6);
+    });
+
+    it("should no set settlement auction start offset when more than minimum option duration", async function () {
+      await calls.connect(marketController).setMinOptionDuration(100)
+
+      await expect(calls.connect(marketController).setSettlementAuctionStartOffset(101))
+      .to.be.revertedWith("the settlement auctions cannot start sooner than an option expired");
+    });
+
+    it("should set market paused as market controller", async function () {
+      await expect(calls.connect(marketController).setMarketPaused(true))
+      .to.emit(calls, 'MarketPauseUpdated')
+      .withArgs(true);
+    });
+  });
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~ getters ~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  describe("getters", function () {
+    let optionTokenId: BigNumber;
+    let multiVault: Contract;
+    let expiration: BigNumber;
+
+    this.beforeEach(async function () {
+      // Create multivault for token
+      await vaultFactory.makeMultiVault(token.address);
+      const multiValutAddress = await vaultFactory.getMultiVault(token.address);
+      multiVault = await ethers.getContractAt(
+        "HookERC721MultiVaultImplV1",
+        multiValutAddress
+      );
+
+      // Transfer token to vault
+      await token
+        .connect(writer)
+        ["safeTransferFrom(address,address,uint256)"](
+          writer.address,
+          multiVault.address,
+          0
+        );
+
+      const blockNumber = await ethers.provider.getBlockNumber();
+      const block = await ethers.provider.getBlock(blockNumber);
+      const blockTimestamp = block.timestamp;
+      expiration = BigNumber.from(Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5));
+
+      await multiVault.connect(writer).grantEntitlement({
+        beneficialOwner: writer.address,
+        operator: calls.address,
+        vaultAddress: multiVault.address,
+        assetId: 0,
+        expiry: expiration,
+      });
+
+      console.log(await multiVault.getCurrentEntitlementOperator(0));
+      console.log(calls.address);
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
+      
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      optionTokenId = callCreatedEvent.args.optionId;
+    });
+
+    it("should get vault address", async function () {
+      expect(await calls.getVaultAddress(optionTokenId)).to.eq(multiVault.address);
+    });
+
+    it("should get asset id", async function () {
+      expect(await calls.getAssetId(optionTokenId)).to.eq(0);
+    });
+
+    it("should get strike price", async function () {
+      expect(await calls.getStrikePrice(optionTokenId)).to.eq(1000);
+    });
+
+    it("should get expiration", async function () {
+      expect(await calls.getExpiration(optionTokenId)).to.eq(expiration);
     });
   });
 });

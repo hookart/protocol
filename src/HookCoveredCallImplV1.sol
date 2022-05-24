@@ -542,26 +542,14 @@ contract HookCoveredCallImplV1 is
       !call.settled,
       "reclaimAsset -- the option has already been settled"
     );
-
-    if (call.writer != ownerOf(optionId)) {
-      // if the writer holds the option nft, there are more cases where they're able to reclaim.
-      require(
-        call.highBidder == address(0),
-        "reclaimAsset -- cannot reclaim a sold asset if the option is not writer-owned."
-      );
-      require(
-        call.expiration < block.timestamp,
-        "reclaimAsset -- the option must expired unless writer-owned"
-      );
-    }
-
-    if (call.expiration <= block.timestamp) {
-      require(
-        call.highBidder == address(0),
-        "reclaimAsset -- cannot reclaim a sold asset"
-      );
-      // send the call back to the owner (because we've refunded the high bidder)
-    }
+    require(
+      call.writer == ownerOf(optionId),
+      "reclaimAsset -- the option must be owned by the writer"
+    );
+    require(
+      call.expiration > block.timestamp,
+      "reclaimAsset -- the option must not be expired"
+    );
 
     if (call.highBidder != address(0)) {
       // return current bidder's money
@@ -576,14 +564,12 @@ contract HookCoveredCallImplV1 is
 
     if (returnNft) {
       // Because the call is not expired, we should be able to reclaim the asset from the vault
-      if (call.expiration > block.timestamp) {
-        IHookVault(call.vaultAddress).clearEntitlementAndDistribute(
-          call.assetId,
-          call.writer
-        );
-      } else {
-        IHookVault(call.vaultAddress).withdrawalAsset(call.assetId);
-      }
+      IHookVault(call.vaultAddress).clearEntitlementAndDistribute(
+        call.assetId,
+        call.writer
+      );
+    } else {
+      IHookVault(call.vaultAddress).clearEntitlement(call.assetId);
     }
 
     // burn the option NFT
