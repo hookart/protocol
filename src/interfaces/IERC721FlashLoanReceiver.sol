@@ -5,18 +5,18 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 /// @title Flash Loan Operator Interface (ERC-721)
 /// @dev contracts that will utilize vaulted assets in flash loans should implement this interface in order to
-/// recieve the asset. Users may want to recieve the asset within a single block to claim airdrops, participate
+/// receive the asset. Users may want to receive the asset within a single block to claim airdrops, participate
 /// in governance, and other things with their assets.
 ///
 /// The implementer may do whatever they like with the vaulted NFT within the executeOperation method,
 /// so long as they approve the vault (passed as a param) to operate the underlying NFT. The Vault
-/// will move the asset back into the vault after executionOperation returns, and also validte that
+/// will move the asset back into the vault after executionOperation returns, and also validate that
 /// it is the owner of the asset.
 ///
 /// The flashloan receiver is able to abort a flashloan by returning false from the executeOperation method.
 interface IERC721FlashLoanReceiver is IERC721Receiver {
   /// @notice the method that contains the operations to be performed with the loaned asset
-  /// @dev executeOperation is called immediately after the asset is transfered to this contract. After return,
+  /// @dev executeOperation is called immediately after the asset is transferred to this contract. After return,
   /// the asset is returned to the vault by the vault contract. The executeOperation implementation MUST
   /// approve the {vault} to operate the transferred NFT
   /// i.e. `IERC721(nftContract).setApprovalForAll(vault, true);`

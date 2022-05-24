@@ -916,7 +916,7 @@ describe("Vault", function () {
             .connect(runner)
             .clearEntitlementAndDistribute(0, runner.address)
         ).to.be.revertedWith(
-          "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
+          "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
         );
       });
 
@@ -1440,7 +1440,7 @@ describe("Vault", function () {
               )
             )
         ).to.be.revertedWith(
-          "onERC721Recieved -- cannot impose an entitlement on an asset other than the asset deposited in the transfer"
+          "onERC721Received -- cannot impose an entitlement on an asset other than the asset deposited in the transfer"
         );
       });
 
@@ -1748,7 +1748,7 @@ describe("Vault", function () {
             .connect(runner)
             .clearEntitlementAndDistribute(1, runner.address)
         ).to.be.revertedWith(
-          "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
+          "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
         );
       });
 

@@ -22,20 +22,20 @@ contract HookCoveredCallFactory is
 
   address private _beacon;
   IHookProtocol private _protocol;
-  address private _preapprovedMarketplace;
+  address private _preApprovedMarketplace;
 
   /// @dev there is only one instance of this contract, so the constructor is called exactly once.
   /// @param hookProtocolAddress the address of the deployed HookProtocol contract on this network
   /// @param beaconAddress the address of the deployed beacon pointing to the current covered call implementation
-  /// @param preapprovedMarketplace the address of a marketplace to automatically approve to transfer insturments
+  /// @param preApprovedMarketplace the address of a marketplace to automatically approve to transfer instruments
   constructor(
     address hookProtocolAddress,
     address beaconAddress,
-    address preapprovedMarketplace
+    address preApprovedMarketplace
   ) {
     _beacon = beaconAddress;
     _protocol = IHookProtocol(hookProtocolAddress);
-    _preapprovedMarketplace = preapprovedMarketplace;
+    _preApprovedMarketplace = preApprovedMarketplace;
   }
 
   /// @dev See {IHookCoveredCallFactory-makeCallInstrument}.
@@ -59,7 +59,7 @@ contract HookCoveredCallFactory is
     IInitializeableBeacon bp = IInitializeableBeacon(
       Create2.deploy(
         0,
-        _callInsturmentSalt(assetAddress),
+        _callInstrumentSalt(assetAddress),
         type(HookBeaconProxy).creationCode
       )
     );
@@ -72,13 +72,13 @@ contract HookCoveredCallFactory is
         _protocol,
         assetAddress,
         _protocol.vaultContract(),
-        _preapprovedMarketplace
+        _preApprovedMarketplace
       )
     );
 
     getCallInstrument[assetAddress] = address(bp);
 
-    emit CoveredCallInsturmentCreated(
+    emit CoveredCallInstrumentCreated(
       assetAddress,
       getCallInstrument[assetAddress]
     );
@@ -86,7 +86,7 @@ contract HookCoveredCallFactory is
     return getCallInstrument[assetAddress];
   }
 
-  function _callInsturmentSalt(address underlyingAddress)
+  function _callInstrumentSalt(address underlyingAddress)
     internal
     pure
     returns (bytes32)

@@ -32,7 +32,7 @@ interface IHookERC721Vault is IHookVault, IERC721Receiver {
   /// before returning.
   /// @param receiverAddress the contract which implements the {IERC721FlashLoanReceiver} interface to utilize the
   /// asset while it is loaned out
-  /// @param params calldata params to forward to the reciever
+  /// @param params calldata params to forward to the receiver
   function flashLoan(
     uint256 assetId,
     address receiverAddress,

@@ -71,7 +71,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.expectRevert("ERC721: transfer caller is not owner nor approved");
     calls.safeTransferFrom(writer, address(55), optionId);
 
-    vm.prank(preapprovedOperator);
+    vm.prank(preApprovedOperator);
     calls.safeTransferFrom(writer, address(55), optionId);
     assertTrue(
       calls.ownerOf(optionId) == address(55),

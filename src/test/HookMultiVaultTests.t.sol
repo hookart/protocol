@@ -884,7 +884,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
     vm.expectRevert(
-      "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
+      "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
     );
     vm.prank(mockContract);
     vaultImpl.clearEntitlementAndDistribute(0, address(0x033333344545));

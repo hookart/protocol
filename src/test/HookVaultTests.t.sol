@@ -874,7 +874,7 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     vm.expectRevert(
-      "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
+      "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
     );
     vm.prank(mockContract);
     vaultImpl.clearEntitlementAndDistribute(0, address(0x033333344545));

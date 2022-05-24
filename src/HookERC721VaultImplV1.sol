@@ -13,12 +13,12 @@ import "./lib/Entitlements.sol";
 import "./lib/Signatures.sol";
 import "./mixin/EIP712.sol";
 
-/// @title  HookVault -- implemenation of a Vault for a single NFT asset, with entitlements.
+/// @title HookVault -- implementation of a Vault for a single NFT asset, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
 /// @notice HookVault holds a single NFT asset in escrow on behalf of a user. Other contracts are able
 /// to register "entitlements" for a fixed period of time on the asset, which give them the ability to
 /// change the vault's owner.
-/// @dev This contract implements ERC721Reciever and
+/// @dev This contract implements ERC721Receiver and
 contract HookERC721VaultImplV1 is
   IHookERC721Vault,
   EIP712,
@@ -33,12 +33,12 @@ contract HookERC721VaultImplV1 is
   IERC721 private _nftContract;
   uint256 private _tokenId;
 
-  /// @dev the current owner of the asset, who is able to withdrawl it if there are no
+  /// @dev the current owner of the asset, who is able to withdrawal it if there are no
   /// entitlements.
   address private beneficialOwner;
 
   /// @dev these fields mark when there is an active entitlement on this contract. If these
-  /// fields are non-null, the beneficial owner is unable to withdrawl until either the entitlement
+  /// fields are non-null, the beneficial owner is unable to withdrawal until either the entitlement
   /// expires or the fields are cleared.
   Entitlements.Entitlement private _currentEntitlement;
 
@@ -47,7 +47,7 @@ contract HookERC721VaultImplV1 is
 
   IHookProtocol private _hookProtocol;
 
-  /// Upgradeable Implementations cannot have a contructor, so we call the initialize instead;
+  /// Upgradeable Implementations cannot have a constructor, so we call the initialize instead;
   constructor() {}
 
   /// -- constructor
@@ -82,7 +82,7 @@ contract HookERC721VaultImplV1 is
   /// @dev See {IHookERC721Vault-withdrawalAsset}.
   /// @dev withdrawals can only be performed by the beneficial owner if there are no entitlements
   function withdrawalAsset(uint256) external {
-    // require(msg.sender == beneficialOwner, "the beneficial owner is the only one able to withdrawl");
+    // require(msg.sender == beneficialOwner, "the beneficial owner is the only one able to withdrawal");
     require(
       !hasActiveEntitlement(),
       "withdrawalAsset -- the asset canot be withdrawn with an active entitlement"
@@ -148,8 +148,8 @@ contract HookERC721VaultImplV1 is
     /// subsequently transfers the asset into the contract, it needs to manually call (setBeneficialOwner)
     /// after making this call to ensure that the true owner of the asset is known to the vault. Otherwise,
     /// the owner will lose the ability to reclaim their asset. Alternatively, they could pass an entitlement
-    /// in prepopulated with the correct beneficial owner, which will give that owner the ability to reclaim
-    /// the asseet.
+    /// in pre-populated with the correct beneficial owner, which will give that owner the ability to reclaim
+    /// the asset.
     if (msg.sender == address(_nftContract) && tokenId == _tokenId) {
       // There is no need to check if we currently have this token or an entitlement set.
       // Even if the contract were able to get into this state, it should still accept the asset
@@ -180,7 +180,7 @@ contract HookERC721VaultImplV1 is
         );
       }
     } else {
-      // If we're recieving an airdrop or other asset uncovered by escrow to this address, we should ensure
+      // If we're receiving an airdrop or other asset uncovered by escrow to this address, we should ensure
       // that this is allowed by our current settings.
       require(
         !_hookProtocol.getCollectionConfig(
@@ -215,7 +215,7 @@ contract HookERC721VaultImplV1 is
       "execTransaction -- cannot send transactions to the NFT contract itself"
     );
 
-    // block transactions to the vault to mitigate re-entrancy vulnerabilities
+    // block transactions to the vault to mitigate reentrancy vulnerabilities
     require(
       to != address(this),
       "execTransaction -- cannot call the vault contract"
@@ -265,8 +265,8 @@ contract HookERC721VaultImplV1 is
     _nftContract.safeTransferFrom(address(this), receiverAddress, _tokenId);
 
     // (3) call the flashloan contract, giving it a chance to do whatever it wants
-    // NOTE: The flashloan contract MUST approve this vault contract as an operator
-    // for the nft, such that we're able to make sure it has arrived.
+    //      NOTE: The flashloan contract MUST approve this vault contract as an operator
+    //      for the nft, such that we're able to make sure it has arrived.
     require(
       receiver.executeOperation(
         address(_nftContract),
@@ -290,7 +290,7 @@ contract HookERC721VaultImplV1 is
 
     // (6) additional sanity check to ensure that the internal state of
     // the entitlement has not somehow been modified during the flash loan, for example
-    // via some re-entrancy attack or by sending the asset back into the contract
+    // via some reentrancy attack or by sending the asset back into the contract
     // prematurely
     require(
       startState == keccak256(abi.encode(_currentEntitlement)),
@@ -367,19 +367,19 @@ contract HookERC721VaultImplV1 is
 
   /// @dev See {IHookERC721Vault-clearEntitlementAndDistribute}.
   /// @dev The entitlement must be exist, and must be called by the {operator}. The operator can specify a
-  /// intended reciever, which should match the beneficialOwner. The function will throw if
-  /// the reciever and owner do not match.
-  /// @param reciever the intended reciever of the asset
-  function clearEntitlementAndDistribute(uint256, address reciever)
+  /// intended receiver, which should match the beneficialOwner. The function will throw if
+  /// the receiver and owner do not match.
+  /// @param receiver the intended receiver of the asset
+  function clearEntitlementAndDistribute(uint256, address receiver)
     external
     nonReentrant
   {
     require(
-      beneficialOwner == reciever,
-      "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
+      beneficialOwner == receiver,
+      "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
     );
     clearEntitlement(ASSET_ID);
-    IERC721(_nftContract).safeTransferFrom(address(this), reciever, _tokenId);
+    IERC721(_nftContract).safeTransferFrom(address(this), receiver, _tokenId);
     emit AssetWithdrawn(ASSET_ID, msg.sender, beneficialOwner);
   }
 

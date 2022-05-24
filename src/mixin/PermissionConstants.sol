@@ -11,7 +11,7 @@ abstract contract PermissionConstants {
   /// @notice the allowlister is able to enable and disable projects to mint instruments
   bytes32 public constant ALLOWLISTER_ROLE = keccak256("ALLOWLISTER_ROLE");
 
-  /// @notice the paueser is able to start and pause various components of the protocol
+  /// @notice the pauser is able to start and pause various components of the protocol
   bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
   /// @notice the vault upgrader role is able to upgrade the implementation for all vaults
