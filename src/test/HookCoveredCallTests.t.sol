@@ -1223,29 +1223,28 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     token.mint(address(writer), underlyingTokenId);
 
     setUpMintOption();
+
+    // Transfer option NFT from buyer back to the writer
+    // Writer needs to own the option NFT for reclaimAsset
+    vm.prank(address(buyer));
+    calls.safeTransferFrom(buyer, writer, optionTokenId);
   }
 
   function testReclaimAsset() public {
-    // Option expires in 3 days from current block; bidding starts in 2 days.
-    vm.warp(block.timestamp + 3.1 days);
+    // Option expires in 3 days from current block
+    vm.warp(block.timestamp + 2.1 days);
     vm.prank(writer);
     calls.reclaimAsset(optionTokenId, false);
   }
 
   function testReclaimAssetReturnNft() public {
-    // Option expires in 3 days from current block; bidding starts in 2 days.
-    vm.warp(block.timestamp + 3.1 days);
+    // Option expires in 3 days from current block
+    vm.warp(block.timestamp + 2.1 days);
 
     vm.startPrank(writer);
 
-    IHookERC721Vault vault = vaultFactory.getVault(
-      address(token),
-      underlyingTokenId
-    );
-    vm.expectCall(
-      address(vault),
-      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
-    );
+    vm.expectEmit(true, false, false, false);
+    emit CallReclaimed(optionTokenId);
     calls.reclaimAsset(optionTokenId, true);
   }
 
@@ -1271,28 +1270,37 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     calls.reclaimAsset(optionTokenId, true);
   }
 
-  function testCannotReclaimWithActiveBid() public {
-    setUpOptionBids();
+  function testReclaimWithActiveBid() public {
+    vm.warp(block.timestamp + 2.1 days);
+    vm.deal(address(firstBidder), 1 ether);
+
+    vm.prank(firstBidder);
+    
+    calls.bid{value: 0.1 ether}(optionTokenId);
 
     vm.startPrank(writer);
-    vm.expectRevert(
-      "reclaimAsset -- cannot reclaim a sold asset if the option is not writer-owned."
-    );
+
+    vm.expectEmit(true, false, false, false);
+    emit CallReclaimed(optionTokenId);
     calls.reclaimAsset(optionTokenId, true);
+
+    assertTrue(
+      token.ownerOf(0) == address(writer),
+      "writer should own the underlying asset"
+    );
   }
 
-  function testCannotReclaimBeforeExpiration() public {
+  function testCannotReclaimAfterExpiration() public {
     vm.startPrank(writer);
-    vm.warp(block.timestamp + 2.1 days);
+    vm.warp(block.timestamp + 3.1 days);
 
     vm.expectRevert(
-      "reclaimAsset -- the option must expired unless writer-owned"
+      "reclaimAsset -- the option must not be expired"
     );
     calls.reclaimAsset(optionTokenId, true);
   }
 
   function testReclaimAssetWriterBidFirst() public {
-    address firstBidder = address(37);
     vm.startPrank(writer);
     uint256 underlyingTokenId2 = 1;
     token.mint(writer, underlyingTokenId2);
@@ -1324,23 +1332,14 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.prank(firstBidder);
     calls.bid{value: 2000 wei}(optionId);
 
-    vm.warp(block.timestamp + 1 days);
-
     vm.startPrank(writer);
 
-    IHookERC721Vault vault = vaultFactory.getVault(
-      address(token),
-      underlyingTokenId
-    );
-    vm.expectCall(
-      address(vault),
-      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
-    );
+    vm.expectEmit(true, false, false, false);
+    emit CallReclaimed(optionTokenId);
     calls.reclaimAsset(optionTokenId, true);
   }
 
   function testReclaimAssetWriterBidLast() public {
-    address firstBidder = address(37);
     vm.startPrank(writer);
     uint256 underlyingTokenId2 = 1;
     token.mint(writer, underlyingTokenId2);
@@ -1374,22 +1373,14 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.prank(writer);
     calls.bid{value: 2 wei}(optionId);
 
-    vm.warp(block.timestamp + 1 days);
-
     vm.startPrank(writer);
-    IHookERC721Vault vault = vaultFactory.getVault(
-      address(token),
-      underlyingTokenId
-    );
-    vm.expectCall(
-      address(vault),
-      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
-    );
+
+    vm.expectEmit(true, false, false, false);
+    emit CallReclaimed(optionTokenId);
     calls.reclaimAsset(optionTokenId, true);
   }
 
   function testReclaimAssetWriterBidMultiple() public {
-    address firstBidder = address(37);
     vm.startPrank(writer);
     uint256 underlyingTokenId2 = 1;
     token.mint(writer, underlyingTokenId2);
@@ -1426,17 +1417,10 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.prank(firstBidder);
     calls.bid{value: 1003 wei}(optionId);
 
-    vm.warp(block.timestamp + 1 days);
-
     vm.startPrank(writer);
-    IHookERC721Vault vault = vaultFactory.getVault(
-      address(token),
-      underlyingTokenId
-    );
-    vm.expectCall(
-      address(vault),
-      abi.encodeWithSignature("withdrawalAsset(uint256)", 0)
-    );
+
+    vm.expectEmit(true, false, false, false);
+    emit CallReclaimed(optionTokenId);
     calls.reclaimAsset(optionTokenId, true);
   }
 }
