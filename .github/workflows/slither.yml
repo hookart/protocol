@@ -12,7 +12,7 @@ jobs:
           submodules: recursive
 
       - name: Run Slither
-        uses: crytic/slither-action@0.1.1
+        uses: crytic/slither-action@v0.1.1
       # [NOTE]: continue-on-error ignores warnings. We are using all available Detectors for every Severity.
         continue-on-error: true 
         # id: slither
