@@ -3161,4 +3161,102 @@ describe("Call Instrument Tests", function () {
       expect(await calls.getExpiration(optionTokenId)).to.eq(expiration);
     });
   });
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~~~~~~~~ burnExpiredOption ~~~~~~~~~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  describe("burnExpiredOption", function () {
+    let optionTokenId: BigNumber;
+
+    this.beforeEach(async function () {
+      // Create multivault for token
+      await vaultFactory.makeMultiVault(token.address);
+      const multiValutAddress = await vaultFactory.getMultiVault(token.address);
+      const multiVault = await ethers.getContractAt(
+        "HookERC721MultiVaultImplV1",
+        multiValutAddress
+      );
+
+      // Transfer token to vault
+      await token
+        .connect(writer)
+        ["safeTransferFrom(address,address,uint256)"](
+          writer.address,
+          multiVault.address,
+          0
+        );
+
+      const blockNumber = await ethers.provider.getBlockNumber();
+      const block = await ethers.provider.getBlock(blockNumber);
+      const blockTimestamp = block.timestamp;
+      const expiration = BigNumber.from(Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5));
+
+      await multiVault.connect(writer).grantEntitlement({
+        beneficialOwner: writer.address,
+        operator: calls.address,
+        vaultAddress: multiVault.address,
+        assetId: 0,
+        expiry: expiration,
+      });
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
+      
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      optionTokenId = callCreatedEvent.args.optionId;
+    });
+
+    it("should not burn expired option before expiration", async function () {
+      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith("burnExpiredOption -- the option must be expired")
+    });
+
+    it("should burn expired option", async function () {
+      // Move forward past expiration
+      await ethers.provider.send("evm_increaseTime", [2 * SECS_IN_A_DAY]);
+
+      await expect(calls.burnExpiredOption(optionTokenId))
+      .to.emit(calls, 'ExpiredCallBurned')
+    });
+
+    it("should burn expired option and return funds", async function () {
+      // Move forward to settlement auction
+      await ethers.provider.send("evm_increaseTime", [0.5 * SECS_IN_A_DAY]);
+
+
+      // First bidder bid
+      await calls.connect(firstBidder).bid(optionTokenId, { value: 1001 });
+
+      // Get vault
+      const vaultAddress = await calls.getVaultAddress(optionTokenId);
+      const vault = await ethers.getContractAt(
+        "HookERC721MultiVaultImplV1",
+        vaultAddress
+      );
+
+      // Move forward past option expiration
+      await ethers.provider.send("evm_increaseTime", [2 * SECS_IN_A_DAY]);
+
+      // Burn expired option
+      const burnExpiredOption = await calls.burnExpiredOption(optionTokenId);
+      expect(burnExpiredOption)
+      .to.emit(calls, 'ExpiredCallBurned');
+      
+      expect(burnExpiredOption)
+      .to.changeEtherBalances([writer], [1000]);
+
+      expect(await vault.getBeneficialOwner(0)).to.eq(
+        firstBidder.address
+      );
+    });
+
+  });
 });
