@@ -3269,35 +3269,18 @@ describe("Call Instrument Tests", function () {
       .to.emit(calls, 'ExpiredCallBurned')
     });
 
-    it("should burn expired option and return funds", async function () {
+    it("should not burn expired option with bids", async function () {
       // Move forward to settlement auction
       await ethers.provider.send("evm_increaseTime", [0.5 * SECS_IN_A_DAY]);
 
-
       // First bidder bid
       await calls.connect(firstBidder).bid(optionTokenId, { value: 1001 });
-
-      // Get vault
-      const vaultAddress = await calls.getVaultAddress(optionTokenId);
-      const vault = await ethers.getContractAt(
-        "HookERC721MultiVaultImplV1",
-        vaultAddress
-      );
 
       // Move forward past option expiration
       await ethers.provider.send("evm_increaseTime", [2 * SECS_IN_A_DAY]);
 
       // Burn expired option
-      const burnExpiredOption = await calls.burnExpiredOption(optionTokenId);
-      expect(burnExpiredOption)
-      .to.emit(calls, 'ExpiredCallBurned');
-      
-      expect(burnExpiredOption)
-      .to.changeEtherBalances([writer], [1000]);
-
-      expect(await vault.getBeneficialOwner(0)).to.eq(
-        firstBidder.address
-      );
+      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith("burnExpiredOption -- the option must not have bids");
     });
 
   });

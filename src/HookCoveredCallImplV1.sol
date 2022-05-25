@@ -604,18 +604,10 @@ contract HookCoveredCallImplV1 is
       "burnExpiredOption -- the option has already been settled"
     );
 
-    if (call.highBidder != address(0)) {
-      uint256 spread = call.bid - call.strike;
-
-      // If the option writer is the high bidder they don't recieve the strike because they bid on the spread.
-      if (call.highBidder != call.writer) {
-        // send option writer the strike price
-        _safeTransferETHWithFallback(call.writer, call.strike);
-      }
-
-      // return send option holder their earnings
-      _safeTransferETHWithFallback(ownerOf(optionId), spread);
-    }
+    require(
+      call.highBidder == address(0),
+      "burnExpiredOption -- the option must not have bids"
+    );
 
     // burn the option NFT
     _burn(optionId);
