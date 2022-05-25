@@ -479,7 +479,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     // verify that beneficial owner cannot withdrawl
     // during an active entitlement.
     vm.expectRevert(
-      "withdrawalAsset -- the asset canot be withdrawn with an active entitlement"
+      "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
     );
     vm.prank(writer);
     vaultImpl.withdrawalAsset(tokenId);
