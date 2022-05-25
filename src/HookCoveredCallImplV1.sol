@@ -413,15 +413,19 @@ contract HookCoveredCallImplV1 is
       return true;
     }
 
-    if (
-      vaultAddress ==
-      Create2.computeAddress(
-        BeaconSalts.soloVaultSalt(underlyingAddress, assetId),
-        BeaconSalts.ByteCodeHash,
-        address(_erc721VaultFactory)
-      )
-    ) {
-      return true;
+    try IHookERC721Vault(vaultAddress).assetTokenId(assetId) returns (uint256 _tokenId) {
+      if (
+        vaultAddress ==
+        Create2.computeAddress(
+          BeaconSalts.soloVaultSalt(underlyingAddress, _tokenId),
+          BeaconSalts.ByteCodeHash,
+          address(_erc721VaultFactory)
+        )
+      ) {
+        return true;
+      }
+    } catch(bytes memory) {
+      return false;
     }
 
     return false;
