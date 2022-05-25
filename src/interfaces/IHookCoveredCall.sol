@@ -67,7 +67,7 @@ interface IHookCoveredCall is IERC721Metadata {
     address tokenAddress,
     uint256 tokenId,
     uint128 strikePrice,
-    uint128 expirationTime
+    uint32 expirationTime
   ) external returns (uint256);
 
   /// @notice Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
@@ -78,9 +78,9 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @param signature the signature used to place the entitlement onto the vault
   function mintWithVault(
     address vaultAddress,
-    uint256 assetId,
+    uint32 assetId,
     uint128 strikePrice,
-    uint128 expirationTime,
+    uint32 expirationTime,
     Signatures.Signature calldata signature
   ) external returns (uint256);
 
@@ -92,9 +92,9 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @param expirationTime time the timestamp after which the option will be expired
   function mintWithEntitledVault(
     address vaultAddress,
-    uint256 assetId,
+    uint32 assetId,
     uint128 strikePrice,
-    uint128 expirationTime
+    uint32 expirationTime
   ) external returns (uint256);
 
   /// @notice Bid in the settlement auction for an option. The paid amount is the bid,
@@ -104,7 +104,7 @@ interface IHookCoveredCall is IERC721Metadata {
 
   /// @notice view function to get the current high settlement bid of an option, or 0 if there is no high bid
   /// @param optionId of the option to check
-  function currentBid(uint256 optionId) external view returns (uint256);
+  function currentBid(uint256 optionId) external view returns (uint128);
 
   /// @notice view function to get the current high bidder for an option settlement auction, or the null address if no
   /// high bidder exists
@@ -132,7 +132,6 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @param optionId of the option to settle.
   /// @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
   function settleOption(uint256 optionId, bool returnNft) external;
-
 
   /// @notice Allows anyone to burn the instrument NFT for an expired option.
   /// @param optionId of the option to burn.

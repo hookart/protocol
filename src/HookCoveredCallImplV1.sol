@@ -148,9 +148,9 @@ contract HookCoveredCallImplV1 is
   /// @dev See {IHookCoveredCall-mintWithVault}.
   function mintWithVault(
     address vaultAddress,
-    uint256 assetId,
+    uint32 assetId,
     uint128 strikePrice,
-    uint128 expirationTime,
+    uint32 expirationTime,
     Signatures.Signature calldata signature
   ) external whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
@@ -178,7 +178,7 @@ contract HookCoveredCallImplV1 is
     vault.imposeEntitlement(
       address(this),
       expirationTime,
-      uint128(assetId),
+      assetId,
       signature.v,
       signature.r,
       signature.s
@@ -191,9 +191,9 @@ contract HookCoveredCallImplV1 is
   /// @dev See {IHookCoveredCall-mintWithEntitledVault}.
   function mintWithEntitledVault(
     address vaultAddress,
-    uint256 assetId,
+    uint32 assetId,
     uint128 strikePrice,
-    uint128 expirationTime
+    uint32 expirationTime
   ) external whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
 
@@ -239,7 +239,7 @@ contract HookCoveredCallImplV1 is
     address tokenAddress,
     uint256 tokenId,
     uint128 strikePrice,
-    uint128 expirationTime
+    uint32 expirationTime
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
@@ -390,7 +390,7 @@ contract HookCoveredCallImplV1 is
   function _allowedVaultImplementation(
     address vaultAddress,
     address underlyingAddress,
-    uint256 assetId
+    uint32 assetId
   ) internal view returns (bool) {
     // First check if the multiVault is the one to save a bit of gas
     // in the case the user is optimizing for gas savings (by using MultiVault)
@@ -475,7 +475,7 @@ contract HookCoveredCallImplV1 is
   }
 
   /// @dev See {IHookCoveredCall-currentBid}.
-  function currentBid(uint256 optionId) external view returns (uint256) {
+  function currentBid(uint256 optionId) external view returns (uint128) {
     return optionParams[optionId].bid;
   }
 
@@ -684,7 +684,7 @@ contract HookCoveredCallImplV1 is
     return optionParams[optionId].vaultAddress;
   }
 
-  function getAssetId(uint256 optionId) public view override returns (uint256) {
+  function getAssetId(uint256 optionId) public view override returns (uint32) {
     return optionParams[optionId].assetId;
   }
 

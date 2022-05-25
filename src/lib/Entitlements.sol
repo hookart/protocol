@@ -11,8 +11,8 @@ library Entitlements {
           "address beneficialOwner,",
           "address operator,",
           "address vaultAddress,",
-          "uint256 assetId,",
-          "uint256 expiry",
+          "uint32 assetId,",
+          "uint32 expiry",
           ")"
         )
       )
@@ -27,9 +27,9 @@ library Entitlements {
     /// @notice the contract address for the vault that contains the underlying assets
     address vaultAddress;
     /// @notice the assetId of the asset or assets within the vault
-    uint256 assetId;
+    uint32 assetId;
     /// @notice the block timestamp after which the asset is free of the entitlement
-    uint256 expiry;
+    uint32 expiry;
   }
 
   function getEntitlementStructHash(Entitlement memory entitlement)

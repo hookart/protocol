@@ -75,7 +75,7 @@ abstract contract HookInstrumentERC721 is ERC721Burnable {
     returns (address);
 
   /// @notice getter for the assetId of the underlying asset within a vault
-  function getAssetId(uint256 optionId) public view virtual returns (uint256);
+  function getAssetId(uint256 optionId) public view virtual returns (uint32);
 
   /// @notice getter for the option strike price
   function getStrikePrice(uint256 optionId)
@@ -117,7 +117,7 @@ abstract contract HookInstrumentERC721 is ERC721Burnable {
     bytes4 class = _underlyingClass(tokenId);
     if (class == ERC_721) {
       IHookERC721Vault vault = IHookERC721Vault(getVaultAddress(tokenId));
-      uint256 assetId = getAssetId(tokenId);
+      uint32 assetId = getAssetId(tokenId);
       address underlyingAddress = vault.assetAddress(assetId);
       uint256 underlyingTokenId = vault.assetTokenId(assetId);
       // currently nothing in the contract depends on the actual underlying metadata uri

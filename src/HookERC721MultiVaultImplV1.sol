@@ -13,7 +13,6 @@ import "./lib/Entitlements.sol";
 import "./lib/Signatures.sol";
 import "./mixin/EIP712.sol";
 
-
 /// @title  HookMultiVault -- implementation of a Vault for multiple assets within a NFT collection, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
 /// @notice HookVault holds a multiple NFT asset in escrow on behalf of multiple beneficial owners. Other contracts
@@ -36,14 +35,14 @@ contract HookERC721MultiVaultImplV1 is
   struct Asset {
     address beneficialOwner;
     address operator;
-    uint128 expiry;
+    uint32 expiry;
   }
 
   /// @dev the current entitlement applied to each asset, which includes the beneficialOwner
   /// for the asset
   /// if the entitled operator field is non-null, it means an unreleased entitlement has been
   /// applied; however, that entitlement could still be expired (if block.timestamp > entitlement.expiry)
-  mapping(uint256 => Asset) private assets;
+  mapping(uint32 => Asset) private assets;
 
   IHookProtocol private _hookProtocol;
 
@@ -78,7 +77,7 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev See {IHookERC721Vault-withdrawalAsset}.
   /// @dev withdrawals can only be performed to the beneficial owner if there are no entitlements
-  function withdrawalAsset(uint256 assetId) external {
+  function withdrawalAsset(uint32 assetId) external {
     require(
       !hasActiveEntitlement(assetId),
       "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
@@ -98,8 +97,8 @@ contract HookERC721MultiVaultImplV1 is
   /// entitlement
   function imposeEntitlement(
     address operator,
-    uint128 expiry,
-    uint128 assetId,
+    uint32 expiry,
+    uint32 assetId,
     uint8 v,
     bytes32 r,
     bytes32 s
@@ -132,7 +131,7 @@ contract HookERC721MultiVaultImplV1 is
     _registerEntitlement(
       entitlement.assetId,
       entitlement.operator,
-      uint128(entitlement.expiry),
+      entitlement.expiry,
       msg.sender
     );
   }
@@ -181,20 +180,20 @@ contract HookERC721MultiVaultImplV1 is
         (
           address beneficialOwner,
           address entitledOperator,
-          uint128 expirationTime
-        ) = abi.decode(data, (address, address, uint128));
+          uint32 expirationTime
+        ) = abi.decode(data, (address, address, uint32));
 
         // if someone has the asset, they should be able to set whichever beneficial owner they'd like.
         // equally, they could transfer the asset first to themselves and subsequently grant a specific
         // entitlement, which is equivalent to this.
         _registerEntitlement(
-          tokenId,
+          uint32(tokenId),
           entitledOperator,
           expirationTime,
           beneficialOwner
         );
       } else {
-        _setBeneficialOwner(tokenId, from);
+        _setBeneficialOwner(uint32(tokenId), from);
       }
     } else {
       // If we're receiving an airdrop or other asset uncovered by escrow to this address, we should ensure
@@ -207,13 +206,13 @@ contract HookERC721MultiVaultImplV1 is
         "onERC721Received -- non-escrow asset returned when airdrops are disabled"
       );
     }
-    emit AssetReceived(from, operator, msg.sender, tokenId);
+    emit AssetReceived(from, operator, msg.sender, uint32(tokenId));
     return this.onERC721Received.selector;
   }
 
   /// @dev See {IHookERC721Vault-flashLoan}.
   function flashLoan(
-    uint256 assetId,
+    uint32 assetId,
     address receiverAddress,
     bytes calldata params
   ) external override nonReentrant {
@@ -287,10 +286,10 @@ contract HookERC721MultiVaultImplV1 is
   }
 
   /// @dev See {IHookVault-entitlementExpiration}.
-  function entitlementExpiration(uint256 assetId)
+  function entitlementExpiration(uint32 assetId)
     external
     view
-    returns (uint256 expiry)
+    returns (uint32 expiry)
   {
     if (!hasActiveEntitlement(assetId)) {
       return 0;
@@ -300,12 +299,12 @@ contract HookERC721MultiVaultImplV1 is
   }
 
   /// @dev See {IHookERC721Vault-getBeneficialOwner}.
-  function getBeneficialOwner(uint256 assetId) external view returns (address) {
+  function getBeneficialOwner(uint32 assetId) external view returns (address) {
     return assets[assetId].beneficialOwner;
   }
 
   /// @dev See {IHookERC721Vault-getHoldsAsset}.
-  function getHoldsAsset(uint256 assetId)
+  function getHoldsAsset(uint32 assetId)
     external
     view
     returns (bool holdsAsset)
@@ -313,19 +312,19 @@ contract HookERC721MultiVaultImplV1 is
     return _nftContract.ownerOf(assetId) == address(this);
   }
 
-  function assetAddress(uint256) external view returns (address) {
+  function assetAddress(uint32) external view returns (address) {
     return address(_nftContract);
   }
 
   /// @dev returns the underlying token ID for a given asset. In this case
   /// the tokenId == the assetId
-  function assetTokenId(uint256 assetId) external pure returns (uint256) {
+  function assetTokenId(uint32 assetId) external pure returns (uint256) {
     return assetId;
   }
 
   /// @dev See {IHookERC721Vault-setBeneficialOwner}.
   /// setBeneficialOwner can only be called by the entitlementContract if there is an activeEntitlement.
-  function setBeneficialOwner(uint256 assetId, address newBeneficialOwner)
+  function setBeneficialOwner(uint32 assetId, address newBeneficialOwner)
     external
   {
     if (hasActiveEntitlement(assetId)) {
@@ -344,7 +343,7 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev See {IHookERC721Vault-clearEntitlement}.
   /// @dev This can only be called if an entitlement currently exists, otherwise it would be a no-op
-  function clearEntitlement(uint256 assetId) public {
+  function clearEntitlement(uint32 assetId) public {
     require(
       hasActiveEntitlement(assetId),
       "clearEntitlement -- an active entitlement must exist"
@@ -362,7 +361,7 @@ contract HookERC721MultiVaultImplV1 is
   /// the receiver and owner do not match.
   /// @param assetId the id of the specific vaulted asset
   /// @param receiver the intended receiver of the asset
-  function clearEntitlementAndDistribute(uint256 assetId, address receiver)
+  function clearEntitlementAndDistribute(uint32 assetId, address receiver)
     external
     nonReentrant
   {
@@ -379,8 +378,8 @@ contract HookERC721MultiVaultImplV1 is
   /// EIP-712 signed by the beneficial owner specified in the entitlement.
   function validateEntitlementSignature(
     address operator,
-    uint128 expiry,
-    uint128 assetId,
+    uint32 expiry,
+    uint32 assetId,
     uint8 v,
     bytes32 r,
     bytes32 s
@@ -417,8 +416,8 @@ contract HookERC721MultiVaultImplV1 is
   /// @param s sig s
   function _verifyAndRegisterEntitlement(
     address operator,
-    uint128 expiry,
-    uint128 assetId,
+    uint32 expiry,
+    uint32 assetId,
     uint8 v,
     bytes32 r,
     bytes32 s
@@ -433,9 +432,9 @@ contract HookERC721MultiVaultImplV1 is
   }
 
   function _registerEntitlement(
-    uint256 assetId,
+    uint32 assetId,
     address operator,
-    uint128 expiry,
+    uint32 expiry,
     address beneficialOwner
   ) private {
     require(
@@ -455,13 +454,13 @@ contract HookERC721MultiVaultImplV1 is
     emit EntitlementImposed(assetId, operator, expiry, beneficialOwner);
   }
 
-  function _clearEntitlement(uint256 assetId) private {
+  function _clearEntitlement(uint32 assetId) private {
     assets[assetId].expiry = 0;
     assets[assetId].operator = address(0);
     emit EntitlementCleared(assetId, assets[assetId].beneficialOwner);
   }
 
-  function hasActiveEntitlement(uint256 assetId) public view returns (bool) {
+  function hasActiveEntitlement(uint32 assetId) public view returns (bool) {
     /// Although we do clear the expiry in _clearEntitlement, making the second half of the AND redundant,
     /// we choose to include it here because we rely on this field being null to clear an entitlement.
     return
@@ -469,7 +468,7 @@ contract HookERC721MultiVaultImplV1 is
       assets[assetId].operator != address(0);
   }
 
-  function getCurrentEntitlementOperator(uint256 assetId)
+  function getCurrentEntitlementOperator(uint32 assetId)
     external
     view
     returns (bool isActive, address operator)
@@ -478,7 +477,7 @@ contract HookERC721MultiVaultImplV1 is
     operator = assets[assetId].operator;
   }
 
-  function _setBeneficialOwner(uint256 assetId, address newBeneficialOwner)
+  function _setBeneficialOwner(uint32 assetId, address newBeneficialOwner)
     private
   {
     require(

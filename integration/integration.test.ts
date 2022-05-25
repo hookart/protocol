@@ -578,7 +578,7 @@ describe("Vault", function () {
         ).to.be.true;
         expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
-          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
+          Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
       });
       it("cannot impose entitlement with invalid asset id", async function () {
@@ -641,7 +641,7 @@ describe("Vault", function () {
         ).to.be.true;
         expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
-          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
+          Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
       });
 
@@ -688,7 +688,7 @@ describe("Vault", function () {
 
         expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
-          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
+          Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
       });
 
@@ -1386,7 +1386,7 @@ describe("Vault", function () {
           (await vaultInstance.getCurrentEntitlementOperator(1))["isActive"]
         ).to.be.true;
         expect(await vaultInstance.entitlementExpiration(1)).eq(
-          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
+          Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
       });
       it("cannot impose entitlment with different entitlement id", async function () {
@@ -1448,7 +1448,7 @@ describe("Vault", function () {
           (await vaultInstance.getCurrentEntitlementOperator(1))["isActive"]
         ).to.be.true;
         expect(await vaultInstance.entitlementExpiration(1)).eq(
-          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
+          Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
       });
 
@@ -1494,7 +1494,7 @@ describe("Vault", function () {
         ).to.be.true;
 
         expect(await vaultInstance.entitlementExpiration(1)).eq(
-          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
+          Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
       });
 

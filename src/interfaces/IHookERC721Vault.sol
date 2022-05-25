@@ -24,7 +24,7 @@ interface IHookERC721Vault is IHookVault, IERC721Receiver {
   event AssetFlashLoaned(address owner, uint256 tokenId, address flashLoanImpl);
 
   /// @notice the tokenID of the underlying ERC721 token;
-  function assetTokenId(uint256 assetId) external view returns (uint256);
+  function assetTokenId(uint32 assetId) external view returns (uint256);
 
   /// @notice flashLoans the vaulted asset to another contract for use and return to the vault. Only the owner
   /// may perform the flashloan
@@ -34,7 +34,7 @@ interface IHookERC721Vault is IHookVault, IERC721Receiver {
   /// asset while it is loaned out
   /// @param params calldata params to forward to the receiver
   function flashLoan(
-    uint256 assetId,
+    uint32 assetId,
     address receiverAddress,
     bytes calldata params
   ) external;
