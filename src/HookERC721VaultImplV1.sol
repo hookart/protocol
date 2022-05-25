@@ -13,6 +13,8 @@ import "./lib/Entitlements.sol";
 import "./lib/Signatures.sol";
 import "./mixin/EIP712.sol";
 
+import "hardhat/console.sol";
+
 /// @title HookVault -- implementation of a Vault for a single NFT asset, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
 /// @notice HookVault holds a single NFT asset in escrow on behalf of a user. Other contracts are able
@@ -116,6 +118,7 @@ contract HookERC721VaultImplV1 is
   function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external
   {
+    console.log("in function");
     require(
       beneficialOwner == msg.sender,
       "grantEntitlement -- only the beneficial owner can grant an entitlement"
@@ -161,21 +164,22 @@ contract HookERC721VaultImplV1 is
       if (data.length > 0) {
         // Decode the order, signature from `data`. If `data` does not encode such parameters, this
         // will throw.
-        Entitlements.Entitlement memory entitlement = abi.decode(
-          data,
-          (Entitlements.Entitlement)
-        );
+        (
+          address _beneficialOwner,
+          address entitledOperator,
+          uint128 expirationTime
+        ) = abi.decode(data, (address, address, uint128));
         // if someone has the asset, they should be able to set whichever beneficial owner they'd like.
         // equally, they could transfer the asset first to themselves and subsequently grant a specific
         // entitlement, which is equivalent to this.
-        _setBeneficialOwner(entitlement.beneficialOwner);
+        _setBeneficialOwner(_beneficialOwner);
         _registerEntitlement(
           Entitlements.Entitlement(
-            entitlement.beneficialOwner,
-            entitlement.operator,
-            entitlement.vaultAddress,
-            entitlement.assetId,
-            entitlement.expiry
+            beneficialOwner,
+            entitledOperator,
+            address(this),
+            0,
+            expirationTime
           )
         );
       }

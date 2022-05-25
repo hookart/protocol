@@ -80,18 +80,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -99,7 +88,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -125,18 +114,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -144,7 +122,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -162,18 +140,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -181,7 +148,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -207,18 +174,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -226,7 +182,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -244,18 +200,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -263,7 +208,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -282,18 +227,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -301,7 +235,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -320,18 +254,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -339,7 +262,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -359,18 +282,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -378,7 +290,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -397,18 +309,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -416,7 +317,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -436,7 +337,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -476,7 +377,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       "active entitlement is to correct person"
     );
 
-    // verify that beneficial owner cannot withdrawl
+    // verify that beneficial owner cannot withdrawal
     // during an active entitlement.
     vm.expectRevert(
       "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
@@ -489,25 +390,14 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
@@ -541,25 +431,14 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
@@ -587,25 +466,14 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
@@ -641,25 +509,14 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
@@ -695,18 +552,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(3333);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     // transfer in with first entitlement
     vm.prank(writer);
@@ -714,7 +560,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
@@ -747,26 +593,14 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69420);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
-
+    uint128 expiration = uint128(block.timestamp) + 1 days;
     // transfer in with first entitlement
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 
@@ -790,25 +624,14 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
@@ -861,25 +684,14 @@ contract HookMultiVaultTests is HookProtocolTest {
     (address vaultAddress, uint256 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        tokenId,
-        expiration
-      );
+    uint128 expiration = uint128(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     IHookERC721Vault vaultImpl = IHookERC721Vault(vaultAddress);
 

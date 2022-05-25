@@ -9,6 +9,8 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     setUpFullProtocol();
 
     // add address to the allowlist for minting
+    vm.prank(address(admin));
+    vaultFactory.makeMultiVault(address(token));
 
     // Set user balances
     vm.deal(address(buyer), 100 ether);
@@ -32,7 +34,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
 
   function testMintOption() public {
     vm.startPrank(address(writer));
-    uint256 expiration = block.timestamp + 3 days;
+    uint128 expiration = uint128(block.timestamp) + 3 days;
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -63,7 +65,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      block.timestamp + 3 days
+      uint128(block.timestamp + 3 days)
     );
   }
 
@@ -79,7 +81,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       address(token),
       underlyingTokenId,
       1000,
-      block.timestamp + 30 minutes
+      uint128(block.timestamp + 30 minutes)
     );
     vm.stopPrank();
   }
@@ -89,7 +91,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.startPrank(address(writer));
     uint256 writerStartBalance = writer.balance;
     uint256 baseTime = block.timestamp;
-    uint256 expiration = baseTime + 3 days;
+    uint128 expiration = uint128(baseTime) + 3 days;
     uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
@@ -188,7 +190,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     // create the call option
     vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
-    uint256 expiration = baseTime + 3 days;
+    uint128 expiration = uint128(baseTime) + 3 days;
     uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
@@ -212,7 +214,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     // create the call option
     vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
-    uint256 expiration = baseTime + 3 days;
+    uint128 expiration = uint128(baseTime) + 3 days;
     uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
@@ -238,7 +240,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     // create the call option
     vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
-    uint256 expiration = baseTime + 3 days;
+    uint128 expiration = uint128(baseTime) + 3 days;
     uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,

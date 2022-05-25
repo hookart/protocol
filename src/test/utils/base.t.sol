@@ -138,7 +138,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint128 expiration = uint128(block.timestamp) + 3 days;
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -184,15 +184,30 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     uint256 expiry,
     address _writer
   ) internal returns (Signatures.Signature memory sig) {
-    try vaultFactory.findOrCreateVault(address(token), tokenId) {} catch {}
-    address va = address(vaultFactory.getVault(address(token), tokenId));
+    address va = address(
+      vaultFactory.findOrCreateVault(address(token), tokenId)
+    );
+
+    uint256 assetId = 0;
+    if (
+      va ==
+      Create2.computeAddress(
+        BeaconSalts.multiVaultSalt(address(token)),
+        BeaconSalts.ByteCodeHash,
+        address(vaultFactory)
+      )
+    ) {
+      // If the vault is a multi-vault, it requires that the assetId matches the
+      // tokenId, instead of having a standard assetI of 0
+      assetId = tokenId;
+    }
 
     bytes32 structHash = Entitlements.getEntitlementStructHash(
       Entitlements.Entitlement({
         beneficialOwner: address(_writer),
         operator: address(calls),
         vaultAddress: va,
-        assetId: 0,
+        assetId: assetId,
         expiry: expiry
       })
     );
