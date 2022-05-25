@@ -2549,6 +2549,41 @@ describe("Call Instrument Tests", function () {
 
       expect(createCall).to.emit(calls, "CallCreated");
     });
+
+    it("should mint covered call with entitled solo vault", async function () {
+      // Create solovault for token 1
+      await vaultFactory.makeSoloVault(token.address, 1);
+      const soloValutAddress = await vaultFactory.getVault(token.address, 1);
+      const soloVault = await ethers.getContractAt(
+        "HookERC721VaultImplV1",
+        soloValutAddress
+      );
+
+      await token
+        .connect(writer)
+        ["safeTransferFrom(address,address,uint256)"](
+          writer.address,
+          soloVault.address,
+          1
+        );
+
+      const expiration = Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5);
+
+      await soloVault.connect(writer).grantEntitlement({
+        beneficialOwner: writer.address,
+        operator: calls.address,
+        vaultAddress: soloVault.address,
+        assetId: 0,
+        expiry: expiration,
+      });
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithEntitledVault(soloVault.address, 0, 1000, expiration);
+
+      expect(createCall).to.emit(calls, "CallCreated");
+    });
   });
 
   /*
@@ -3171,40 +3206,23 @@ describe("Call Instrument Tests", function () {
     let optionTokenId: BigNumber;
 
     this.beforeEach(async function () {
-      // Create multivault for token
-      await vaultFactory.makeMultiVault(token.address);
-      const multiValutAddress = await vaultFactory.getMultiVault(token.address);
-      const multiVault = await ethers.getContractAt(
-        "HookERC721MultiVaultImplV1",
-        multiValutAddress
+      // Create solovault for token 0
+      await vaultFactory.makeSoloVault(token.address, 0);
+      const soloValutAddress = await vaultFactory.getVault(token.address, 0);
+      const soloVault = await ethers.getContractAt(
+        "HookERC721VaultImplV1",
+        soloValutAddress
       );
-
-      // Transfer token to vault
-      await token
-        .connect(writer)
-        ["safeTransferFrom(address,address,uint256)"](
-          writer.address,
-          multiVault.address,
-          0
-        );
 
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
       const expiration = BigNumber.from(Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5));
 
-      await multiVault.connect(writer).grantEntitlement({
-        beneficialOwner: writer.address,
-        operator: calls.address,
-        vaultAddress: multiVault.address,
-        assetId: 0,
-        expiry: expiration,
-      });
-
       // Mint call option
       const createCall = await calls
         .connect(writer)
-        .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
+        .mintWithErc721(token.address, 0, 1000, expiration);
       
       const cc = await createCall.wait();
 
