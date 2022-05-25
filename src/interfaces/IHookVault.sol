@@ -1,4 +1,34 @@
 /// SPDX-License-Identifier: UNLICENSED
+///
+///
+///
+/// ,cccccccl:                              ':cccccccc'     
+/// oKXXXXXXXO;                             :0XXXXXXXKl     
+/// oKXXXXXXXO;                             :0XXXXXXXKl     
+/// oKXXXXXXXO;                             :0XXXXXXXKl     
+/// oKXXXXXXXO;                             :0XXXXXXXKl     
+/// oXXXXXXXXO;                             :0XXXXXXXKl     
+/// lKXXXXXXX0:                             cKXXXXXXXKc     
+/// c0XXXXXXXKo       ';:cclllllcc:;'       dKXXXXXXX0:     
+/// ,kXXXXXXX0o  ':oxO0KXXXXXXXXXXXK0Oxl;  c0XXXXXXXXx'     
+///  lKXXXKOl :lk0XXXXXXXXXXXXXXXXXXXXX0o cOXXXXXXXX0:      
+///   dKKk' cx0XXXXXXXXXXXXXXXXXXXXXX0d ;o0XXXXXXXXKo       
+///   'll ckKXXXXXXXXXXXXXXXXXXXK0kdl' oOXXXXXXXXXKo        
+///     ,dKXXXXXXXXXXX0k olcccccccccokKXXXXXXXXXX0l         
+///    :OXXXXXXXXXX0dc :lodxxkkkO0KXXXXXXXXXXXXKx;,        
+///   :OXXXXXXXXXOl :oOKXXXXXXXXXXXXXXXXXXXXXKxc lOk;       
+///  ;kXXXXXXXXKd :xKXXXXXXXXXXXXXXXXXXXXXKOd: lOKXXk,      
+///  dXXXXXXXXKo 'd0XXXXXXXXXXXXXXXXXXK0ko:, dOXXXXXKo      
+/// ;OXXXXXXXXx'   ':coxkkO00000OOkdoc;'    xXXXXXXXXk,     
+/// lKXXXXXXXKc             '''             lKXXXXXXX0:     
+/// oKXXXXXXXO;                             :0XXXXXXXKl     
+/// oXXXXXXXXO;                             :0XXXXXXXKl     
+/// oKXXXXXXXO;                             :0XXXXXXXKl     
+/// oKXXXXXXXO;                             :0XXXXXXXKl     
+/// oXXXXXXXXO;                             :0XXXXXXXKl     
+/// cOOOOOOOOx,                             ;xOOOOOOOk: 
+///
+///
 pragma solidity ^0.8.10;
 
 import "../lib/Entitlements.sol";
@@ -67,11 +97,19 @@ interface IHookVault is IERC165 {
     external;
 
   /// @notice Add an entitlement claim to the asset held within the contract
-  /// @param entitlement The entitlement to impose onto the contract
-  /// @param signature an EIP-712 signature of the entitlement struct signed by the beneficial owner
+  /// @param operator the operator to entitle
+  /// @param expiry the duration of the entitlement
+  /// @param assetId the id of the asset within the vault
+  /// @param v sig v
+  /// @param r sig r
+  /// @param s sig s
   function imposeEntitlement(
-    Entitlements.Entitlement calldata entitlement,
-    Signatures.Signature calldata signature
+    address operator,
+    uint128 expiry,
+    uint128 assetId,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
   ) external;
 
   /// @notice Allows the beneficial owner to grant an entitlement to an asset within the contract

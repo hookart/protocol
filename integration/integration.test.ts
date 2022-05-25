@@ -608,33 +608,6 @@ describe("Vault", function () {
         );
       });
 
-      it("cannot impose entitlment with for a different vault", async function () {
-        const nowEpoch = Date.now() / 1000;
-        await testNFT
-          .connect(beneficialOwner)
-          ["safeTransferFrom(address,address,uint256)"](
-            beneficialOwner.address,
-            vaultInstance.address,
-            1
-          );
-
-        expect(await vaultInstance.getBeneficialOwner(0)).eq(
-          beneficialOwner.address
-        );
-
-        await expect(
-          vaultInstance.connect(beneficialOwner).grantEntitlement({
-            beneficialOwner: beneficialOwner.address,
-            operator: runner.address,
-            vaultAddress: runner.address,
-            assetId: 0,
-            expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-          })
-        ).to.be.revertedWith(
-          "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
-        );
-      });
-
       it("allows the beneficial owner to specify an entitlement", async function () {
         const nowEpoch = Date.now() / 1000;
         await testNFT
@@ -682,24 +655,25 @@ describe("Vault", function () {
             1
           );
 
-        await vaultInstance.connect(runner).imposeEntitlement(
-          {
-            beneficialOwner: beneficialOwner.address,
-            operator: runner.address,
-            vaultAddress: vaultInstance.address,
-            assetId: 0,
-            expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-          },
-          await signEntitlement(
-            beneficialOwner.address,
-            runner.address,
-            vaultInstance.address,
-            "0",
-            String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
-            beneficialOwner,
-            protocol.address
-          )
+        const signed = await signEntitlement(
+          beneficialOwner.address,
+          runner.address,
+          vaultInstance.address,
+          "0",
+          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
+          beneficialOwner,
+          protocol.address
         );
+        await vaultInstance
+          .connect(runner)
+          .imposeEntitlement(
+            runner.address,
+            String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
+            "0",
+            signed.v,
+            signed.r,
+            signed.s
+          );
 
         expect(await vaultInstance.getBeneficialOwner(0)).eq(
           beneficialOwner.address
@@ -728,25 +702,26 @@ describe("Vault", function () {
             1
           );
 
+        const signed = await signEntitlement(
+          beneficialOwner.address,
+          runner.address,
+          vaultInstance.address,
+          "0",
+          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
+          runner,
+          protocol.address
+        );
         await expect(
-          vaultInstance.connect(runner).imposeEntitlement(
-            {
-              beneficialOwner: beneficialOwner.address,
-              operator: runner.address,
-              vaultAddress: vaultInstance.address,
-              assetId: 0,
-              expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-            },
-            await signEntitlement(
-              beneficialOwner.address,
+          vaultInstance
+            .connect(runner)
+            .imposeEntitlement(
               runner.address,
-              vaultInstance.address,
-              "0",
               String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
-              runner,
-              protocol.address
+              "0",
+              signed.v,
+              signed.r,
+              signed.s
             )
-          )
         ).to.be.revertedWith(
           "validateEntitlementSignature --- not signed by beneficialOwner"
         );
@@ -762,25 +737,26 @@ describe("Vault", function () {
             1
           );
 
+        const signed = await signEntitlement(
+          beneficialOwner.address,
+          runner.address,
+          vaultInstance.address,
+          "0",
+          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
+          beneficialOwner,
+          protocol.address
+        );
         await expect(
-          vaultInstance.connect(runner).imposeEntitlement(
-            {
-              beneficialOwner: beneficialOwner.address,
-              operator: runner.address,
-              vaultAddress: vaultInstance.address,
-              assetId: 0,
-              expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-            },
-            await signEntitlement(
-              beneficialOwner.address,
+          vaultInstance
+            .connect(runner)
+            .imposeEntitlement(
               runner.address,
-              vaultInstance.address,
-              "0",
               String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1)),
-              beneficialOwner,
-              protocol.address
+              "0",
+              signed.v,
+              signed.r,
+              signed.s
             )
-          )
         ).to.be.revertedWith(
           "validateEntitlementSignature --- not signed by beneficialOwner"
         );
@@ -1486,24 +1462,25 @@ describe("Vault", function () {
             1
           );
 
-        await vaultInstance.connect(runner).imposeEntitlement(
-          {
-            beneficialOwner: beneficialOwner.address,
-            operator: runner.address,
-            vaultAddress: vaultInstance.address,
-            assetId: 1,
-            expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-          },
-          await signEntitlement(
-            beneficialOwner.address,
-            runner.address,
-            vaultInstance.address,
-            "1",
-            String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
-            beneficialOwner,
-            protocol.address
-          )
+        const signed = await signEntitlement(
+          beneficialOwner.address,
+          runner.address,
+          vaultInstance.address,
+          "1",
+          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
+          beneficialOwner,
+          protocol.address
         );
+        await vaultInstance
+          .connect(runner)
+          .imposeEntitlement(
+            runner.address,
+            String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
+            "1",
+            signed.v,
+            signed.r,
+            signed.s
+          );
 
         expect(await vaultInstance.getBeneficialOwner(1)).eq(
           beneficialOwner.address
@@ -1531,25 +1508,26 @@ describe("Vault", function () {
             1
           );
 
+        const signed = await signEntitlement(
+          beneficialOwner.address,
+          runner.address,
+          vaultInstance.address,
+          "1",
+          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
+          runner,
+          protocol.address
+        );
         await expect(
-          vaultInstance.connect(runner).imposeEntitlement(
-            {
-              beneficialOwner: beneficialOwner.address,
-              operator: runner.address,
-              vaultAddress: vaultInstance.address,
-              assetId: 1,
-              expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-            },
-            await signEntitlement(
-              beneficialOwner.address,
+          vaultInstance
+            .connect(runner)
+            .imposeEntitlement(
               runner.address,
-              vaultInstance.address,
-              "1",
               String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
-              runner,
-              protocol.address
+              "1",
+              signed.v,
+              signed.r,
+              signed.s
             )
-          )
         ).to.be.revertedWith(
           "validateEntitlementSignature --- not signed by beneficialOwner"
         );
@@ -1565,25 +1543,26 @@ describe("Vault", function () {
             1
           );
 
+        const signed = await signEntitlement(
+          beneficialOwner.address,
+          runner.address,
+          vaultInstance.address,
+          "1",
+          String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)),
+          beneficialOwner,
+          protocol.address
+        );
         await expect(
-          vaultInstance.connect(runner).imposeEntitlement(
-            {
-              beneficialOwner: beneficialOwner.address,
-              operator: runner.address,
-              vaultAddress: vaultInstance.address,
-              assetId: 1,
-              expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-            },
-            await signEntitlement(
-              beneficialOwner.address,
+          vaultInstance
+            .connect(runner)
+            .imposeEntitlement(
               runner.address,
-              vaultInstance.address,
-              "1",
               String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1)),
-              beneficialOwner,
-              protocol.address
+              1,
+              signed.v,
+              signed.r,
+              signed.s
             )
-          )
         ).to.be.revertedWith(
           "validateEntitlementSignature --- not signed by beneficialOwner"
         );

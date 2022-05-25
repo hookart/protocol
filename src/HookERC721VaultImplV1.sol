@@ -13,8 +13,6 @@ import "./lib/Entitlements.sol";
 import "./lib/Signatures.sol";
 import "./mixin/EIP712.sol";
 
-import "hardhat/console.sol";
-
 /// @title HookVault -- implementation of a Vault for a single NFT asset, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
 /// @notice HookVault holds a single NFT asset in escrow on behalf of a user. Other contracts are able
@@ -87,7 +85,7 @@ contract HookERC721VaultImplV1 is
     // require(msg.sender == beneficialOwner, "the beneficial owner is the only one able to withdrawal");
     require(
       !hasActiveEntitlement(),
-      "withdrawalAsset -- the asset canot be withdrawn with an active entitlement"
+      "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
     );
 
     _nftContract.safeTransferFrom(address(this), beneficialOwner, _tokenId);
@@ -99,17 +97,24 @@ contract HookERC721VaultImplV1 is
   /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
   /// entitlement
   function imposeEntitlement(
-    Entitlements.Entitlement calldata entitlement,
-    Signatures.Signature calldata signature
+    address operator,
+    uint128 expiry,
+    uint128 assetId,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
   ) external {
+    // check that the asset has a current beneficial owner
+    // before creating a new entitlement
     require(
       beneficialOwner != address(0),
       "imposeEntitlement -- beneficial owner must be set to impose an entitlement"
     );
+    require(assetId == 0, "imposeEntitlement -- only one asset supported");
 
     // the beneficial owner of an asset is able to set any entitlement on their own asset
     // as long as it has not already been committed to someone else.
-    _verifyAndRegisterEntitlement(entitlement, signature);
+    _verifyAndRegisterEntitlement(operator, expiry, assetId, v, r, s);
   }
 
   /// @dev See {IHookERC721Vault-grantEntitlement}.
@@ -118,7 +123,6 @@ contract HookERC721VaultImplV1 is
   function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external
   {
-    console.log("in function");
     require(
       beneficialOwner == msg.sender,
       "grantEntitlement -- only the beneficial owner can grant an entitlement"
@@ -126,7 +130,12 @@ contract HookERC721VaultImplV1 is
 
     // the beneficial owner of an asset is able to directly set any entitlement on their own asset
     // as long as it has not already been committed to someone else.
-    _registerEntitlement(entitlement);
+    _registerEntitlement(
+      entitlement.assetId,
+      entitlement.operator,
+      uint128(entitlement.expiry),
+      msg.sender
+    );
   }
 
   /// @dev See {IERC721Receiver-onERC721Received}.
@@ -174,13 +183,10 @@ contract HookERC721VaultImplV1 is
         // entitlement, which is equivalent to this.
         _setBeneficialOwner(_beneficialOwner);
         _registerEntitlement(
-          Entitlements.Entitlement(
-            beneficialOwner,
-            entitledOperator,
-            address(this),
-            0,
-            expirationTime
-          )
+          0,
+          entitledOperator,
+          expirationTime,
+          beneficialOwner
         );
       }
     } else {
@@ -387,25 +393,32 @@ contract HookERC721VaultImplV1 is
     emit AssetWithdrawn(ASSET_ID, msg.sender, beneficialOwner);
   }
 
-  /// @dev Get the EIP-712 hash of an Entitlement.
-  /// @param entitlement The entitlement to hash
-  /// @return entitlementHash The hash of the entitlement.
-  function getEntitlementHash(Entitlements.Entitlement memory entitlement)
-    public
-    view
-    returns (bytes32 entitlementHash)
-  {
-    return _getEIP712Hash(Entitlements.getEntitlementStructHash(entitlement));
-  }
-
+  /// @dev Validates that a specific signature is actually the entitlement
+  /// EIP-712 signed by the beneficial owner specified in the entitlement.
   function validateEntitlementSignature(
-    Entitlements.Entitlement calldata entitlement,
-    Signatures.Signature calldata signature
+    address operator,
+    uint128 expiry,
+    uint128 assetId,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
   ) public view {
-    bytes32 entitlementHash = getEntitlementHash(entitlement);
-    address signer = Signatures.getSignerOfHash(entitlementHash, signature);
+    bytes32 entitlementHash = _getEIP712Hash(
+      Entitlements.getEntitlementStructHash(
+        Entitlements.Entitlement({
+          beneficialOwner: beneficialOwner,
+          expiry: expiry,
+          operator: operator,
+          assetId: assetId,
+          vaultAddress: address(this)
+        })
+      )
+    );
+    address signer = ecrecover(entitlementHash, v, r, s);
+
+    require(signer != address(0), "recovered address is null");
     require(
-      signer == entitlement.beneficialOwner,
+      signer == beneficialOwner,
       "validateEntitlementSignature --- not signed by beneficialOwner"
     );
   }
@@ -414,43 +427,54 @@ contract HookERC721VaultImplV1 is
 
   /// @notice Verify that an entitlement is properly signed and apply it to the asset if able.
   /// @dev The entitlement must be signed by the beneficial owner of the asset in order for it to be considered valid
-  /// @param entitlement the entitlement to impose on the asset
-  /// @param signature the EIP-712 signed entitlement by the beneficial owner
+  /// @param operator the operator to entitle
+  /// @param expiry the duration of the entitlement
+  /// @param assetId the id of the asset within the vault
+  /// @param v sig v
+  /// @param r sig r
+  /// @param s sig s
   function _verifyAndRegisterEntitlement(
-    Entitlements.Entitlement calldata entitlement,
-    Signatures.Signature calldata signature
+    address operator,
+    uint128 expiry,
+    uint128 assetId,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
   ) private {
-    validateEntitlementSignature(entitlement, signature);
-    _registerEntitlement(entitlement);
+    validateEntitlementSignature(operator, expiry, assetId, v, r, s);
+    _registerEntitlement(assetId, operator, expiry, beneficialOwner);
   }
 
-  function _registerEntitlement(Entitlements.Entitlement memory entitlement)
-    private
-  {
+  function _registerEntitlement(
+    uint256 assetId,
+    address operator,
+    uint128 expiry,
+    address _beneficialOwner
+  ) private {
     require(
       !hasActiveEntitlement(),
       "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
     );
+
     require(
-      entitlement.beneficialOwner == beneficialOwner,
+      _beneficialOwner == beneficialOwner,
       "_verifyAndRegisterEntitlement -- only the current beneficial owner can make an entitlement"
     );
     require(
-      entitlement.vaultAddress == address(this),
-      "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
+      expiry > block.timestamp,
+      "_verifyAndRegisterEntitlement -- entitlement must expire in the future"
     );
     require(
-      entitlement.assetId == ASSET_ID,
+      assetId == ASSET_ID,
       "_verifyAndRegisterEntitlement -- the asset id must match an actual asset id"
     );
-    _currentEntitlement = entitlement;
+    _currentEntitlement.beneficialOwner = _beneficialOwner;
+    _currentEntitlement.operator = operator;
+    _currentEntitlement.expiry = expiry;
+    _currentEntitlement.assetId = ASSET_ID;
+    _currentEntitlement.vaultAddress = address(this);
     _hasEntitlement = true;
-    emit EntitlementImposed(
-      ASSET_ID,
-      entitlement.operator,
-      entitlement.expiry,
-      beneficialOwner
-    );
+    emit EntitlementImposed(assetId, operator, expiry, beneficialOwner);
   }
 
   function _clearEntitlement() private {

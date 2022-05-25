@@ -445,7 +445,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
     // impose the entitlement onto the vault
     vm.prank(mockContract);
-    vaultImpl.imposeEntitlement(entitlement, sig);
+    vaultImpl.imposeEntitlement(
+      entitlement.operator,
+      uint128(entitlement.expiry),
+      uint128(entitlement.assetId),
+      sig.v,
+      sig.r,
+      sig.s
+    );
 
     assertTrue(
       vaultImpl.getHoldsAsset(0),
@@ -463,7 +470,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     // verify that beneficial owner cannot withdrawl
     // during an active entitlement.
     vm.expectRevert(
-      "withdrawalAsset -- the asset canot be withdrawn with an active entitlement"
+      "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
     );
     vm.prank(writer);
     vaultImpl.withdrawalAsset(0);
@@ -615,7 +622,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
         vaultAddress,
         expiration2
       );
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint128(entitlement2.expiry),
+      uint128(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
     assertTrue(
       vaultImpl.hasActiveEntitlement(),
       "there should be a new active entitlement"
@@ -672,7 +686,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
         expiration2
       );
 
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint128(entitlement2.expiry),
+      uint128(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
     assertTrue(
       vaultImpl.hasActiveEntitlement(),
       "there should be a new active entitlement"
@@ -728,7 +749,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
     );
 
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint128(entitlement2.expiry),
+      uint128(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
   }
 
   function testBeneficialOwnerCannotClearEntitlement() public {

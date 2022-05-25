@@ -358,7 +358,14 @@ contract HookMultiVaultTests is HookProtocolTest {
 
     // impose the entitlement onto the vault
     vm.prank(mockContract);
-    vaultImpl.imposeEntitlement(entitlement, sig);
+    vaultImpl.imposeEntitlement(
+      entitlement.operator,
+      uint128(entitlement.expiry),
+      uint128(entitlement.assetId),
+      sig.v,
+      sig.r,
+      sig.s
+    );
 
     assertTrue(
       vaultImpl.getHoldsAsset(tokenId),
@@ -500,7 +507,14 @@ contract HookMultiVaultTests is HookProtocolTest {
         tokenId,
         expiration2
       );
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint128(entitlement2.expiry),
+      uint128(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
     (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
     assertTrue(active, "there should be an active entitlement");
   }
@@ -543,7 +557,14 @@ contract HookMultiVaultTests is HookProtocolTest {
         expiration2
       );
 
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint128(entitlement2.expiry),
+      uint128(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
     (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
     assertTrue(active, "there should  be an active entitlement");
   }
@@ -586,7 +607,14 @@ contract HookMultiVaultTests is HookProtocolTest {
       "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
     );
 
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint128(entitlement2.expiry),
+      uint128(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
   }
 
   function testBeneficialOwnerCannotClearEntitlement() public {

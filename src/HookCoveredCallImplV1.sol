@@ -44,12 +44,12 @@ contract HookCoveredCallImplV1 is
   /// @param bid is the current high bid in the settlement auction
   /// @param highBidder is the address that made the current winning bid in the settlement auction
   struct CallOption {
-    uint128 assetId;
-    uint128 strike;
-    uint128 expiration;
-    uint128 bid;
     address writer;
+    uint32 expiration;
+    uint32 assetId;
     address vaultAddress;
+    uint128 strike;
+    uint128 bid;
     address highBidder;
     bool settled;
   }
@@ -174,15 +174,15 @@ contract HookCoveredCallImplV1 is
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
     address writer = vault.getBeneficialOwner(assetId);
-    Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
-      beneficialOwner: writer,
-      operator: address(this),
-      vaultAddress: address(vault),
-      assetId: assetId,
-      expiry: expirationTime
-    });
 
-    vault.imposeEntitlement(entitlement, signature);
+    vault.imposeEntitlement(
+      address(this),
+      expirationTime,
+      uint128(assetId),
+      signature.v,
+      signature.r,
+      signature.s
+    );
 
     return
       _mintOptionWithVault(writer, vault, assetId, strikePrice, expirationTime);
@@ -266,6 +266,28 @@ contract HookCoveredCallImplV1 is
       tokenId
     );
 
+    uint256 assetId = 0;
+    if (
+      address(vault) ==
+      Create2.computeAddress(
+        BeaconSalts.multiVaultSalt(tokenAddress),
+        BeaconSalts.ByteCodeHash,
+        address(_erc721VaultFactory)
+      )
+    ) {
+      // If the vault is a multi-vault, it requires that the assetId matches the
+      // tokenId, instead of having a standard assetI of 0
+      assetId = tokenId;
+    }
+
+    uint256 optionId = _mintOptionWithVault(
+      tokenOwner,
+      IHookVault(vault),
+      assetId,
+      strikePrice,
+      expirationTime
+    );
+
     // transfer the underlying asset into our vault, passing along the entitlement. The entitlement specified
     // here will be accepted by the vault because we are also simultaneously tendering the asset.
     IERC721(tokenAddress).safeTransferFrom(
@@ -281,28 +303,7 @@ contract HookCoveredCallImplV1 is
       "mintWithErc712 -- asset must be in vault"
     );
 
-    uint256 assetId = 0;
-    if (
-      address(vault) ==
-      Create2.computeAddress(
-        BeaconSalts.multiVaultSalt(tokenAddress),
-        BeaconSalts.ByteCodeHash,
-        address(_erc721VaultFactory)
-      )
-    ) {
-      // If the vault is a multi-vault, it requires that the assetId matches the
-      // tokenId, instead of having a standard assetI of 0
-      assetId = tokenId;
-    }
-
-    return
-      _mintOptionWithVault(
-        tokenOwner,
-        IHookVault(vault),
-        assetId,
-        strikePrice,
-        expirationTime
-      );
+    return optionId;
   }
 
   /// @notice internal use function to record the option and mint it
@@ -334,9 +335,9 @@ contract HookCoveredCallImplV1 is
     optionParams[newOptionId] = CallOption({
       writer: writer,
       vaultAddress: address(vault),
-      assetId: uint128(assetId),
+      assetId: uint32(assetId),
       strike: strikePrice,
-      expiration: expirationTime,
+      expiration: uint32(expirationTime),
       bid: uint128(0),
       highBidder: address(0),
       settled: false
@@ -404,7 +405,9 @@ contract HookCoveredCallImplV1 is
       return true;
     }
 
-    try IHookERC721Vault(vaultAddress).assetTokenId(assetId) returns (uint256 _tokenId) {
+    try IHookERC721Vault(vaultAddress).assetTokenId(assetId) returns (
+      uint256 _tokenId
+    ) {
       if (
         vaultAddress ==
         Create2.computeAddress(
@@ -415,7 +418,7 @@ contract HookCoveredCallImplV1 is
       ) {
         return true;
       }
-    } catch(bytes memory) {
+    } catch (bytes memory) {
       return false;
     }
 

@@ -76,7 +76,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     // limit this call to 300,000 gas
     // overall gas usage depends on the underlying NFT contract
-    uint256 optionId = calls.mintWithErc721{gas: 400000}(
+    uint256 optionId = calls.mintWithErc721{gas: 350000}(
       address(token),
       underlyingTokenId,
       1000,
@@ -1299,7 +1299,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.deal(address(firstBidder), 1 ether);
 
     vm.prank(firstBidder);
-    
+
     calls.bid{value: 0.1 ether}(optionTokenId);
 
     vm.startPrank(writer);
@@ -1318,9 +1318,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.startPrank(writer);
     vm.warp(block.timestamp + 3.1 days);
 
-    vm.expectRevert(
-      "reclaimAsset -- the option must not be expired"
-    );
+    vm.expectRevert("reclaimAsset -- the option must not be expired");
     calls.reclaimAsset(optionTokenId, true);
   }
 
