@@ -1,15 +1,142 @@
 import { ethers } from "hardhat";
 import { expect, use } from "chai";
-import { BigNumber, Contract, Signer } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { solidity } from "ethereum-waffle";
 import { signEntitlement } from "./helpers";
 import { getAddress } from "ethers/lib/utils";
-import { writeHeapSnapshot } from "v8";
-import { create } from "domain";
 
 use(solidity);
+
+describe("Protocol", function () {
+  let protocol: Contract;
+  let admin: SignerWithAddress, one: SignerWithAddress, two: SignerWithAddress;
+  beforeEach(async () => {
+    [admin, one, two] = await ethers.getSigners();
+    const protocolFactory = await ethers.getContractFactory("HookProtocol");
+    protocol = await protocolFactory.deploy(admin.address, admin.address);
+  });
+
+  it("can be paused", async () => {
+    await protocol.connect(admin).pause();
+    await expect(protocol.throwWhenPaused()).to.be.reverted;
+  });
+
+  it("can be unpaused", async () => {
+    await protocol.connect(admin).pause();
+    await expect(protocol.throwWhenPaused()).to.be.reverted;
+    await protocol.connect(admin).unpause();
+    await expect(protocol.throwWhenPaused()).not.to.be.reverted;
+  });
+
+  it("vault factory can be set", async () => {
+    await protocol.connect(admin).pause();
+    await expect(protocol.throwWhenPaused()).to.be.reverted;
+    await protocol.connect(admin).unpause();
+    await expect(protocol.throwWhenPaused()).not.to.be.reverted;
+  });
+
+  it("admin role can be revoked", async () => {
+    /// give role to new user
+    await protocol
+      .connect(admin)
+      .grantRole(ethers.utils.id("VAULT_UPGRADER"), one.address);
+    // drop role
+    await protocol
+      .connect(admin)
+      .renounceRole(ethers.utils.id("VAULT_UPGRADER"), admin.address);
+    // new user gives role to a third user
+    await protocol
+      .connect(one)
+      .grantRole(ethers.utils.id("VAULT_UPGRADER"), two.address);
+    expect(
+      await protocol.hasRole(ethers.utils.id("VAULT_UPGRADER"), one.address)
+    ).to.be.true;
+    expect(
+      await protocol.hasRole(ethers.utils.id("VAULT_UPGRADER"), two.address)
+    ).to.be.true;
+    expect(
+      await protocol.hasRole(ethers.utils.id("VAULT_UPGRADER"), admin.address)
+    ).to.be.false;
+  });
+
+  it("collection configs can be set", async () => {
+    await protocol
+      .connect(admin)
+      .setCollectionConfig(two.address, ethers.utils.id("config"), true);
+    expect(
+      await protocol.getCollectionConfig(two.address, ethers.utils.id("config"))
+    ).to.be.true;
+  });
+});
+
+describe("UpgradeableBeacon", function () {
+  let beacon: Contract, impl1: Contract, impl2: Contract, protocol: Contract;
+  let admin: SignerWithAddress;
+  beforeEach(async () => {
+    [admin] = await ethers.getSigners();
+    const protocolFactory = await ethers.getContractFactory("HookProtocol");
+    protocol = await protocolFactory.deploy(admin.address, admin.address);
+
+    const vaultImplFactory = await ethers.getContractFactory(
+      "HookERC721VaultImplV1"
+    );
+
+    const vaultBeaconFactory = await ethers.getContractFactory(
+      "HookUpgradeableBeacon"
+    );
+
+    impl1 = await vaultImplFactory.deploy();
+    impl2 = await vaultImplFactory.deploy();
+
+    beacon = await vaultBeaconFactory.deploy(
+      impl1.address,
+      protocol.address,
+      ethers.utils.id("VAULT_UPGRADER")
+    );
+  });
+
+  it("the beacon should show an implementation", async function () {
+    expect(await beacon.implementation()).to.eq(impl1.address);
+  });
+
+  it("the beacon should be upgradeable by the correct role", async () => {
+    await beacon.connect(admin).upgradeTo(impl2.address);
+    expect(await beacon.implementation()).to.eq(impl2.address);
+  });
+
+  it("the beacon should not be upgradeable by a random address", async () => {
+    const [, actor] = await ethers.getSigners();
+    expect(
+      await protocol.hasRole(ethers.utils.id("VAULT_UPGRADER"), actor.address)
+    ).to.be.false;
+    await expect(
+      beacon.connect(actor).upgradeTo(impl2.address)
+    ).to.be.revertedWith("w");
+    expect(await beacon.implementation()).to.eq(impl1.address);
+  });
+
+  it("the beacon should not be upgradeable by a granted address", async () => {
+    const [, actor] = await ethers.getSigners();
+    expect(
+      await protocol.hasRole(ethers.utils.id("VAULT_UPGRADER"), actor.address)
+    ).to.be.false;
+
+    await protocol
+      .connect(admin)
+      .grantRole(ethers.utils.id("VAULT_UPGRADER"), actor.address);
+    await beacon.connect(actor).upgradeTo(impl2.address);
+    expect(await beacon.implementation()).to.eq(impl2.address);
+  });
+  it("the beacon should not be upgradeable not a non-contract", async () => {
+    const [, actor] = await ethers.getSigners();
+    await expect(
+      beacon.connect(admin).upgradeTo(actor.address)
+    ).to.be.revertedWith("UpgradeableBeacon: implementation is not a contract");
+  });
+});
+
 describe("Vault", function () {
   let vaultFactory: Contract,
     protocol: Contract,
@@ -1948,6 +2075,8 @@ describe("Call Instrument Tests", function () {
       callBeacon.address,
       getAddress("0x0000000000000000000000000000000000000000")
     );
+
+    protocol.setCoveredCallFactory(callFactory.address);
 
     // Create another call instrument contract instance
     await callFactory.makeCallInstrument(token.address);
