@@ -2225,6 +2225,30 @@ describe("Call Instrument Tests", function () {
       expect(callCreatedEvent.args.strikePrice).to.equal(1000);
       expect(callCreatedEvent.args.expiration).to.equal(expiration);
     });
+
+    it("should mint covered call with unvaulted erc721 with existing multivault", async function () {
+      await vaultFactory.makeMultiVault(token.address);
+
+      const expiration = String(
+        Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5)
+      );
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithErc721(token.address, 0, 1000, expiration);
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      expect(createCall).to.emit(calls, "CallCreated");
+      expect(callCreatedEvent.args.writer).to.equal(writer.address);
+      expect(callCreatedEvent.args.optionId).to.equal(1);
+      expect(callCreatedEvent.args.strikePrice).to.equal(1000);
+      expect(callCreatedEvent.args.expiration).to.equal(expiration);
+    });
   });
 
   /*
