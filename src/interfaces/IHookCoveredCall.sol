@@ -19,7 +19,7 @@ import "../lib/Signatures.sol";
 /// (1) WRITING:
 /// The owner of the NFT can mint an option by calling the "mint" function using the parameters of the subject ERC-721;
 /// specifying additionally their preferred strike price and expiration. An "instrument nft" is minted to the writer's
-/// address, where the holder of this ERC-721 will recieve the economic benefit of holding the option.
+/// address, where the holder of this ERC-721 will receive the economic benefit of holding the option.
 ///
 /// (2) SALE:
 /// The sale occurs outside of the context of this contract; however, the ZeroEx market contracts are pre-approved to
@@ -115,13 +115,13 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @notice Permissionlessly settle an expired option when the option expires in the money, distributing
   /// the proceeds to the Writer, Holder, and Bidder as follows:
   ///
-  /// WRITER (who originally called mint() and owned underlying asset) - recieves the `strike`
-  /// HOLDER (ownerOf(optionId)) - recieves `bid - strike`
+  /// WRITER (who originally called mint() and owned underlying asset) - receives the `strike`
+  /// HOLDER (ownerOf(optionId)) - receives `bid - strike`
   /// HIGH BIDDER (call.highBidder) - becomes ownerOf NFT, pays `bid`.
   ///
   /// @dev the return nft param allows the underlying asset to remain in its vault. This saves gas
-  /// compared to first distributing it and then re-depositing it. No royalities or other payments
-  /// are subtracted from the distribtion amounts.
+  /// compared to first distributing it and then re-depositing it. No royalties or other payments
+  /// are subtracted from the distribution amounts.
   ///
   /// @param optionId of the option to settle.
   /// @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.

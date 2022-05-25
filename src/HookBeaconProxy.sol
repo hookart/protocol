@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts v4.4.1 (proxy/beacon/BeaconProxy.sol)
+// OpenZeppelin Contracts v4.4.1 (proxy/beacon/BeaconProxy.sol) (MODIFIED)
 
 pragma solidity ^0.8.0;
 
@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
  * The beacon address is stored in storage slot `uint256(keccak256('eip1967.proxy.beacon')) - 1`, so that it doesn't
  * conflict with the storage layout of the implementation behind the proxy.
  *
- * This is an extension of the OpenZeppelin beacaon proxy, however differs in that it is initializeable, which means
+ * This is an extension of the OpenZeppelin beacon proxy, however differs in that it is initializeable, which means
  * it is usable with Create2.
  */
 contract HookBeaconProxy is Proxy, ERC1967Upgrade {
@@ -24,7 +24,7 @@ contract HookBeaconProxy is Proxy, ERC1967Upgrade {
    * @dev Initializes the proxy with `beacon`.
    *
    * If `data` is nonempty, it's used as data in a delegate call to the implementation returned by the beacon. This
-   * will typically be an encoded function call, and allows initializating the storage of the proxy like a Solidity
+   * will typically be an encoded function call, and allows initializing the storage of the proxy like a Solidity
    * constructor.
    *
    * Requirements:

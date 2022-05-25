@@ -26,7 +26,7 @@ import "./mixin/HookInstrumentERC721.sol";
 /// @dev Explain to a developer any extra details
 contract HookCoveredCallImplV1 is
   IHookCoveredCall,
-  HookInsturmentERC721,
+  HookInstrumentERC721,
   ReentrancyGuard,
   Initializable,
   PermissionConstants
@@ -107,17 +107,17 @@ contract HookCoveredCallImplV1 is
   /// @param startOffset new number of seconds from expiration when the start offset begins
   event SettlementAuctionStartOffsetUpdated(uint256 startOffset);
 
-  /// @dev emitted when the minimun duration for an option is changed
+  /// @dev emitted when the minimum duration for an option is changed
   /// @param optionDuration new minimum length of an option in seconds.
   event MinOptionDurationUpdated(uint256 optionDuration);
 
   /// --- Constructor
-  // the constructor cannot have arugments in proxied contracts.
-  constructor() HookInsturmentERC721("Call") {}
+  // the constructor cannot have arguments in proxied contracts.
+  constructor() HookInstrumentERC721("Call") {}
 
   /// @notice Initializes the specific instance of the instrument contract.
   /// @dev Because the deployed contract is proxied, arguments unique to each deployment
-  /// must be passed in an individual initializer. This function is like a consturctor.
+  /// must be passed in an individual initializer. This function is like a constructor.
   /// @param protocol the address of the Hook protocol (which contains configurations)
   /// @param nftContract the address for the ERC-721 contract that can serve as underlying instruments
   /// @param hookVaultFactory the address of the ERC-721 vault registry
@@ -125,12 +125,12 @@ contract HookCoveredCallImplV1 is
     address protocol,
     address nftContract,
     address hookVaultFactory,
-    address preapprovedMarketplace
+    address preApprovedMarketplace
   ) public initializer {
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();
-    _preapprovedMarketplace = preapprovedMarketplace;
+    _preApprovedMarketplace = preApprovedMarketplace;
     allowedUnderlyingAddress = nftContract;
 
     /// Initialize basic configuration.
@@ -227,7 +227,7 @@ contract HookCoveredCallImplV1 is
     );
 
     // the beneficial owner owns the asset so
-    // they should recieve the option.
+    // they should receive the option.
     address writer = vault.getBeneficialOwner(assetId);
 
     return
@@ -273,7 +273,7 @@ contract HookCoveredCallImplV1 is
         address(_erc721VaultFactory)
       )
     ) {
-      // If the vault is a multi-vault, it requries that the assetId matches the
+      // If the vault is a multi-vault, it requires that the assetId matches the
       // tokenId, instead of having a standard assetI of 0
       assetId = tokenId;
     }
@@ -467,13 +467,13 @@ contract HookCoveredCallImplV1 is
   }
 
   function _returnBidToPreviousBidder(CallOption storage call) internal {
-    uint256 unnormalizedHighBid = call.bid;
+    uint256 unNormalizedHighBid = call.bid;
     if (call.highBidder == call.writer) {
-      unnormalizedHighBid -= call.strike;
+      unNormalizedHighBid -= call.strike;
     }
 
     // return current bidder's money
-    _safeTransferETHWithFallback(call.highBidder, unnormalizedHighBid);
+    _safeTransferETHWithFallback(call.highBidder, unNormalizedHighBid);
   }
 
   /// @dev See {IHookCoveredCall-currentBid}.
@@ -506,7 +506,7 @@ contract HookCoveredCallImplV1 is
 
     uint256 spread = call.bid - call.strike;
 
-    // If the option writer is the high bidder they don't recieve the strike because they bid on the spread.
+    // If the option writer is the high bidder they don't receive the strike because they bid on the spread.
     if (call.highBidder != call.writer) {
       // send option writer the strike price
       _safeTransferETHWithFallback(call.writer, call.strike);
@@ -522,7 +522,7 @@ contract HookCoveredCallImplV1 is
     // burn nft
     _burn(optionId);
 
-    // set settled to prevent an additional attemt to settle the option
+    // set settled to prevent an additional attempt to settle the option
     optionParams[optionId].settled = true;
 
     emit CallDestroyed(optionId);
@@ -588,7 +588,7 @@ contract HookCoveredCallImplV1 is
 
   //// ---- Administrative Fns.
 
-  // forward to protocol pausability
+  // forward to protocol pauseability
   modifier whenNotPaused() {
     require(!marketPaused, "whenNotPaused -- market is paused");
     _protocol.throwWhenPaused();
@@ -624,7 +624,7 @@ contract HookCoveredCallImplV1 is
     emit MinBidIncrementUpdated(newBidIncrement);
   }
 
-  /// @dev set the settlment auction start offset. Settlement auctions begin at this time prior to expiration.
+  /// @dev set the settlement auction start offset. Settlement auctions begin at this time prior to expiration.
   /// @param newSettlementStartOffset in seconds (i.e. block.timestamp increments)
   function setSettlementAuctionStartOffset(uint256 newSettlementStartOffset)
     public
@@ -646,7 +646,7 @@ contract HookCoveredCallImplV1 is
   }
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ////
-  //// These fuctions are overrides needed by the HookInstrumentNFT library in order   ////
+  //// These functions are overrides needed by the HookInstrumentNFT library in order   ////
   //// to generate the NFT view for the project.                                       ////
 
   function getVaultAddress(uint256 optionId)
@@ -684,7 +684,7 @@ contract HookCoveredCallImplV1 is
 
   /// @notice Transfer ETH. If the ETH transfer fails, wrap the ETH and try send it as WETH.
   /// @dev this transfer failure could occur if the transferee is a malicious contract
-  /// so limiting the gas and persisting on fail helps prevent the impace of these calls.
+  /// so limiting the gas and persisting on fail helps prevent the impact of these calls.
   function _safeTransferETHWithFallback(address to, uint256 amount) internal {
     if (!_safeTransferETH(to, amount)) {
       IWETH(weth).deposit{value: amount}();

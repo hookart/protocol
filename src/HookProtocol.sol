@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 /// added.
 ///
 /// This contract does not implement any specific timelocks or other safety measures. The roles are granted
-/// with the principal of least privildge. As the protocol matures, these additional measures can be layered
+/// with the principal of least privilege. As the protocol matures, these additional measures can be layered
 /// by granting these roles to other contracts. In the extreme, the upgrade and other roles can be burned,
 /// which would effectively make the protocol static and non-upgradeable.
 contract HookProtocol is

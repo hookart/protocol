@@ -2,7 +2,7 @@ pragma solidity ^0.8.10;
 
 import "../../../interfaces/IHookCoveredCall.sol";
 
-// @dev a smart contract that reverts upon recieveing funds
+// @dev a smart contract that reverts upon receiveing funds
 // and allows a bid to be mocked to a specific covered call option.
 // this can be used to write tests that fail if a contract reverting
 // prevents new bids.

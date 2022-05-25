@@ -9,14 +9,14 @@ import "../interfaces/IHookERC721Vault.sol";
 
 import "../lib/HookStrings.sol";
 
-/// @dev This contract implements some ERC721 / for hook insturments.
-abstract contract HookInsturmentERC721 is ERC721Burnable {
+/// @dev This contract implements some ERC721 / for hook instruments.
+abstract contract HookInstrumentERC721 is ERC721Burnable {
   using Counters for Counters.Counter;
   mapping(uint256 => Counters.Counter) private _transfers;
   bytes4 private constant ERC_721 = bytes4(keccak256("ERC712"));
 
   /// @dev the contact address for a marketplace to pre-approve
-  address public _preapprovedMarketplace = address(0);
+  address public _preApprovedMarketplace = address(0);
 
   /// @dev hook called after the ERC721 is transferred,
   /// which allows us to increment the counters.
@@ -43,25 +43,25 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
     returns (bool)
   {
     return
-      operator == _preapprovedMarketplace ||
+      operator == _preApprovedMarketplace ||
       super.isApprovedForAll(owner, operator);
   }
 
-  constructor(string memory insturmentType)
-    ERC721(makeInsturmentName(insturmentType), "INST")
+  constructor(string memory instrumentType)
+    ERC721(makeInstrumentName(instrumentType), "INST")
   {}
 
-  function makeInsturmentName(string memory z)
+  function makeInstrumentName(string memory z)
     internal
     pure
     returns (string memory)
   {
-    return string(abi.encodePacked("Hook ", z, " instument"));
+    return string(abi.encodePacked("Hook ", z, " instrument"));
   }
 
   /// @notice the number of times the token has been transferred
-  /// @dev this count can be used by orderbooks to invaildate orders after a
-  /// token has been transfered, preveting stale order execution by
+  /// @dev this count can be used by overbooks to invalidate orders after a
+  /// token has been transferred, preventing stale order execution by
   /// malicious parties
   function getTransferCount(uint256 optionId) external view returns (uint256) {
     return _transfers[optionId].current();
@@ -122,15 +122,15 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
       uint256 underlyingTokenId = vault.assetTokenId(assetId);
       // currently nothing in the contract depends on the actual underlying metadata uri
       // IERC721 underlyingContract = IERC721(underlyingAddress);
-      uint256 insturmentStrikePrice = this.getStrikePrice(tokenId);
-      uint256 insturmentExpiration = this.getExpiration(tokenId);
+      uint256 instrumentStrikePrice = this.getStrikePrice(tokenId);
+      uint256 instrumentExpiration = this.getExpiration(tokenId);
       return
         _tokenURIERC721(
           tokenId,
           underlyingAddress,
           underlyingTokenId,
-          insturmentExpiration,
-          insturmentStrikePrice
+          instrumentExpiration,
+          instrumentStrikePrice
         );
     }
     return "Invalid underlying asset";
@@ -139,7 +139,7 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
   /// @dev returns an internal identifier for the underlying type contained within
   /// the vault to determine what the instrument is on
   ///
-  /// this class evalutation relies on the interfaceId of the underlying asset
+  /// this class evaluation relies on the interfaceId of the underlying asset
   ///
   function _underlyingClass(uint256 optionId)
     internal
@@ -163,13 +163,13 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
     address underlyingTokenAddress,
     uint256 underlyingTokenId,
     uint256 instrumentStrikePrice,
-    uint256 insturmentExpiration
+    uint256 instrumentExpiration
   ) internal view returns (string memory) {
     return
       string(
         abi.encodePacked(
           ', "expiration": ',
-          HookStrings.toString(insturmentExpiration),
+          HookStrings.toString(instrumentExpiration),
           ', "underlying_address": ',
           HookStrings.toAsciiString(underlyingTokenAddress),
           ', "underlying_tokenId": ',
@@ -185,11 +185,11 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
   /// @dev this is a basic tokenURI based on the loot contract for an ERC721
   /// (ripped off from LOOT PROJECT)
   function _tokenURIERC721(
-    uint256 insturmentId,
+    uint256 instrumentId,
     address underlyingAddress,
     uint256 underlyingTokenId,
-    uint256 insturmentExpiration,
-    uint256 insturmentStrike
+    uint256 instrumentExpiration,
+    uint256 instrumentStrike
   ) public view returns (string memory) {
     string[5] memory parts;
     parts[
@@ -215,16 +215,16 @@ abstract contract HookInsturmentERC721 is ERC721Burnable {
         string(
           abi.encodePacked(
             '{"name": "Option Id',
-            HookStrings.toString(insturmentId),
+            HookStrings.toString(instrumentId),
             '", "description": "Hook is the on-chain covered call option protocol", "image": '
             '"data:image/svg+xml;base64,',
             Base64.encode(bytes(output)),
             _generateMetadataERC721(
-              insturmentId,
+              instrumentId,
               underlyingAddress,
               underlyingTokenId,
-              insturmentStrike,
-              insturmentExpiration
+              instrumentStrike,
+              instrumentExpiration
             ),
             '"}'
           )
