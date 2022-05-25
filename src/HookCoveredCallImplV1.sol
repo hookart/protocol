@@ -413,15 +413,19 @@ contract HookCoveredCallImplV1 is
       return true;
     }
 
-    if (
-      vaultAddress ==
-      Create2.computeAddress(
-        BeaconSalts.soloVaultSalt(underlyingAddress, assetId),
-        BeaconSalts.ByteCodeHash,
-        address(_erc721VaultFactory)
-      )
-    ) {
-      return true;
+    try IHookERC721Vault(vaultAddress).assetTokenId(assetId) returns (uint256 _tokenId) {
+      if (
+        vaultAddress ==
+        Create2.computeAddress(
+          BeaconSalts.soloVaultSalt(underlyingAddress, _tokenId),
+          BeaconSalts.ByteCodeHash,
+          address(_erc721VaultFactory)
+        )
+      ) {
+        return true;
+      }
+    } catch(bytes memory) {
+      return false;
     }
 
     return false;
@@ -525,7 +529,7 @@ contract HookCoveredCallImplV1 is
     // set settled to prevent an additional attempt to settle the option
     optionParams[optionId].settled = true;
 
-    emit CallDestroyed(optionId);
+    emit CallSettled(optionId);
   }
 
   /// @dev See {IHookCoveredCall-reclaimAsset}.
@@ -577,13 +581,41 @@ contract HookCoveredCallImplV1 is
 
     // settle the option
     call.settled = true;
-    emit CallDestroyed(optionId);
+    emit CallReclaimed(optionId);
 
     /// WARNING:
     /// Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on
     /// the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer
     /// could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for
     /// the current bidder to reclaim their money.
+  }
+
+  /// @dev See {IHookCoveredCall-burnExpiredOption}.
+  function burnExpiredOption(uint256 optionId) external {
+    CallOption storage call = optionParams[optionId];
+
+    require(
+      block.timestamp > call.expiration,
+      "burnExpiredOption -- the option must be expired"
+    );
+
+    require(
+      !call.settled,
+      "burnExpiredOption -- the option has already been settled"
+    );
+
+    require(
+      call.highBidder == address(0),
+      "burnExpiredOption -- the option must not have bids"
+    );
+
+    // burn the option NFT
+    _burn(optionId);
+
+    // settle the option
+    call.settled = true;
+
+    emit ExpiredCallBurned(optionId);
   }
 
   //// ---- Administrative Fns.

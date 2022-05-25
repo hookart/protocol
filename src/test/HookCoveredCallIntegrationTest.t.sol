@@ -30,7 +30,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     weth.approve(address(calls), 50 ether);
   }
 
-  function test_MintOption() public {
+  function testMintOption() public {
     vm.startPrank(address(writer));
     uint256 expiration = block.timestamp + 3 days;
 
@@ -57,7 +57,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.stopPrank();
   }
 
-  function testRevert_MintOptionMustBeOwnerOrOperator() public {
+  function testRevertMintOptionMustBeOwnerOrOperator() public {
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(
       address(token),
@@ -67,7 +67,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     );
   }
 
-  function testRevert_MintOptionExpirationMustBeMoreThan1DayInTheFuture()
+  function testRevertMintOptionExpirationMustBeMoreThan1DayInTheFuture()
     public
   {
     vm.startPrank(address(writer));
@@ -84,7 +84,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.stopPrank();
   }
 
-  function test_SuccessfulAuctionAndSettlement() public {
+  function testSuccessfulAuctionAndSettlement() public {
     // create the call option
     vm.startPrank(address(writer));
     uint256 writerStartBalance = writer.balance;
@@ -181,38 +181,10 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     );
   }
 
-  // Test that the option was sold as per usual, but no settlement
-  // bid activity occurred.
-  function test_NoSettlemetBidAssetReclaim() public {
-    // create the call option
-    vm.startPrank(address(writer));
-    uint256 baseTime = block.timestamp;
-    uint256 expiration = baseTime + 3 days;
-    uint256 optionId = calls.mintWithErc721(
-      address(token),
-      underlyingTokenId,
-      1000,
-      expiration
-    );
-
-    // assume that the writer somehow sold to the buyer, outside the scope of this test
-
-    calls.safeTransferFrom(writer, buyer, optionId);
-
-    vm.warp(expiration + 50 seconds);
-
-    calls.reclaimAsset(optionId, true);
-    assertTrue(
-      token.ownerOf(underlyingTokenId) == writer,
-      "the nft should have returned to the buyer"
-    );
-    vm.stopPrank();
-  }
-
   // Test that the option was not transferred, a bid was made,
   // but the owner re-obtained the option and therefore can stop
   // the auction.
-  function test_NoSettlemetBidAssetEarlyReclaim() public {
+  function testNoSettlemetBidAssetEarlyReclaim() public {
     // create the call option
     vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
@@ -236,7 +208,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     calls.reclaimAsset(optionId, false);
   }
 
-  function test_NoSettlemetBidAssetRecaimFailRandomClaimer() public {
+  function testNoSettlemetBidAssetRecaimFailRandomClaimer() public {
     // create the call option
     vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
@@ -262,7 +234,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   }
 
   // test: writer must not steal asset by buying back option nft after expiration.
-  function test_WriterCannotStealBackAssetAfterExpiration() public {
+  function testWriterCannotStealBackAssetAfterExpiration() public {
     // create the call option
     vm.startPrank(address(writer));
     uint256 baseTime = block.timestamp;
@@ -285,47 +257,14 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.prank(bidder1);
     calls.bid{value: 1050}(optionId);
 
-    vm.warp(expiration + 3 seconds);
+    vm.warp(expiration + 1 days);
 
     // The writer somehow buys back the option
     vm.prank(address(buyer));
     calls.safeTransferFrom(buyer, writer, optionId);
 
     vm.prank(address(writer));
-    vm.expectRevert("reclaimAsset -- cannot reclaim a sold asset");
-    calls.reclaimAsset(optionId, true);
-  }
-
-  // make sure that the writer cannot reclaim when a settlement bid is ongoing.
-  function test_ActiveSettlementBidAssetRecaimFail() public {
-    // create the call option
-    vm.startPrank(address(writer));
-    uint256 baseTime = block.timestamp;
-    uint256 expiration = baseTime + 3 days;
-    uint256 optionId = calls.mintWithErc721(
-      address(token),
-      underlyingTokenId,
-      1000,
-      expiration
-    );
-
-    // assume that the writer somehow sold to the buyer, outside the scope of this test
-    calls.safeTransferFrom(writer, buyer, optionId);
-    vm.stopPrank();
-
-    // made a bid
-    vm.warp(baseTime + 2.1 days);
-    address bidder1 = address(3456);
-    vm.deal(bidder1, 1100);
-    vm.prank(bidder1);
-    calls.bid{value: 1050}(optionId);
-
-    vm.warp(expiration + 3 seconds);
-
-    vm.prank(address(writer));
-    vm.expectRevert(
-      "reclaimAsset -- cannot reclaim a sold asset if the option is not writer-owned."
-    );
+    vm.expectRevert("reclaimAsset -- the option must not be expired");
     calls.reclaimAsset(optionId, true);
   }
 }

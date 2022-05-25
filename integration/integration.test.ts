@@ -2225,6 +2225,30 @@ describe("Call Instrument Tests", function () {
       expect(callCreatedEvent.args.strikePrice).to.equal(1000);
       expect(callCreatedEvent.args.expiration).to.equal(expiration);
     });
+
+    it("should mint covered call with unvaulted erc721 with existing multivault", async function () {
+      await vaultFactory.makeMultiVault(token.address);
+
+      const expiration = String(
+        Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5)
+      );
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithErc721(token.address, 0, 1000, expiration);
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      expect(createCall).to.emit(calls, "CallCreated");
+      expect(callCreatedEvent.args.writer).to.equal(writer.address);
+      expect(callCreatedEvent.args.optionId).to.equal(1);
+      expect(callCreatedEvent.args.strikePrice).to.equal(1000);
+      expect(callCreatedEvent.args.expiration).to.equal(expiration);
+    });
   });
 
   /*
@@ -2549,6 +2573,41 @@ describe("Call Instrument Tests", function () {
 
       expect(createCall).to.emit(calls, "CallCreated");
     });
+
+    it("should mint covered call with entitled solo vault", async function () {
+      // Create solovault for token 1
+      await vaultFactory.makeSoloVault(token.address, 1);
+      const soloValutAddress = await vaultFactory.getVault(token.address, 1);
+      const soloVault = await ethers.getContractAt(
+        "HookERC721VaultImplV1",
+        soloValutAddress
+      );
+
+      await token
+        .connect(writer)
+        ["safeTransferFrom(address,address,uint256)"](
+          writer.address,
+          soloVault.address,
+          1
+        );
+
+      const expiration = Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5);
+
+      await soloVault.connect(writer).grantEntitlement({
+        beneficialOwner: writer.address,
+        operator: calls.address,
+        vaultAddress: soloVault.address,
+        assetId: 0,
+        expiry: expiration,
+      });
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithEntitledVault(soloVault.address, 0, 1000, expiration);
+
+      expect(createCall).to.emit(calls, "CallCreated");
+    });
   });
 
   /*
@@ -2852,7 +2911,8 @@ describe("Call Instrument Tests", function () {
       const settleCall = calls
         .connect(writer)
         .settleOption(optionTokenId, false);
-      await expect(settleCall).to.emit(calls, "CallDestroyed");
+      await expect(settleCall)
+      .to.emit(calls, "CallSettled");
 
       const vaultAddress = await calls.getVaultAddress(optionTokenId);
       const vault = await ethers.getContractAt(
@@ -2872,7 +2932,7 @@ describe("Call Instrument Tests", function () {
       const settleCall = calls
         .connect(writer)
         .settleOption(optionTokenId, true);
-      await expect(settleCall).to.emit(calls, "CallDestroyed");
+      await expect(settleCall).to.emit(calls, "CallSettled");
 
       expect(await token.ownerOf(0)).to.eq(writer.address);
     });
@@ -2884,7 +2944,8 @@ describe("Call Instrument Tests", function () {
       const settleCall = calls
         .connect(secondBidder)
         .settleOption(secondOptionTokenId, false);
-      await expect(settleCall).to.emit(calls, "CallDestroyed");
+      await expect(settleCall)
+      .to.emit(calls, "CallSettled");
 
       const vaultAddress = await calls.getVaultAddress(secondOptionTokenId);
       const vault = await ethers.getContractAt(
@@ -2996,7 +3057,7 @@ describe("Call Instrument Tests", function () {
         .connect(writer)
         .reclaimAsset(optionTokenId, false);
 
-      await expect(reclaimAsset).to.emit(calls, "CallDestroyed");
+      await expect(reclaimAsset).to.emit(calls, "CallReclaimed");
 
       // Check that there's no entitlment on the vault
       const vaultAddress = await calls.getVaultAddress(optionTokenId);
@@ -3014,7 +3075,7 @@ describe("Call Instrument Tests", function () {
         .connect(writer)
         .reclaimAsset(optionTokenId, false);
 
-      await expect(reclaimAsset).to.emit(calls, "CallDestroyed");
+      await expect(reclaimAsset).to.emit(calls, "CallReclaimed");
 
       // Check that there's no entitlment on the vault
       const vaultAddress = await calls.getVaultAddress(optionTokenId);
@@ -3129,9 +3190,6 @@ describe("Call Instrument Tests", function () {
         expiry: expiration,
       });
 
-      console.log(await multiVault.getCurrentEntitlementOperator(0));
-      console.log(calls.address);
-
       // Mint call option
       const createCall = await calls
         .connect(writer)
@@ -3161,5 +3219,69 @@ describe("Call Instrument Tests", function () {
     it("should get expiration", async function () {
       expect(await calls.getExpiration(optionTokenId)).to.eq(expiration);
     });
+  });
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~~~~~~~~ burnExpiredOption ~~~~~~~~~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  describe("burnExpiredOption", function () {
+    let optionTokenId: BigNumber;
+
+    this.beforeEach(async function () {
+      // Create solovault for token 0
+      await vaultFactory.makeSoloVault(token.address, 0);
+      const soloValutAddress = await vaultFactory.getVault(token.address, 0);
+      const soloVault = await ethers.getContractAt(
+        "HookERC721VaultImplV1",
+        soloValutAddress
+      );
+
+      const blockNumber = await ethers.provider.getBlockNumber();
+      const block = await ethers.provider.getBlock(blockNumber);
+      const blockTimestamp = block.timestamp;
+      const expiration = BigNumber.from(Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5));
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithErc721(token.address, 0, 1000, expiration);
+      
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      optionTokenId = callCreatedEvent.args.optionId;
+    });
+
+    it("should not burn expired option before expiration", async function () {
+      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith("burnExpiredOption -- the option must be expired")
+    });
+
+    it("should burn expired option", async function () {
+      // Move forward past expiration
+      await ethers.provider.send("evm_increaseTime", [2 * SECS_IN_A_DAY]);
+
+      await expect(calls.burnExpiredOption(optionTokenId))
+      .to.emit(calls, 'ExpiredCallBurned')
+    });
+
+    it("should not burn expired option with bids", async function () {
+      // Move forward to settlement auction
+      await ethers.provider.send("evm_increaseTime", [0.5 * SECS_IN_A_DAY]);
+
+      // First bidder bid
+      await calls.connect(firstBidder).bid(optionTokenId, { value: 1001 });
+
+      // Move forward past option expiration
+      await ethers.provider.send("evm_increaseTime", [2 * SECS_IN_A_DAY]);
+
+      // Burn expired option
+      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith("burnExpiredOption -- the option must not have bids");
+    });
+
   });
 });

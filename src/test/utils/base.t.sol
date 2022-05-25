@@ -52,6 +52,12 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     uint256 expiration
   );
 
+  event CallSettled(uint256 optionId);
+
+  event CallReclaimed(uint256 optionId);
+
+  event ExpiredCallBurned(uint256 optionId);
+
   function setUpAddresses() public {
     token = new TestERC721();
     weth = new WETH();
@@ -65,6 +71,12 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
     admin = address(69);
     vm.label(admin, "contract admin");
+
+    firstBidder = address(37);
+    vm.label(firstBidder, "First option bidder");
+
+    secondBidder = address(38);
+    vm.label(secondBidder, "Second option bidder");
   }
 
   function setUpFullProtocol() public {
@@ -151,12 +163,8 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   }
 
   function setUpOptionBids() public {
-    firstBidder = address(37);
-    vm.label(firstBidder, "First option bidder");
     vm.deal(address(firstBidder), 1 ether);
 
-    secondBidder = address(38);
-    vm.label(secondBidder, "Second option bidder");
     vm.deal(address(secondBidder), 1 ether);
 
     vm.warp(block.timestamp + 2.1 days);
