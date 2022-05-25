@@ -11,6 +11,8 @@ contract HookCoveredCallBiddingRevertTests is HookProtocolTest {
     setUpFullProtocol();
 
     // add address to the allowlist for minting
+    vm.prank(address(admin));
+    vaultFactory.makeMultiVault(address(token));
 
     // Set user balances
     vm.deal(address(buyer), 100 ether);
@@ -37,7 +39,7 @@ contract HookCoveredCallBiddingRevertTests is HookProtocolTest {
     vm.startPrank(address(writer));
     uint256 writerStartBalance = writer.balance;
     uint256 baseTime = block.timestamp;
-    uint256 expiration = baseTime + 3 days;
+    uint128 expiration = uint128(baseTime) + 3 days;
     uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,

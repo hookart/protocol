@@ -66,8 +66,8 @@ interface IHookCoveredCall is IERC721Metadata {
   function mintWithErc721(
     address tokenAddress,
     uint256 tokenId,
-    uint256 strikePrice,
-    uint256 expirationTime
+    uint128 strikePrice,
+    uint128 expirationTime
   ) external returns (uint256);
 
   /// @notice Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
@@ -79,8 +79,8 @@ interface IHookCoveredCall is IERC721Metadata {
   function mintWithVault(
     address vaultAddress,
     uint256 assetId,
-    uint256 strikePrice,
-    uint256 expirationTime,
+    uint128 strikePrice,
+    uint128 expirationTime,
     Signatures.Signature calldata signature
   ) external returns (uint256);
 
@@ -93,8 +93,8 @@ interface IHookCoveredCall is IERC721Metadata {
   function mintWithEntitledVault(
     address vaultAddress,
     uint256 assetId,
-    uint256 strikePrice,
-    uint256 expirationTime
+    uint128 strikePrice,
+    uint128 expirationTime
   ) external returns (uint256);
 
   /// @notice Bid in the settlement auction for an option. The paid amount is the bid,

@@ -556,13 +556,11 @@ describe("Vault", function () {
             vaultInstance.address,
             1,
             ethers.utils.defaultAbiCoder.encode(
-              ["tuple(address, address, address, uint256, uint256)"],
+              ["tuple(address, address, uint128)"],
               [
                 [
                   beneficialOwner.address,
                   runner.address,
-                  vaultInstance.address,
-                  0,
                   Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
                 ],
               ]
@@ -583,28 +581,28 @@ describe("Vault", function () {
           String(Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5))
         );
       });
-      it("cannot impose entitlment with invalid asset id", async function () {
+      it("cannot impose entitlement with invalid asset id", async function () {
         const nowEpoch = Date.now() / 1000;
+        await testNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            1
+          );
+
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+
         await expect(
-          testNFT
-            .connect(beneficialOwner)
-            ["safeTransferFrom(address,address,uint256,bytes)"](
-              beneficialOwner.address,
-              vaultInstance.address,
-              1,
-              ethers.utils.defaultAbiCoder.encode(
-                ["tuple(address, address, address, uint256, uint256)"],
-                [
-                  [
-                    beneficialOwner.address,
-                    runner.address,
-                    vaultInstance.address,
-                    10,
-                    Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-                  ],
-                ]
-              )
-            )
+          vaultInstance.connect(beneficialOwner).grantEntitlement({
+            beneficialOwner: beneficialOwner.address,
+            operator: runner.address,
+            vaultAddress: vaultInstance.address,
+            assetId: 10,
+            expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+          })
         ).to.be.revertedWith(
           "_verifyAndRegisterEntitlement -- the asset id must match an actual asset id"
         );
@@ -612,26 +610,26 @@ describe("Vault", function () {
 
       it("cannot impose entitlment with for a different vault", async function () {
         const nowEpoch = Date.now() / 1000;
+        await testNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            1
+          );
+
+        expect(await vaultInstance.getBeneficialOwner(0)).eq(
+          beneficialOwner.address
+        );
+
         await expect(
-          testNFT
-            .connect(beneficialOwner)
-            ["safeTransferFrom(address,address,uint256,bytes)"](
-              beneficialOwner.address,
-              vaultInstance.address,
-              1,
-              ethers.utils.defaultAbiCoder.encode(
-                ["tuple(address, address, address, uint256, uint256)"],
-                [
-                  [
-                    beneficialOwner.address,
-                    runner.address,
-                    runner.address,
-                    0,
-                    Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-                  ],
-                ]
-              )
-            )
+          vaultInstance.connect(beneficialOwner).grantEntitlement({
+            beneficialOwner: beneficialOwner.address,
+            operator: runner.address,
+            vaultAddress: runner.address,
+            assetId: 0,
+            expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+          })
         ).to.be.revertedWith(
           "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
         );
@@ -1391,13 +1389,11 @@ describe("Vault", function () {
             vaultInstance.address,
             1,
             ethers.utils.defaultAbiCoder.encode(
-              ["tuple(address, address, address, uint256, uint256)"],
+              ["tuple(address, address, uint128)"],
               [
                 [
                   beneficialOwner.address,
                   runner.address,
-                  vaultInstance.address,
-                  1,
                   Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
                 ],
               ]
@@ -1419,55 +1415,28 @@ describe("Vault", function () {
       });
       it("cannot impose entitlment with different entitlement id", async function () {
         const nowEpoch = Date.now() / 1000;
-        await expect(
-          testNFT
-            .connect(beneficialOwner)
-            ["safeTransferFrom(address,address,uint256,bytes)"](
-              beneficialOwner.address,
-              vaultInstance.address,
-              1,
-              ethers.utils.defaultAbiCoder.encode(
-                ["tuple(address, address, address, uint256, uint256)"],
-                [
-                  [
-                    beneficialOwner.address,
-                    runner.address,
-                    vaultInstance.address,
-                    10,
-                    Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-                  ],
-                ]
-              )
-            )
-        ).to.be.revertedWith(
-          "onERC721Received -- cannot impose an entitlement on an asset other than the asset deposited in the transfer"
-        );
-      });
+        await testNFT
+          .connect(beneficialOwner)
+          ["safeTransferFrom(address,address,uint256)"](
+            beneficialOwner.address,
+            vaultInstance.address,
+            1
+          );
 
-      it("cannot impose entitlment with for a different vault", async function () {
-        const nowEpoch = Date.now() / 1000;
+        expect(await vaultInstance.getBeneficialOwner(1)).eq(
+          beneficialOwner.address
+        );
+
         await expect(
-          testNFT
-            .connect(beneficialOwner)
-            ["safeTransferFrom(address,address,uint256,bytes)"](
-              beneficialOwner.address,
-              vaultInstance.address,
-              1,
-              ethers.utils.defaultAbiCoder.encode(
-                ["tuple(address, address, address, uint256, uint256)"],
-                [
-                  [
-                    beneficialOwner.address,
-                    runner.address,
-                    runner.address,
-                    1,
-                    Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
-                  ],
-                ]
-              )
-            )
+          vaultInstance.connect(beneficialOwner).grantEntitlement({
+            beneficialOwner: beneficialOwner.address,
+            operator: runner.address,
+            vaultAddress: beneficialOwner.address,
+            assetId: 10,
+            expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
+          })
         ).to.be.revertedWith(
-          "_verifyAndRegisterEntitlement -- the entitled contract must match the vault contract"
+          "grantEntitlement -- only the beneficial owner can grant an entitlement"
         );
       });
 
@@ -2911,8 +2880,7 @@ describe("Call Instrument Tests", function () {
       const settleCall = calls
         .connect(writer)
         .settleOption(optionTokenId, false);
-      await expect(settleCall)
-      .to.emit(calls, "CallSettled");
+      await expect(settleCall).to.emit(calls, "CallSettled");
 
       const vaultAddress = await calls.getVaultAddress(optionTokenId);
       const vault = await ethers.getContractAt(
@@ -2944,8 +2912,7 @@ describe("Call Instrument Tests", function () {
       const settleCall = calls
         .connect(secondBidder)
         .settleOption(secondOptionTokenId, false);
-      await expect(settleCall)
-      .to.emit(calls, "CallSettled");
+      await expect(settleCall).to.emit(calls, "CallSettled");
 
       const vaultAddress = await calls.getVaultAddress(secondOptionTokenId);
       const vault = await ethers.getContractAt(
@@ -3089,9 +3056,7 @@ describe("Call Instrument Tests", function () {
     });
 
     it("should reclaim asset with no bids and return nft", async function () {
-      await calls
-        .connect(writer)
-        .reclaimAsset(optionTokenId, true);
+      await calls.connect(writer).reclaimAsset(optionTokenId, true);
 
       expect(await token.ownerOf(0)).to.eq(writer.address);
     });
@@ -3103,49 +3068,60 @@ describe("Call Instrument Tests", function () {
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   */
   describe("config", function () {
-    let marketController: SignerWithAddress
+    let marketController: SignerWithAddress;
 
     this.beforeEach(async function () {
       [marketController] = await ethers.getSigners();
 
       const MARKET_CONF_ROLE = calls.MARKET_CONF();
-      protocol.connect(admin).grantRole(MARKET_CONF_ROLE, marketController.address);
+      protocol
+        .connect(admin)
+        .grantRole(MARKET_CONF_ROLE, marketController.address);
     });
 
     it("should not modify configuration as non market controller", async function () {
-      const setMinOptionDuration = calls.connect(writer).setMinOptionDuration(0);
-      await expect(setMinOptionDuration).to.be.revertedWith("onlyMarketController -- caller does not have the MARKET_CONF protocol role")
+      const setMinOptionDuration = calls
+        .connect(writer)
+        .setMinOptionDuration(0);
+      await expect(setMinOptionDuration).to.be.revertedWith(
+        "onlyMarketController -- caller does not have the MARKET_CONF protocol role"
+      );
     });
 
     it("should set min option duration as market controller", async function () {
       await expect(calls.connect(marketController).setMinOptionDuration(100))
-      .to.emit(calls, 'MinOptionDurationUpdated')
-      .withArgs(100);
+        .to.emit(calls, "MinOptionDurationUpdated")
+        .withArgs(100);
     });
 
     it("should set bid increment as market controller", async function () {
       await expect(calls.connect(marketController).setBidIncrement(37))
-      .to.emit(calls, 'MinBidIncrementUpdated')
-      .withArgs(37);
+        .to.emit(calls, "MinBidIncrementUpdated")
+        .withArgs(37);
     });
 
     it("should set settlement auction start offset as market controller", async function () {
-      await expect(calls.connect(marketController).setSettlementAuctionStartOffset(6))
-      .to.emit(calls, 'SettlementAuctionStartOffsetUpdated')
-      .withArgs(6);
+      await expect(
+        calls.connect(marketController).setSettlementAuctionStartOffset(6)
+      )
+        .to.emit(calls, "SettlementAuctionStartOffsetUpdated")
+        .withArgs(6);
     });
 
     it("should no set settlement auction start offset when more than minimum option duration", async function () {
-      await calls.connect(marketController).setMinOptionDuration(100)
+      await calls.connect(marketController).setMinOptionDuration(100);
 
-      await expect(calls.connect(marketController).setSettlementAuctionStartOffset(101))
-      .to.be.revertedWith("the settlement auctions cannot start sooner than an option expired");
+      await expect(
+        calls.connect(marketController).setSettlementAuctionStartOffset(101)
+      ).to.be.revertedWith(
+        "the settlement auctions cannot start sooner than an option expired"
+      );
     });
 
     it("should set market paused as market controller", async function () {
       await expect(calls.connect(marketController).setMarketPaused(true))
-      .to.emit(calls, 'MarketPauseUpdated')
-      .withArgs(true);
+        .to.emit(calls, "MarketPauseUpdated")
+        .withArgs(true);
     });
   });
 
@@ -3180,7 +3156,9 @@ describe("Call Instrument Tests", function () {
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
-      expiration = BigNumber.from(Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5));
+      expiration = BigNumber.from(
+        Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5)
+      );
 
       await multiVault.connect(writer).grantEntitlement({
         beneficialOwner: writer.address,
@@ -3194,7 +3172,7 @@ describe("Call Instrument Tests", function () {
       const createCall = await calls
         .connect(writer)
         .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
-      
+
       const cc = await createCall.wait();
 
       const callCreatedEvent = cc.events.find(
@@ -3205,7 +3183,9 @@ describe("Call Instrument Tests", function () {
     });
 
     it("should get vault address", async function () {
-      expect(await calls.getVaultAddress(optionTokenId)).to.eq(multiVault.address);
+      expect(await calls.getVaultAddress(optionTokenId)).to.eq(
+        multiVault.address
+      );
     });
 
     it("should get asset id", async function () {
@@ -3241,13 +3221,15 @@ describe("Call Instrument Tests", function () {
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
-      const expiration = BigNumber.from(Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5));
+      const expiration = BigNumber.from(
+        Math.floor(blockTimestamp + SECS_IN_A_DAY * 1.5)
+      );
 
       // Mint call option
       const createCall = await calls
         .connect(writer)
         .mintWithErc721(token.address, 0, 1000, expiration);
-      
+
       const cc = await createCall.wait();
 
       const callCreatedEvent = cc.events.find(
@@ -3258,15 +3240,19 @@ describe("Call Instrument Tests", function () {
     });
 
     it("should not burn expired option before expiration", async function () {
-      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith("burnExpiredOption -- the option must be expired")
+      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith(
+        "burnExpiredOption -- the option must be expired"
+      );
     });
 
     it("should burn expired option", async function () {
       // Move forward past expiration
       await ethers.provider.send("evm_increaseTime", [2 * SECS_IN_A_DAY]);
 
-      await expect(calls.burnExpiredOption(optionTokenId))
-      .to.emit(calls, 'ExpiredCallBurned')
+      await expect(calls.burnExpiredOption(optionTokenId)).to.emit(
+        calls,
+        "ExpiredCallBurned"
+      );
     });
 
     it("should not burn expired option with bids", async function () {
@@ -3280,8 +3266,9 @@ describe("Call Instrument Tests", function () {
       await ethers.provider.send("evm_increaseTime", [2 * SECS_IN_A_DAY]);
 
       // Burn expired option
-      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith("burnExpiredOption -- the option must not have bids");
+      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith(
+        "burnExpiredOption -- the option must not have bids"
+      );
     });
-
   });
 });
