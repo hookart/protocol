@@ -266,7 +266,7 @@ contract HookCoveredCallImplV1 is
       tokenId
     );
 
-    uint256 assetId = 0;
+    uint32 assetId = 0;
     if (
       address(vault) ==
       Create2.computeAddress(
@@ -277,7 +277,7 @@ contract HookCoveredCallImplV1 is
     ) {
       // If the vault is a multi-vault, it requires that the assetId matches the
       // tokenId, instead of having a standard assetI of 0
-      assetId = tokenId;
+      assetId = uint32(tokenId);
     }
 
     uint256 optionId = _mintOptionWithVault(
