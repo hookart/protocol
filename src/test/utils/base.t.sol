@@ -138,7 +138,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint128 expiration = uint128(block.timestamp) + 3 days;
+    uint32 expiration = uint32(block.timestamp) + 3 days;
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -181,14 +181,14 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
   function makeSignature(
     uint256 tokenId,
-    uint256 expiry,
+    uint32 expiry,
     address _writer
   ) internal returns (Signatures.Signature memory sig) {
     address va = address(
       vaultFactory.findOrCreateVault(address(token), tokenId)
     );
 
-    uint256 assetId = 0;
+    uint32 assetId = 0;
     if (
       va ==
       Create2.computeAddress(
@@ -199,7 +199,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     ) {
       // If the vault is a multi-vault, it requires that the assetId matches the
       // tokenId, instead of having a standard assetI of 0
-      assetId = tokenId;
+      assetId = uint32(tokenId);
     }
 
     bytes32 structHash = Entitlements.getEntitlementStructHash(

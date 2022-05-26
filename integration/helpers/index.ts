@@ -51,8 +51,8 @@ function genEntitlementTypedData(
         { name: "beneficialOwner", type: "address" },
         { name: "operator", type: "address" },
         { name: "vaultAddress", type: "address" },
-        { name: "assetId", type: "uint256" },
-        { name: "expiry", type: "uint256" },
+        { name: "assetId", type: "uint32" },
+        { name: "expiry", type: "uint32" },
       ],
     },
     // The data to sign

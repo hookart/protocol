@@ -25,11 +25,11 @@ contract HookMultiVaultTests is HookProtocolTest {
 
   function createVaultandAsset()
     internal
-    returns (address vaultAddress, uint256 tokenId)
+    returns (address vaultAddress, uint32 tokenId)
   {
     vm.startPrank(admin);
     tokenStartIndex += 1;
-    tokenId = tokenStartIndex;
+    tokenId = uint32(tokenStartIndex);
     token.mint(address(writer), tokenId);
     vault.makeMultiVault(address(token));
     vaultAddress = address(vault.findOrCreateVault(address(token), tokenId));
@@ -42,7 +42,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     address operator,
     address vaultAddress,
     uint256 tokenId,
-    uint256 _expiry
+    uint32 _expiry
   )
     internal
     returns (
@@ -56,7 +56,7 @@ contract HookMultiVaultTests is HookProtocolTest {
       beneficialOwner: ownerAdd,
       operator: operator,
       vaultAddress: vaultAddress,
-      assetId: tokenId,
+      assetId: uint32(tokenId),
       expiry: _expiry
     });
 
@@ -77,10 +77,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testImposeEntitlmentOnTransferIn() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -111,10 +111,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testBasicFlashLoan() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -137,10 +137,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testFlashLoanFailsIfDisabled() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -171,10 +171,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testBasicFlashLoanAlternateApprove() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -197,10 +197,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testBasicFlashCantReturnFalse() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -224,10 +224,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testBasicFlashMustApprove() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -251,10 +251,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testBasicFlashCantBurn() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -279,10 +279,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testFlashCallData() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -306,10 +306,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testFlashWillRevert() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -334,10 +334,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testImposeEntitlementAfterInitialTransfer() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -358,7 +358,14 @@ contract HookMultiVaultTests is HookProtocolTest {
 
     // impose the entitlement onto the vault
     vm.prank(mockContract);
-    vaultImpl.imposeEntitlement(entitlement, sig);
+    vaultImpl.imposeEntitlement(
+      entitlement.operator,
+      uint32(entitlement.expiry),
+      uint32(entitlement.assetId),
+      sig.v,
+      sig.r,
+      sig.s
+    );
 
     assertTrue(
       vaultImpl.getHoldsAsset(tokenId),
@@ -387,10 +394,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testEntitlementGoesAwayAfterExpiration() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
@@ -428,10 +435,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testEntitlementCanBeClearedByOperator() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
@@ -463,10 +470,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testNewEntitlementPossibleAferExpiredEntitlement() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
@@ -488,7 +495,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     assertTrue(!active, "there should not be an active entitlement");
 
     // asset is not withdrawn, try to add a new entitlement
-    uint256 expiration2 = block.timestamp + 10 days;
+    uint32 expiration2 = uint32(block.timestamp + 10 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -500,16 +507,23 @@ contract HookMultiVaultTests is HookProtocolTest {
         tokenId,
         expiration2
       );
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint32(entitlement2.expiry),
+      uint32(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
     (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
     assertTrue(active, "there should be an active entitlement");
   }
 
   function testNewEntitlementPossibleAfterClearedEntitlement() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
@@ -530,7 +544,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
     assertTrue(!active, "there should not be an active entitlement");
 
-    uint256 expiration2 = block.timestamp + 3 days;
+    uint32 expiration2 = uint32(block.timestamp + 3 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -543,16 +557,23 @@ contract HookMultiVaultTests is HookProtocolTest {
         expiration2
       );
 
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint32(entitlement2.expiry),
+      uint32(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
     (active, operator) = vaultImpl.getCurrentEntitlementOperator(tokenId);
     assertTrue(active, "there should  be an active entitlement");
   }
 
   function testOnlyOneEntitlementAllowed() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(3333);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     // transfer in with first entitlement
     vm.prank(writer);
@@ -568,7 +589,7 @@ contract HookMultiVaultTests is HookProtocolTest {
     (bool active, ) = vaultImpl.getCurrentEntitlementOperator(tokenId);
     assertTrue(active, "there should  be an active entitlement");
 
-    uint256 expiration2 = block.timestamp + 3 days;
+    uint32 expiration2 = uint32(block.timestamp + 3 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -586,14 +607,21 @@ contract HookMultiVaultTests is HookProtocolTest {
       "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
     );
 
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint32(entitlement2.expiry),
+      uint32(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
   }
 
   function testBeneficialOwnerCannotClearEntitlement() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69420);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
     // transfer in with first entitlement
     vm.prank(writer);
     token.safeTransferFrom(
@@ -621,10 +649,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testClearAndDistributeReturnsNFT2() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
@@ -681,10 +709,10 @@ contract HookMultiVaultTests is HookProtocolTest {
   }
 
   function testClearAndDistributeDoesNotReturnToWrongPerson() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint128 expiration = uint128(block.timestamp) + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
