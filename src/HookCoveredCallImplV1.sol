@@ -530,6 +530,7 @@ contract HookCoveredCallImplV1 is
   function reclaimAsset(uint256 optionId, bool returnNft)
     external
     nonReentrant
+    whenNotPaused
   {
     CallOption storage call = optionParams[optionId];
     require(
@@ -585,7 +586,7 @@ contract HookCoveredCallImplV1 is
   }
 
   /// @dev See {IHookCoveredCall-burnExpiredOption}.
-  function burnExpiredOption(uint256 optionId) external {
+  function burnExpiredOption(uint256 optionId) external whenNotPaused {
     CallOption storage call = optionParams[optionId];
 
     require(
