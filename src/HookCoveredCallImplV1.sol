@@ -26,7 +26,7 @@ import "./mixin/HookInstrumentERC721.sol";
 /// @dev Explain to a developer any extra details
 contract HookCoveredCallImplV1 is
   IHookCoveredCall,
-  HookInsturmentERC721,
+  HookInstrumentERC721,
   ReentrancyGuard,
   Initializable,
   PermissionConstants
@@ -45,11 +45,11 @@ contract HookCoveredCallImplV1 is
   /// @param highBidder is the address that made the current winning bid in the settlement auction
   struct CallOption {
     address writer;
+    uint32 expiration;
+    uint32 assetId;
     address vaultAddress;
-    uint256 assetId;
-    uint256 strike;
-    uint256 expiration;
-    uint256 bid;
+    uint128 strike;
+    uint128 bid;
     address highBidder;
     bool settled;
   }
@@ -107,17 +107,17 @@ contract HookCoveredCallImplV1 is
   /// @param startOffset new number of seconds from expiration when the start offset begins
   event SettlementAuctionStartOffsetUpdated(uint256 startOffset);
 
-  /// @dev emitted when the minimun duration for an option is changed
+  /// @dev emitted when the minimum duration for an option is changed
   /// @param optionDuration new minimum length of an option in seconds.
   event MinOptionDurationUpdated(uint256 optionDuration);
 
   /// --- Constructor
-  // the constructor cannot have arugments in proxied contracts.
-  constructor() HookInsturmentERC721("Call") {}
+  // the constructor cannot have arguments in proxied contracts.
+  constructor() HookInstrumentERC721("Call") {}
 
   /// @notice Initializes the specific instance of the instrument contract.
   /// @dev Because the deployed contract is proxied, arguments unique to each deployment
-  /// must be passed in an individual initializer. This function is like a consturctor.
+  /// must be passed in an individual initializer. This function is like a constructor.
   /// @param protocol the address of the Hook protocol (which contains configurations)
   /// @param nftContract the address for the ERC-721 contract that can serve as underlying instruments
   /// @param hookVaultFactory the address of the ERC-721 vault registry
@@ -125,12 +125,12 @@ contract HookCoveredCallImplV1 is
     address protocol,
     address nftContract,
     address hookVaultFactory,
-    address preapprovedMarketplace
+    address preApprovedMarketplace
   ) public initializer {
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();
-    _preapprovedMarketplace = preapprovedMarketplace;
+    _preApprovedMarketplace = preApprovedMarketplace;
     allowedUnderlyingAddress = nftContract;
 
     /// Initialize basic configuration.
@@ -148,9 +148,9 @@ contract HookCoveredCallImplV1 is
   /// @dev See {IHookCoveredCall-mintWithVault}.
   function mintWithVault(
     address vaultAddress,
-    uint256 assetId,
-    uint256 strikePrice,
-    uint256 expirationTime,
+    uint32 assetId,
+    uint128 strikePrice,
+    uint32 expirationTime,
     Signatures.Signature calldata signature
   ) external whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
@@ -169,20 +169,20 @@ contract HookCoveredCallImplV1 is
         allowedUnderlyingAddress,
         assetId
       ),
-      "mintWithVault -- can only mint with vaults created in protocol"
+      "mintWithVault -- can only mint with protocol vaults"
     );
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
     address writer = vault.getBeneficialOwner(assetId);
-    Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
-      beneficialOwner: writer,
-      operator: address(this),
-      vaultAddress: address(vault),
-      assetId: assetId,
-      expiry: expirationTime
-    });
 
-    vault.imposeEntitlement(entitlement, signature);
+    vault.imposeEntitlement(
+      address(this),
+      expirationTime,
+      assetId,
+      signature.v,
+      signature.r,
+      signature.s
+    );
 
     return
       _mintOptionWithVault(writer, vault, assetId, strikePrice, expirationTime);
@@ -191,9 +191,9 @@ contract HookCoveredCallImplV1 is
   /// @dev See {IHookCoveredCall-mintWithEntitledVault}.
   function mintWithEntitledVault(
     address vaultAddress,
-    uint256 assetId,
-    uint256 strikePrice,
-    uint256 expirationTime
+    uint32 assetId,
+    uint128 strikePrice,
+    uint32 expirationTime
   ) external whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
 
@@ -223,11 +223,11 @@ contract HookCoveredCallImplV1 is
         allowedUnderlyingAddress,
         assetId
       ),
-      "mintWithVault -- can only mint with vaults created in protocol"
+      "mintWithVault -- can only mint with protocol vaults"
     );
 
     // the beneficial owner owns the asset so
-    // they should recieve the option.
+    // they should receive the option.
     address writer = vault.getBeneficialOwner(assetId);
 
     return
@@ -238,8 +238,8 @@ contract HookCoveredCallImplV1 is
   function mintWithErc721(
     address tokenAddress,
     uint256 tokenId,
-    uint256 strikePrice,
-    uint256 expirationTime
+    uint128 strikePrice,
+    uint32 expirationTime
   ) external whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
@@ -247,13 +247,14 @@ contract HookCoveredCallImplV1 is
       "mintWithErc721 -- token must be on the project allowlist"
     );
 
-    // NOTE: we can mint the option since our contract is approved
-    // this is to ensure additionally that the msg.sender isn't a unexpected address
     require(
       msg.sender == tokenOwner ||
         IERC721(tokenAddress).isApprovedForAll(tokenOwner, msg.sender),
       "mintWithErc721 -- caller must be token owner or operator"
     );
+
+    // NOTE: we can mint the option since our contract is approved
+    // this is to ensure additionally that the msg.sender isn't a unexpected address
     require(
       IERC721(tokenAddress).isApprovedForAll(tokenOwner, address(this)),
       "mintWithErc721 -- HookCoveredCall must be operator"
@@ -264,7 +265,8 @@ contract HookCoveredCallImplV1 is
       tokenAddress,
       tokenId
     );
-    uint256 assetId = 0;
+
+    uint32 assetId = 0;
     if (
       address(vault) ==
       Create2.computeAddress(
@@ -273,21 +275,18 @@ contract HookCoveredCallImplV1 is
         address(_erc721VaultFactory)
       )
     ) {
-      // If the vault is a multi-vault, it requries that the assetId matches the
+      // If the vault is a multi-vault, it requires that the assetId matches the
       // tokenId, instead of having a standard assetI of 0
-      assetId = tokenId;
+      assetId = uint32(tokenId);
     }
 
-    /// IMPORTANT: the entitlement entitles the user to this contract address. That means that even if this
-    // implementation code were upgraded, the contract at this address (i.e. with the new implementation) would
-    // retain the entitlement.
-    Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
-      beneficialOwner: tokenOwner,
-      operator: address(this),
-      vaultAddress: address(vault),
-      assetId: assetId,
-      expiry: expirationTime
-    });
+    uint256 optionId = _mintOptionWithVault(
+      tokenOwner,
+      IHookVault(vault),
+      assetId,
+      strikePrice,
+      expirationTime
+    );
 
     // transfer the underlying asset into our vault, passing along the entitlement. The entitlement specified
     // here will be accepted by the vault because we are also simultaneously tendering the asset.
@@ -295,23 +294,16 @@ contract HookCoveredCallImplV1 is
       tokenOwner,
       address(vault),
       tokenId,
-      abi.encode(entitlement)
+      abi.encode(tokenOwner, address(this), expirationTime)
     );
 
     // make sure that the vault actually has the asset.
     require(
-      vault.getHoldsAsset(assetId),
+      IERC721(tokenAddress).ownerOf(tokenId) == address(vault),
       "mintWithErc712 -- asset must be in vault"
     );
 
-    return
-      _mintOptionWithVault(
-        tokenOwner,
-        IHookVault(vault),
-        assetId,
-        strikePrice,
-        expirationTime
-      );
+    return optionId;
   }
 
   /// @notice internal use function to record the option and mint it
@@ -325,9 +317,9 @@ contract HookCoveredCallImplV1 is
   function _mintOptionWithVault(
     address writer,
     IHookVault vault,
-    uint256 assetId,
-    uint256 strikePrice,
-    uint256 expirationTime
+    uint32 assetId,
+    uint128 strikePrice,
+    uint32 expirationTime
   ) private returns (uint256) {
     // NOTE: The settlement auction always occurs one day before expiration
     require(
@@ -398,7 +390,7 @@ contract HookCoveredCallImplV1 is
   function _allowedVaultImplementation(
     address vaultAddress,
     address underlyingAddress,
-    uint256 assetId
+    uint32 assetId
   ) internal view returns (bool) {
     // First check if the multiVault is the one to save a bit of gas
     // in the case the user is optimizing for gas savings (by using MultiVault)
@@ -413,15 +405,21 @@ contract HookCoveredCallImplV1 is
       return true;
     }
 
-    if (
-      vaultAddress ==
-      Create2.computeAddress(
-        BeaconSalts.soloVaultSalt(underlyingAddress, assetId),
-        BeaconSalts.ByteCodeHash,
-        address(_erc721VaultFactory)
-      )
+    try IHookERC721Vault(vaultAddress).assetTokenId(assetId) returns (
+      uint256 _tokenId
     ) {
-      return true;
+      if (
+        vaultAddress ==
+        Create2.computeAddress(
+          BeaconSalts.soloVaultSalt(underlyingAddress, _tokenId),
+          BeaconSalts.ByteCodeHash,
+          address(_erc721VaultFactory)
+        )
+      ) {
+        return true;
+      }
+    } catch (bytes memory) {
+      return false;
     }
 
     return false;
@@ -434,7 +432,7 @@ contract HookCoveredCallImplV1 is
     nonReentrant
     biddingEnabled(optionId)
   {
-    uint256 bidAmt = msg.value;
+    uint128 bidAmt = uint128(msg.value);
     CallOption storage call = optionParams[optionId];
 
     if (msg.sender == call.writer) {
@@ -442,7 +440,7 @@ contract HookCoveredCallImplV1 is
       /// an underlying asset that they owned. In this case, as they would be
       /// the recipient of the spread after the auction, they are able to bid
       /// paying only the difference between their bid and the strike.
-      bidAmt = msg.value + call.strike;
+      bidAmt += call.strike;
     }
 
     require(
@@ -467,17 +465,17 @@ contract HookCoveredCallImplV1 is
   }
 
   function _returnBidToPreviousBidder(CallOption storage call) internal {
-    uint256 unnormalizedHighBid = call.bid;
+    uint256 unNormalizedHighBid = call.bid;
     if (call.highBidder == call.writer) {
-      unnormalizedHighBid -= call.strike;
+      unNormalizedHighBid -= call.strike;
     }
 
     // return current bidder's money
-    _safeTransferETHWithFallback(call.highBidder, unnormalizedHighBid);
+    _safeTransferETHWithFallback(call.highBidder, unNormalizedHighBid);
   }
 
   /// @dev See {IHookCoveredCall-currentBid}.
-  function currentBid(uint256 optionId) external view returns (uint256) {
+  function currentBid(uint256 optionId) external view returns (uint128) {
     return optionParams[optionId].bid;
   }
 
@@ -506,7 +504,7 @@ contract HookCoveredCallImplV1 is
 
     uint256 spread = call.bid - call.strike;
 
-    // If the option writer is the high bidder they don't recieve the strike because they bid on the spread.
+    // If the option writer is the high bidder they don't receive the strike because they bid on the spread.
     if (call.highBidder != call.writer) {
       // send option writer the strike price
       _safeTransferETHWithFallback(call.writer, call.strike);
@@ -522,10 +520,10 @@ contract HookCoveredCallImplV1 is
     // burn nft
     _burn(optionId);
 
-    // set settled to prevent an additional attemt to settle the option
+    // set settled to prevent an additional attempt to settle the option
     optionParams[optionId].settled = true;
 
-    emit CallDestroyed(optionId);
+    emit CallSettled(optionId);
   }
 
   /// @dev See {IHookCoveredCall-reclaimAsset}.
@@ -542,26 +540,14 @@ contract HookCoveredCallImplV1 is
       !call.settled,
       "reclaimAsset -- the option has already been settled"
     );
-
-    if (call.writer != ownerOf(optionId)) {
-      // if the writer holds the option nft, there are more cases where they're able to reclaim.
-      require(
-        call.highBidder == address(0),
-        "reclaimAsset -- cannot reclaim a sold asset if the option is not writer-owned."
-      );
-      require(
-        call.expiration < block.timestamp,
-        "reclaimAsset -- the option must expired unless writer-owned"
-      );
-    }
-
-    if (call.expiration <= block.timestamp) {
-      require(
-        call.highBidder == address(0),
-        "reclaimAsset -- cannot reclaim a sold asset"
-      );
-      // send the call back to the owner (because we've refunded the high bidder)
-    }
+    require(
+      call.writer == ownerOf(optionId),
+      "reclaimAsset -- the option must be owned by the writer"
+    );
+    require(
+      call.expiration > block.timestamp,
+      "reclaimAsset -- the option must not be expired"
+    );
 
     if (call.highBidder != address(0)) {
       // return current bidder's money
@@ -576,14 +562,12 @@ contract HookCoveredCallImplV1 is
 
     if (returnNft) {
       // Because the call is not expired, we should be able to reclaim the asset from the vault
-      if (call.expiration > block.timestamp) {
-        IHookVault(call.vaultAddress).clearEntitlementAndDistribute(
-          call.assetId,
-          call.writer
-        );
-      } else {
-        IHookVault(call.vaultAddress).withdrawalAsset(call.assetId);
-      }
+      IHookVault(call.vaultAddress).clearEntitlementAndDistribute(
+        call.assetId,
+        call.writer
+      );
+    } else {
+      IHookVault(call.vaultAddress).clearEntitlement(call.assetId);
     }
 
     // burn the option NFT
@@ -591,7 +575,7 @@ contract HookCoveredCallImplV1 is
 
     // settle the option
     call.settled = true;
-    emit CallDestroyed(optionId);
+    emit CallReclaimed(optionId);
 
     /// WARNING:
     /// Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on
@@ -600,9 +584,37 @@ contract HookCoveredCallImplV1 is
     /// the current bidder to reclaim their money.
   }
 
+  /// @dev See {IHookCoveredCall-burnExpiredOption}.
+  function burnExpiredOption(uint256 optionId) external {
+    CallOption storage call = optionParams[optionId];
+
+    require(
+      block.timestamp > call.expiration,
+      "burnExpiredOption -- the option must be expired"
+    );
+
+    require(
+      !call.settled,
+      "burnExpiredOption -- the option has already been settled"
+    );
+
+    require(
+      call.highBidder == address(0),
+      "burnExpiredOption -- the option must not have bids"
+    );
+
+    // burn the option NFT
+    _burn(optionId);
+
+    // settle the option
+    call.settled = true;
+
+    emit ExpiredCallBurned(optionId);
+  }
+
   //// ---- Administrative Fns.
 
-  // forward to protocol pausability
+  // forward to protocol pauseability
   modifier whenNotPaused() {
     require(!marketPaused, "whenNotPaused -- market is paused");
     _protocol.throwWhenPaused();
@@ -638,7 +650,7 @@ contract HookCoveredCallImplV1 is
     emit MinBidIncrementUpdated(newBidIncrement);
   }
 
-  /// @dev set the settlment auction start offset. Settlement auctions begin at this time prior to expiration.
+  /// @dev set the settlement auction start offset. Settlement auctions begin at this time prior to expiration.
   /// @param newSettlementStartOffset in seconds (i.e. block.timestamp increments)
   function setSettlementAuctionStartOffset(uint256 newSettlementStartOffset)
     public
@@ -660,7 +672,7 @@ contract HookCoveredCallImplV1 is
   }
 
   //// ------------------------- NFT RELATED FUNCTIONS ------------------------------- ////
-  //// These fuctions are overrides needed by the HookInstrumentNFT library in order   ////
+  //// These functions are overrides needed by the HookInstrumentNFT library in order   ////
   //// to generate the NFT view for the project.                                       ////
 
   function getVaultAddress(uint256 optionId)
@@ -672,7 +684,7 @@ contract HookCoveredCallImplV1 is
     return optionParams[optionId].vaultAddress;
   }
 
-  function getAssetId(uint256 optionId) public view override returns (uint256) {
+  function getAssetId(uint256 optionId) public view override returns (uint32) {
     return optionParams[optionId].assetId;
   }
 
@@ -698,7 +710,7 @@ contract HookCoveredCallImplV1 is
 
   /// @notice Transfer ETH. If the ETH transfer fails, wrap the ETH and try send it as WETH.
   /// @dev this transfer failure could occur if the transferee is a malicious contract
-  /// so limiting the gas and persisting on fail helps prevent the impace of these calls.
+  /// so limiting the gas and persisting on fail helps prevent the impact of these calls.
   function _safeTransferETHWithFallback(address to, uint256 amount) internal {
     if (!_safeTransferETH(to, amount)) {
       IWETH(weth).deposit{value: amount}();

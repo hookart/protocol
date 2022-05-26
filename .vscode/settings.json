@@ -1,0 +1,15 @@
+{
+  "cSpell.enableFiletypes": [
+    "solidity"
+  ],
+  "cSpell.words": [
+    "flashloan",
+    "IERC",
+    "IWETH",
+    "keccak",
+    "Nyquist",
+    "Permissionlessly",
+    "struct",
+    "timelocks"
+  ]
+}

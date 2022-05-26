@@ -15,7 +15,7 @@ import "./utils/mocks/FlashLoan.sol";
 
 contract HookVaultTestsBase is HookProtocolTest {
   IHookERC721VaultFactory vault;
-  uint256 tokenStartIndex = 300;
+  uint32 tokenStartIndex = 300;
 
   function setUp() public {
     setUpAddresses();
@@ -25,7 +25,7 @@ contract HookVaultTestsBase is HookProtocolTest {
 
   function createVaultandAsset()
     internal
-    returns (address vaultAddress, uint256 tokenId)
+    returns (address vaultAddress, uint32 tokenId)
   {
     vm.startPrank(admin);
     tokenStartIndex += 1;
@@ -40,7 +40,7 @@ contract HookVaultTestsBase is HookProtocolTest {
     uint256 ownerPkey,
     address operator,
     address vaultAddress,
-    uint256 _expiry
+    uint32 _expiry
   )
     internal
     returns (
@@ -77,20 +77,10 @@ contract HookVaultTestsBase is HookProtocolTest {
 
 contract HookVaultTestFlash is HookVaultTestsBase {
   function testBasicFlashLoan() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -98,7 +88,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -113,20 +103,10 @@ contract HookVaultTestFlash is HookVaultTestsBase {
   }
 
   function testFlashLoanFailsIfDisabled() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -134,7 +114,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -157,20 +137,10 @@ contract HookVaultTestFlash is HookVaultTestsBase {
   }
 
   function testBasicFlashLoanAlternateApprove() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -178,7 +148,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -193,20 +163,10 @@ contract HookVaultTestFlash is HookVaultTestsBase {
   }
 
   function testBasicFlashCantReturnFalse() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -214,7 +174,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -230,20 +190,10 @@ contract HookVaultTestFlash is HookVaultTestsBase {
   }
 
   function testBasicFlashMustApprove() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -251,7 +201,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -267,20 +217,10 @@ contract HookVaultTestFlash is HookVaultTestsBase {
   }
 
   function testBasicFlashCantBurn() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -288,7 +228,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -305,20 +245,10 @@ contract HookVaultTestFlash is HookVaultTestsBase {
   }
 
   function testFlashCallData() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -326,7 +256,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -342,20 +272,10 @@ contract HookVaultTestFlash is HookVaultTestsBase {
   }
 
   function testFlashWillRevert() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -363,7 +283,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -382,20 +302,10 @@ contract HookVaultTestFlash is HookVaultTestsBase {
 
 contract HookVaultTestEntitlement is HookVaultTestsBase {
   function testImposeEntitlmentOnTransferIn() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
 
@@ -403,7 +313,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
 
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
@@ -422,10 +332,10 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
   }
 
   function testImposeEntitlementAfterInitialTransfer() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     (
       Entitlements.Entitlement memory entitlement,
@@ -445,7 +355,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
     // impose the entitlement onto the vault
     vm.prank(mockContract);
-    vaultImpl.imposeEntitlement(entitlement, sig);
+    vaultImpl.imposeEntitlement(
+      entitlement.operator,
+      uint32(entitlement.expiry),
+      uint32(entitlement.assetId),
+      sig.v,
+      sig.r,
+      sig.s
+    );
 
     assertTrue(
       vaultImpl.getHoldsAsset(0),
@@ -463,34 +380,24 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     // verify that beneficial owner cannot withdrawl
     // during an active entitlement.
     vm.expectRevert(
-      "withdrawalAsset -- the asset canot be withdrawn with an active entitlement"
+      "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
     );
     vm.prank(writer);
     vaultImpl.withdrawalAsset(0);
   }
 
   function testEntitlementGoesAwayAfterExpiration() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
@@ -520,27 +427,17 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
   }
 
   function testEntitlementCanBeClearedByOperator() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
@@ -567,27 +464,17 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
   }
 
   function testNewEntitlementPossibleAferExpiredEntitlement() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
@@ -604,7 +491,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     );
 
     // asset is not withdrawn, try to add a new entitlement
-    uint256 expiration2 = block.timestamp + 10 days;
+    uint32 expiration2 = uint32(block.timestamp + 10 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -615,7 +502,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
         vaultAddress,
         expiration2
       );
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint32(entitlement2.expiry),
+      uint32(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
     assertTrue(
       vaultImpl.hasActiveEntitlement(),
       "there should be a new active entitlement"
@@ -623,27 +517,17 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
   }
 
   function testNewEntitlementPossibleAfterClearedEntitlement() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
@@ -660,7 +544,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       "there should not be any active entitlements"
     );
 
-    uint256 expiration2 = block.timestamp + 3 days;
+    uint32 expiration2 = uint32(block.timestamp + 3 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -672,7 +556,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
         expiration2
       );
 
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint32(entitlement2.expiry),
+      uint32(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
     assertTrue(
       vaultImpl.hasActiveEntitlement(),
       "there should be a new active entitlement"
@@ -680,20 +571,10 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
   }
 
   function testOnlyOneEntitlementAllowed() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(3333);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     // transfer in with first entitlement
     vm.prank(writer);
@@ -701,7 +582,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
@@ -711,7 +592,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       "there should be an active entitlement"
     );
 
-    uint256 expiration2 = block.timestamp + 3 days;
+    uint32 expiration2 = uint32(block.timestamp + 3 days);
 
     (
       Entitlements.Entitlement memory entitlement2,
@@ -728,32 +609,28 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
     );
 
-    vaultImpl.imposeEntitlement(entitlement2, sig2);
+    vaultImpl.imposeEntitlement(
+      entitlement2.operator,
+      uint32(entitlement2.expiry),
+      uint32(entitlement2.assetId),
+      sig2.v,
+      sig2.r,
+      sig2.s
+    );
   }
 
   function testBeneficialOwnerCannotClearEntitlement() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69420);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
+    uint32 expiration = uint32(block.timestamp) + 1 days;
     // transfer in with first entitlement
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
@@ -778,27 +655,17 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
 contract HookVaultTestsDistribution is HookVaultTestsBase {
   function testClearAndDistributeReturnsNFT() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
@@ -849,32 +716,22 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
   }
 
   function testClearAndDistributeDoesNotReturnToWrongPerson() public {
-    (address vaultAddress, uint256 tokenId) = createVaultandAsset();
+    (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
     address mockContract = address(69);
-    uint256 expiration = block.timestamp + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
+    uint32 expiration = uint32(block.timestamp) + 1 days;
 
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
       vaultAddress,
       tokenId,
-      abi.encode(entitlement, sig)
+      abi.encode(writer, mockContract, expiration)
     );
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     vm.expectRevert(
-      "clearEntitlementAndDistribute -- Only the beneficial owner can recieve the asset"
+      "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
     );
     vm.prank(mockContract);
     vaultImpl.clearEntitlementAndDistribute(0, address(0x033333344545));

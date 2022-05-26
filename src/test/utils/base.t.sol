@@ -40,7 +40,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   address internal protocolAddress;
   HookProtocol protocol;
   uint256 internal optionTokenId;
-  address internal preapprovedOperator;
+  address internal preApprovedOperator;
   HookERC721VaultFactory vaultFactory;
 
   event CallCreated(
@@ -51,6 +51,12 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     uint256 strikePrice,
     uint256 expiration
   );
+
+  event CallSettled(uint256 optionId);
+
+  event CallReclaimed(uint256 optionId);
+
+  event ExpiredCallBurned(uint256 optionId);
 
   function setUpAddresses() public {
     token = new TestERC721();
@@ -65,13 +71,19 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
     admin = address(69);
     vm.label(admin, "contract admin");
+
+    firstBidder = address(37);
+    vm.label(firstBidder, "First option bidder");
+
+    secondBidder = address(38);
+    vm.label(secondBidder, "Second option bidder");
   }
 
   function setUpFullProtocol() public {
     weth = new WETH();
     protocol = new HookProtocol(admin, address(weth));
     protocolAddress = address(protocol);
-    preapprovedOperator = address(8845603894908);
+    preApprovedOperator = address(8845603894908);
     setAddressForEipDomain(protocolAddress);
 
     // Deploy new vault factory
@@ -109,7 +121,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     HookCoveredCallFactory callFactory = new HookCoveredCallFactory(
       protocolAddress,
       address(callBeacon),
-      preapprovedOperator
+      preApprovedOperator
     );
     vm.prank(address(admin));
     protocol.setCoveredCallFactory(address(callFactory));
@@ -126,7 +138,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint256 expiration = block.timestamp + 3 days;
+    uint32 expiration = uint32(block.timestamp) + 3 days;
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -151,12 +163,8 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   }
 
   function setUpOptionBids() public {
-    firstBidder = address(37);
-    vm.label(firstBidder, "First option bidder");
     vm.deal(address(firstBidder), 1 ether);
 
-    secondBidder = address(38);
-    vm.label(secondBidder, "Second option bidder");
     vm.deal(address(secondBidder), 1 ether);
 
     vm.warp(block.timestamp + 2.1 days);
@@ -173,18 +181,33 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
   function makeSignature(
     uint256 tokenId,
-    uint256 expiry,
+    uint32 expiry,
     address _writer
   ) internal returns (Signatures.Signature memory sig) {
-    try vaultFactory.findOrCreateVault(address(token), tokenId) {} catch {}
-    address va = address(vaultFactory.getVault(address(token), tokenId));
+    address va = address(
+      vaultFactory.findOrCreateVault(address(token), tokenId)
+    );
+
+    uint32 assetId = 0;
+    if (
+      va ==
+      Create2.computeAddress(
+        BeaconSalts.multiVaultSalt(address(token)),
+        BeaconSalts.ByteCodeHash,
+        address(vaultFactory)
+      )
+    ) {
+      // If the vault is a multi-vault, it requires that the assetId matches the
+      // tokenId, instead of having a standard assetI of 0
+      assetId = uint32(tokenId);
+    }
 
     bytes32 structHash = Entitlements.getEntitlementStructHash(
       Entitlements.Entitlement({
         beneficialOwner: address(_writer),
         operator: address(calls),
         vaultAddress: va,
-        assetId: 0,
+        assetId: assetId,
         expiry: expiry
       })
     );

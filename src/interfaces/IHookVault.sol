@@ -1,4 +1,34 @@
 /// SPDX-License-Identifier: UNLICENSED
+///
+///
+///
+/// ,cccccccl:                              ':cccccccc'
+/// oKXXXXXXXO;                             :0XXXXXXXKl
+/// oKXXXXXXXO;                             :0XXXXXXXKl
+/// oKXXXXXXXO;                             :0XXXXXXXKl
+/// oKXXXXXXXO;                             :0XXXXXXXKl
+/// oXXXXXXXXO;                             :0XXXXXXXKl
+/// lKXXXXXXX0:                             cKXXXXXXXKc
+/// c0XXXXXXXKo       ';:cclllllcc:;'       dKXXXXXXX0:
+/// ,kXXXXXXX0o  ':oxO0KXXXXXXXXXXXK0Oxl;  c0XXXXXXXXx'
+///  lKXXXKOl :lk0XXXXXXXXXXXXXXXXXXXXX0o cOXXXXXXXX0:
+///   dKKk' cx0XXXXXXXXXXXXXXXXXXXXXX0d ;o0XXXXXXXXKo
+///   'll ckKXXXXXXXXXXXXXXXXXXXK0kdl' oOXXXXXXXXXKo
+///     ,dKXXXXXXXXXXX0k olcccccccccokKXXXXXXXXXX0l
+///    :OXXXXXXXXXX0dc :lodxxkkkO0KXXXXXXXXXXXXKx;,
+///   :OXXXXXXXXXOl :oOKXXXXXXXXXXXXXXXXXXXXXKxc lOk;
+///  ;kXXXXXXXXKd :xKXXXXXXXXXXXXXXXXXXXXXKOd: lOKXXk,
+///  dXXXXXXXXKo 'd0XXXXXXXXXXXXXXXXXXK0ko:, dOXXXXXKo
+/// ;OXXXXXXXXx'   ':coxkkO00000OOkdoc;'    xXXXXXXXXk,
+/// lKXXXXXXXKc             '''             lKXXXXXXX0:
+/// oKXXXXXXXO;                             :0XXXXXXXKl
+/// oXXXXXXXXO;                             :0XXXXXXXKl
+/// oKXXXXXXXO;                             :0XXXXXXXKl
+/// oKXXXXXXXO;                             :0XXXXXXXKl
+/// oXXXXXXXXO;                             :0XXXXXXXKl
+/// cOOOOOOOOx,                             ;xOOOOOOOk:
+///
+///
 pragma solidity ^0.8.10;
 
 import "../lib/Entitlements.sol";
@@ -7,7 +37,7 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 /// @title Generic Hook Vault -- a vault designed to contain a single asset to be used as escrow.
 /// @author Jake Nyquist -- j@hook.xyz
 /// @notice The Vault holds an asset on behalf of the owner. The owner is able to post this
-/// asset as collateral to other protocols by signing a messsage, called an "entitlement", that gives
+/// asset as collateral to other protocols by signing a message, called an "entitlement", that gives
 /// a specific account the ability to change the owner. While the asset is held within the vault,
 /// any account set as the beneficial owner is able to make external contract calls to benefit from
 /// the utility of the asset. Specifically, that means this structure should not be used in order to
@@ -27,20 +57,20 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 interface IHookVault is IERC165 {
   /// @notice emitted when an entitlement is placed on an asset
   event EntitlementImposed(
-    uint256 assetId,
+    uint32 assetId,
     address entitledAccount,
-    uint256 expiry,
+    uint32 expiry,
     address beneficialOwner
   );
 
-  /// @notice emitted when an entitlment is cleared from an asset
+  /// @notice emitted when an entitlement is cleared from an asset
   event EntitlementCleared(uint256 assetId, address beneficialOwner);
 
   /// @notice emitted when the beneficial owner of an asset changes
   /// @dev it is not required that this event is emitted when an entitlement is
   /// imposed that also modifies the beneficial owner.
   event BeneficialOwnerSet(
-    uint256 assetId,
+    uint32 assetId,
     address beneficialOwner,
     address setBy
   );
@@ -50,58 +80,66 @@ interface IHookVault is IERC165 {
     address owner,
     address sender,
     address contractAddress,
-    uint256 assetId
+    uint32 assetId
   );
 
   /// @notice emitted when an asset is withdrawn from the vault
-  event AssetWithdrawn(uint256 assetId, address to, address beneficialOwner);
+  event AssetWithdrawn(uint32 assetId, address to, address beneficialOwner);
 
   /// @notice Withdrawal an unencumbered asset from this vault
   /// @param assetId the asset to remove from the vault
-  function withdrawalAsset(uint256 assetId) external;
+  function withdrawalAsset(uint32 assetId) external;
 
   /// @notice setBeneficialOwner updates the current address that can claim the asset when it is free of entitlements.
   /// @param assetId the id of the subject asset to impose the entitlement
-  /// @param newBeneficialOwner the account of the person who is able to withdrawl when there are no entitlements.
-  function setBeneficialOwner(uint256 assetId, address newBeneficialOwner)
+  /// @param newBeneficialOwner the account of the person who is able to withdrawal when there are no entitlements.
+  function setBeneficialOwner(uint32 assetId, address newBeneficialOwner)
     external;
 
   /// @notice Add an entitlement claim to the asset held within the contract
-  /// @param entitlement The entitlement to impose onto the contract
-  /// @param signature an EIP-712 signauture of the entitlement struct signed by the beneficial owner
+  /// @param operator the operator to entitle
+  /// @param expiry the duration of the entitlement
+  /// @param assetId the id of the asset within the vault
+  /// @param v sig v
+  /// @param r sig r
+  /// @param s sig s
   function imposeEntitlement(
-    Entitlements.Entitlement memory entitlement,
-    Signatures.Signature memory signature
+    address operator,
+    uint32 expiry,
+    uint32 assetId,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
   ) external;
 
   /// @notice Allows the beneficial owner to grant an entitlement to an asset within the contract
   /// @dev this function call is signed by the sender, so we know the entitlement is authentic
   /// @param entitlement The entitlement to impose onto the contract
-  function grantEntitlement(Entitlements.Entitlement memory entitlement)
+  function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external;
 
-  /// @notice Allowes the entitled address to release their claim on the asset
+  /// @notice Allows the entitled address to release their claim on the asset
   /// @param assetId the id of the asset to clear
-  function clearEntitlement(uint256 assetId) external;
+  function clearEntitlement(uint32 assetId) external;
 
   /// @notice Removes the active entitlement from a vault and returns the asset to the beneficial owner
-  /// @param reciever the intended reciever of the asset
+  /// @param receiver the intended receiver of the asset
   /// @param assetId the Id of the asset to clear
-  function clearEntitlementAndDistribute(uint256 assetId, address reciever)
+  function clearEntitlementAndDistribute(uint32 assetId, address receiver)
     external;
 
   /// @notice looks up the current beneficial owner of the underlying asset
-  function getBeneficialOwner(uint256 assetId) external view returns (address);
+  function getBeneficialOwner(uint32 assetId) external view returns (address);
 
   /// @notice checks if the asset is currently stored in the vault
-  function getHoldsAsset(uint256 assetId) external view returns (bool);
+  function getHoldsAsset(uint32 assetId) external view returns (bool);
 
   /// @notice the contract address of the vaulted asset
-  function assetAddress(uint256 assetId) external view returns (address);
+  function assetAddress(uint32 assetId) external view returns (address);
 
-  /// @notice looks up the current operator of an entitlemnt on an asset
+  /// @notice looks up the current operator of an entitlement on an asset
   /// @param assetId the id of the underlying asset
-  function getCurrentEntitlementOperator(uint256 assetId)
+  function getCurrentEntitlementOperator(uint32 assetId)
     external
     view
     returns (bool isActive, address operator);
@@ -109,8 +147,8 @@ interface IHookVault is IERC165 {
   /// @notice Looks up the expiration timestamp of the current entitlement
   /// @dev returns the 0 if no entitlement is set
   /// @return expiry the block timestamp after which the entitlement expires
-  function entitlementExpiration(uint256 assetId)
+  function entitlementExpiration(uint32 assetId)
     external
     view
-    returns (uint256 expiry);
+    returns (uint32 expiry);
 }
