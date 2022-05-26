@@ -317,9 +317,9 @@ contract HookCoveredCallImplV1 is
   function _mintOptionWithVault(
     address writer,
     IHookVault vault,
-    uint256 assetId,
+    uint32 assetId,
     uint128 strikePrice,
-    uint128 expirationTime
+    uint32 expirationTime
   ) private returns (uint256) {
     // NOTE: The settlement auction always occurs one day before expiration
     require(
@@ -335,10 +335,10 @@ contract HookCoveredCallImplV1 is
     optionParams[newOptionId] = CallOption({
       writer: writer,
       vaultAddress: address(vault),
-      assetId: uint32(assetId),
+      assetId: assetId,
       strike: strikePrice,
-      expiration: uint32(expirationTime),
-      bid: uint128(0),
+      expiration: expirationTime,
+      bid: 0,
       highBidder: address(0),
       settled: false
     });
@@ -440,7 +440,7 @@ contract HookCoveredCallImplV1 is
       /// an underlying asset that they owned. In this case, as they would be
       /// the recipient of the spread after the auction, they are able to bid
       /// paying only the difference between their bid and the strike.
-      bidAmt = uint128(msg.value) + call.strike;
+      bidAmt += call.strike;
     }
 
     require(
