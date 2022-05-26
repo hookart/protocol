@@ -169,7 +169,7 @@ contract HookCoveredCallImplV1 is
         allowedUnderlyingAddress,
         assetId
       ),
-      "mintWithVault -- can only mint with vaults created in protocol"
+      "mintWithVault -- can only mint with protocol vaults"
     );
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
@@ -223,7 +223,7 @@ contract HookCoveredCallImplV1 is
         allowedUnderlyingAddress,
         assetId
       ),
-      "mintWithVault -- can only mint with vaults created in protocol"
+      "mintWithVault -- can only mint with protocol vaults"
     );
 
     // the beneficial owner owns the asset so

@@ -179,9 +179,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
 
-    vm.expectRevert(
-      "mintWithVault -- can only mint with vaults created in protocol"
-    );
+    vm.expectRevert("mintWithVault -- can only mint with protocol vaults");
     calls.mintWithVault(address(alienVault), 0, 1000, expiration, sig);
   }
 

@@ -82,16 +82,6 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
 
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
     vm.prank(writer);
 
     token.safeTransferFrom(
@@ -117,16 +107,6 @@ contract HookVaultTestFlash is HookVaultTestsBase {
 
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
 
     vm.prank(writer);
 
@@ -162,16 +142,6 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
 
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
     vm.prank(writer);
 
     token.safeTransferFrom(
@@ -197,16 +167,6 @@ contract HookVaultTestFlash is HookVaultTestsBase {
 
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
 
     vm.prank(writer);
 
@@ -235,16 +195,6 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
 
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
     vm.prank(writer);
 
     token.safeTransferFrom(
@@ -271,16 +221,6 @@ contract HookVaultTestFlash is HookVaultTestsBase {
 
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
 
     vm.prank(writer);
 
@@ -310,16 +250,6 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
 
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
     vm.prank(writer);
 
     token.safeTransferFrom(
@@ -346,16 +276,6 @@ contract HookVaultTestFlash is HookVaultTestsBase {
 
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
 
     vm.prank(writer);
 
@@ -386,16 +306,6 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
 
     vm.prank(writer);
 
@@ -482,16 +392,6 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
 
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
@@ -532,16 +432,6 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
 
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
@@ -578,16 +468,6 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
 
     vm.prank(writer);
     token.safeTransferFrom(
@@ -642,16 +522,6 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
 
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
@@ -705,16 +575,6 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
     address mockContract = address(3333);
     uint32 expiration = uint32(block.timestamp) + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
 
     // transfer in with first entitlement
     vm.prank(writer);
@@ -800,16 +660,6 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
 
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
-
     vm.prank(writer);
     token.safeTransferFrom(
       writer,
@@ -870,16 +720,6 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
 
     address mockContract = address(69);
     uint32 expiration = uint32(block.timestamp) + 1 days;
-
-    (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory sig
-    ) = makeEntitlementAndSignature(
-        writerpkey,
-        mockContract,
-        vaultAddress,
-        expiration
-      );
 
     vm.prank(writer);
     token.safeTransferFrom(
