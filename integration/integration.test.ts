@@ -576,7 +576,7 @@ describe("Vault", function () {
         expect(
           (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
         ).to.be.true;
-        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -639,7 +639,7 @@ describe("Vault", function () {
         expect(
           (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
         ).to.be.true;
-        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -686,7 +686,7 @@ describe("Vault", function () {
           (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
         ).to.be.true;
 
-        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -3049,9 +3049,7 @@ describe("Call Instrument Tests", function () {
       const reclaimAsset = calls
         .connect(writer)
         .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith(
-        "Pausable: paused"
-      );
+      await expect(reclaimAsset).to.be.revertedWith("Pausable: paused");
     });
   });
 

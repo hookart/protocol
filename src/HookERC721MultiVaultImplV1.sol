@@ -30,7 +30,7 @@ contract HookERC721MultiVaultImplV1 is
   /// ----------------  STORAGE ---------------- ///
 
   /// @dev these are the NFT contract address and tokenId the vault is covering
-  IERC721 private _nftContract;
+  IERC721 internal _nftContract;
 
   struct Asset {
     address beneficialOwner;
@@ -42,9 +42,9 @@ contract HookERC721MultiVaultImplV1 is
   /// for the asset
   /// if the entitled operator field is non-null, it means an unreleased entitlement has been
   /// applied; however, that entitlement could still be expired (if block.timestamp > entitlement.expiry)
-  mapping(uint32 => Asset) private assets;
+  mapping(uint32 => Asset) internal assets;
 
-  IHookProtocol private _hookProtocol;
+  IHookProtocol internal _hookProtocol;
 
   /// Upgradeable Implementations cannot have a constructor, so we call the initialize instead;
   constructor() {}
@@ -77,7 +77,7 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev See {IHookERC721Vault-withdrawalAsset}.
   /// @dev withdrawals can only be performed to the beneficial owner if there are no entitlements
-  function withdrawalAsset(uint32 assetId) external {
+  function withdrawalAsset(uint32 assetId) public virtual {
     require(
       !hasActiveEntitlement(assetId),
       "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
@@ -86,7 +86,7 @@ contract HookERC721MultiVaultImplV1 is
     _nftContract.safeTransferFrom(
       address(this),
       assets[assetId].beneficialOwner,
-      assetId
+      _assetTokenId(assetId)
     );
 
     emit AssetWithdrawn(assetId, msg.sender, assets[assetId].beneficialOwner);
@@ -102,7 +102,7 @@ contract HookERC721MultiVaultImplV1 is
     uint8 v,
     bytes32 r,
     bytes32 s
-  ) external {
+  ) public virtual {
     // check that the asset has a current beneficial owner
     // before creating a new entitlement
     require(
@@ -119,6 +119,7 @@ contract HookERC721MultiVaultImplV1 is
   /// @dev The entitlement must be sent by the current beneficial owner
   function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external
+    virtual
   {
     require(
       assets[entitlement.assetId].beneficialOwner == msg.sender,
@@ -215,13 +216,13 @@ contract HookERC721MultiVaultImplV1 is
     uint32 assetId,
     address receiverAddress,
     bytes calldata params
-  ) external override nonReentrant {
+  ) external virtual override nonReentrant {
     IERC721FlashLoanReceiver receiver = IERC721FlashLoanReceiver(
       receiverAddress
     );
     require(receiverAddress != address(0), "flashLoan -- zero address");
     require(
-      _nftContract.ownerOf(assetId) == address(this),
+      _assetOwner(assetId) == address(this),
       "flashLoan -- asset not in vault"
     );
     require(
@@ -241,7 +242,11 @@ contract HookERC721MultiVaultImplV1 is
     bytes32 startState = keccak256(abi.encode(assets[assetId]));
 
     // (2) send the flashloan contract the vaulted NFT
-    _nftContract.safeTransferFrom(address(this), receiverAddress, assetId);
+    _nftContract.safeTransferFrom(
+      address(this),
+      receiverAddress,
+      _assetTokenId(assetId)
+    );
 
     // (3) call the flashloan contract, giving it a chance to do whatever it wants
     // NOTE: The flashloan contract MUST approve this vault contract as an operator
@@ -249,7 +254,7 @@ contract HookERC721MultiVaultImplV1 is
     require(
       receiver.executeOperation(
         address(_nftContract),
-        assetId,
+        _assetTokenId(assetId),
         msg.sender,
         address(this),
         params
@@ -261,12 +266,16 @@ contract HookERC721MultiVaultImplV1 is
     //        Use transferFrom instead of safeTransfer from because transferFrom
     //        would modify our state ( it calls erc721Receiver ). and because we know
     //        for sure that this contract can handle ERC-721s.
-    _nftContract.transferFrom(receiverAddress, address(this), assetId);
+    _nftContract.transferFrom(
+      receiverAddress,
+      address(this),
+      _assetTokenId(assetId)
+    );
 
     // (5) sanity check to ensure the asset was actually returned to the vault.
     // this is a concern because its possible that the safeTransferFrom implemented by
     // some contract fails silently
-    require(_nftContract.ownerOf(assetId) == address(this));
+    require(_assetOwner(assetId) == address(this));
 
     // (6) additional sanity check to ensure that the internal state of
     // the entitlement has not somehow been modified during the flash loan, for example
@@ -309,7 +318,7 @@ contract HookERC721MultiVaultImplV1 is
     view
     returns (bool holdsAsset)
   {
-    return _nftContract.ownerOf(assetId) == address(this);
+    return _assetOwner(assetId) == address(this);
   }
 
   function assetAddress(uint32) external view returns (address) {
@@ -318,14 +327,15 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev returns the underlying token ID for a given asset. In this case
   /// the tokenId == the assetId
-  function assetTokenId(uint32 assetId) external pure returns (uint256) {
-    return assetId;
+  function assetTokenId(uint32 assetId) external view returns (uint256) {
+    return _assetTokenId(assetId);
   }
 
   /// @dev See {IHookERC721Vault-setBeneficialOwner}.
   /// setBeneficialOwner can only be called by the entitlementContract if there is an activeEntitlement.
   function setBeneficialOwner(uint32 assetId, address newBeneficialOwner)
-    external
+    public
+    virtual
   {
     if (hasActiveEntitlement(assetId)) {
       require(
@@ -343,7 +353,7 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev See {IHookERC721Vault-clearEntitlement}.
   /// @dev This can only be called if an entitlement currently exists, otherwise it would be a no-op
-  function clearEntitlement(uint32 assetId) public {
+  function clearEntitlement(uint32 assetId) public virtual {
     require(
       hasActiveEntitlement(assetId),
       "clearEntitlement -- an active entitlement must exist"
@@ -363,14 +373,23 @@ contract HookERC721MultiVaultImplV1 is
   /// @param receiver the intended receiver of the asset
   function clearEntitlementAndDistribute(uint32 assetId, address receiver)
     external
+    virtual
     nonReentrant
   {
     require(
       assets[assetId].beneficialOwner == receiver,
       "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
     );
+    require(
+      receiver != address(0),
+      "clearEntitlementAndDistribute -- assets cannot be sent to null address"
+    );
     clearEntitlement(assetId);
-    IERC721(_nftContract).safeTransferFrom(address(this), receiver, assetId);
+    IERC721(_nftContract).safeTransferFrom(
+      address(this),
+      receiver,
+      _assetTokenId(assetId)
+    );
     emit AssetWithdrawn(assetId, msg.sender, assets[assetId].beneficialOwner);
   }
 
@@ -436,7 +455,7 @@ contract HookERC721MultiVaultImplV1 is
     address operator,
     uint32 expiry,
     address beneficialOwner
-  ) private {
+  ) internal {
     require(
       !hasActiveEntitlement(assetId),
       "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
@@ -477,8 +496,28 @@ contract HookERC721MultiVaultImplV1 is
     operator = assets[assetId].operator;
   }
 
+  /// @dev determine the owner of a specific asset according to is contract based
+  /// on that assets assetId within this vault.
+  ///
+  /// this function can be overridden if the assetId -> tokenId mapping is modified.
+  function _assetOwner(uint32 assetId) internal view returns (address) {
+    return _nftContract.ownerOf(_assetTokenId(assetId));
+  }
+
+  /// @dev get the token id based on an asset's ID
+  ///
+  /// this function can be overridden if the assetId -> tokenId mapping is modified.
+  function _assetTokenId(uint32 assetId)
+    internal
+    view
+    virtual
+    returns (uint256)
+  {
+    return assetId;
+  }
+
   function _setBeneficialOwner(uint32 assetId, address newBeneficialOwner)
-    private
+    internal
   {
     require(
       newBeneficialOwner != address(0),

@@ -326,7 +326,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       "writer should be the beneficial owner"
     );
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be an active entitlement"
     );
   }
@@ -373,7 +373,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       "writer should be the beneficial owner"
     );
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be an active entitlement"
     );
 
@@ -402,14 +402,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be an active entitlement"
     );
 
     vm.warp(block.timestamp + 2 days);
 
     assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
+      !vaultImpl.hasActiveEntitlement(0),
       "there should not be any active entitlements"
     );
 
@@ -445,7 +445,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     vaultImpl.clearEntitlement(0);
 
     assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
+      !vaultImpl.hasActiveEntitlement(0),
       "there should not be any active entitlements"
     );
 
@@ -479,14 +479,14 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be an active entitlement"
     );
 
     vm.warp(block.timestamp + 2 days);
 
     assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
+      !vaultImpl.hasActiveEntitlement(0),
       "there should not be any active entitlements"
     );
 
@@ -511,7 +511,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       sig2.s
     );
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be a new active entitlement"
     );
   }
@@ -532,7 +532,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be an active entitlement"
     );
 
@@ -540,7 +540,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     vaultImpl.clearEntitlement(0);
 
     assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
+      !vaultImpl.hasActiveEntitlement(0),
       "there should not be any active entitlements"
     );
 
@@ -565,7 +565,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
       sig2.s
     );
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be a new active entitlement"
     );
   }
@@ -588,7 +588,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
     address mockContract2 = address(35553445);
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be an active entitlement"
     );
 
@@ -635,7 +635,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     assertTrue(
-      vaultImpl.hasActiveEntitlement(),
+      vaultImpl.hasActiveEntitlement(0),
       "there should be an active entitlement"
     );
 
@@ -673,7 +673,7 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
     vaultImpl.clearEntitlementAndDistribute(0, writer);
 
     assertTrue(
-      !vaultImpl.hasActiveEntitlement(),
+      !vaultImpl.hasActiveEntitlement(0),
       "there should not be any active entitlements"
     );
 
