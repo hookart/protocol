@@ -102,7 +102,7 @@ contract HookERC721MultiVaultImplV1 is
     uint8 v,
     bytes32 r,
     bytes32 s
-  ) public virtual {
+  ) external {
     // check that the asset has a current beneficial owner
     // before creating a new entitlement
     require(
@@ -119,7 +119,6 @@ contract HookERC721MultiVaultImplV1 is
   /// @dev The entitlement must be sent by the current beneficial owner
   function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external
-    virtual
   {
     require(
       assets[entitlement.assetId].beneficialOwner == msg.sender,
@@ -216,7 +215,7 @@ contract HookERC721MultiVaultImplV1 is
     uint32 assetId,
     address receiverAddress,
     bytes calldata params
-  ) external virtual override nonReentrant {
+  ) external override nonReentrant {
     IERC721FlashLoanReceiver receiver = IERC721FlashLoanReceiver(
       receiverAddress
     );
@@ -353,7 +352,7 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev See {IHookERC721Vault-clearEntitlement}.
   /// @dev This can only be called if an entitlement currently exists, otherwise it would be a no-op
-  function clearEntitlement(uint32 assetId) public virtual {
+  function clearEntitlement(uint32 assetId) public {
     require(
       hasActiveEntitlement(assetId),
       "clearEntitlement -- an active entitlement must exist"
@@ -373,7 +372,6 @@ contract HookERC721MultiVaultImplV1 is
   /// @param receiver the intended receiver of the asset
   function clearEntitlementAndDistribute(uint32 assetId, address receiver)
     external
-    virtual
     nonReentrant
   {
     require(
