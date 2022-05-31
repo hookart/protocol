@@ -449,8 +449,6 @@ contract HookCoveredCallImplV1 is
     );
     require(bidAmt > call.strike, "bid - bid is lower than the strike price");
 
-    _returnBidToPreviousBidder(call);
-
     // set the new bidder
     call.bid = bidAmt;
     call.highBidder = msg.sender;
@@ -459,6 +457,8 @@ contract HookCoveredCallImplV1 is
     // The beneficial owner must be set here instead of with a final bid
     // because the ability to
     IHookVault(call.vaultAddress).setBeneficialOwner(call.assetId, msg.sender);
+
+    _returnBidToPreviousBidder(call);
 
     // emit event
     emit Bid(optionId, bidAmt, msg.sender);
