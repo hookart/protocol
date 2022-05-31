@@ -449,6 +449,8 @@ contract HookCoveredCallImplV1 is
     );
     require(bidAmt > call.strike, "bid - bid is lower than the strike price");
 
+    _returnBidToPreviousBidder(call);
+
     // set the new bidder
     call.bid = bidAmt;
     call.highBidder = msg.sender;
@@ -457,8 +459,6 @@ contract HookCoveredCallImplV1 is
     // The beneficial owner must be set here instead of with a final bid
     // because the ability to
     IHookVault(call.vaultAddress).setBeneficialOwner(call.assetId, msg.sender);
-
-    _returnBidToPreviousBidder(call);
 
     // emit event
     emit Bid(optionId, bidAmt, msg.sender);
@@ -504,6 +504,14 @@ contract HookCoveredCallImplV1 is
 
     uint256 spread = call.bid - call.strike;
 
+    address optionOwner = ownerOf(optionId);
+
+    // burn nft
+    _burn(optionId);
+
+    // set settled to prevent an additional attempt to settle the option
+    optionParams[optionId].settled = true;
+
     // If the option writer is the high bidder they don't receive the strike because they bid on the spread.
     if (call.highBidder != call.writer) {
       // send option writer the strike price
@@ -511,17 +519,11 @@ contract HookCoveredCallImplV1 is
     }
 
     // return send option holder their earnings
-    _safeTransferETHWithFallback(ownerOf(optionId), spread);
+    _safeTransferETHWithFallback(optionOwner, spread);
 
     if (returnNft) {
       IHookVault(call.vaultAddress).withdrawalAsset(call.assetId);
     }
-
-    // burn nft
-    _burn(optionId);
-
-    // set settled to prevent an additional attempt to settle the option
-    optionParams[optionId].settled = true;
 
     emit CallSettled(optionId);
   }
@@ -550,6 +552,12 @@ contract HookCoveredCallImplV1 is
       "reclaimAsset -- the option must not be expired"
     );
 
+    // burn the option NFT
+    _burn(optionId);
+
+    // settle the option
+    call.settled = true;
+
     if (call.highBidder != address(0)) {
       // return current bidder's money
       _safeTransferETHWithFallback(call.highBidder, call.bid);
@@ -571,18 +579,7 @@ contract HookCoveredCallImplV1 is
       IHookVault(call.vaultAddress).clearEntitlement(call.assetId);
     }
 
-    // burn the option NFT
-    _burn(optionId);
-
-    // settle the option
-    call.settled = true;
     emit CallReclaimed(optionId);
-
-    /// WARNING:
-    /// Currently, if the owner writes an option, and never sells that option, a settlement auction will exist on
-    /// the protocol. Bidders could bid in this settlement auction, and in the middle of the auction the writer
-    /// could call this reclaim method. If they do that, they'll get their nft back _however_ there is no way for
-    /// the current bidder to reclaim their money.
   }
 
   /// @dev See {IHookCoveredCall-burnExpiredOption}.

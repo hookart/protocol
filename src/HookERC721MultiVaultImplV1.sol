@@ -102,7 +102,7 @@ contract HookERC721MultiVaultImplV1 is
     uint8 v,
     bytes32 r,
     bytes32 s
-  ) external {
+  ) public virtual {
     // check that the asset has a current beneficial owner
     // before creating a new entitlement
     require(
