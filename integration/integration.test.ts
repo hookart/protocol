@@ -529,7 +529,7 @@ describe("Vault", function () {
             .connect(beneficialOwner)
             .setBeneficialOwner(10, runner.address)
         ).to.be.revertedWith(
-          "setBeneficialOwner -- this contract only contains one asset"
+          "assetIdIsZero -- this vault only supports asset id 0"
         );
       });
     });
@@ -576,7 +576,7 @@ describe("Vault", function () {
         expect(
           (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
         ).to.be.true;
-        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -604,7 +604,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "_verifyAndRegisterEntitlement -- the asset id must match an actual asset id"
+          "grantEntitlement -- only the beneficial owner can grant an entitlement"
         );
       });
 
@@ -639,7 +639,7 @@ describe("Vault", function () {
         expect(
           (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
         ).to.be.true;
-        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -686,7 +686,7 @@ describe("Vault", function () {
           (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
         ).to.be.true;
 
-        expect(await vaultInstance.hasActiveEntitlement()).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -1087,7 +1087,7 @@ describe("Vault", function () {
               runner.address,
               "0x0000000000000000000000000000000000000000"
             )
-        ).to.be.revertedWith("flashLoan -- invalid asset id");
+        ).to.be.revertedWith("assetIdIsZero -- this vault only supports asset id 0"); 
       });
 
       it("allows basic flashloans", async function () {
@@ -2005,8 +2005,12 @@ describe("Call Instrument Tests", function () {
     const callFactoryFactory = await ethers.getContractFactory(
       "HookCoveredCallFactory"
     );
+    const tokenURILib = await ethers.getContractFactory(
+      "TokenURI"
+    )
+    const tokenURI = await tokenURILib.deploy();
     const callImplFactory = await ethers.getContractFactory(
-      "HookCoveredCallImplV1"
+      "HookCoveredCallImplV1", {libraries: {TokenURI: tokenURI.address}}
     );
     const callBeaconFactory = await ethers.getContractFactory(
       "HookUpgradeableBeacon"
@@ -2863,11 +2867,11 @@ describe("Call Instrument Tests", function () {
 
       const vaultAddress = await calls.getVaultAddress(optionTokenId);
       const vault = await ethers.getContractAt(
-        "HookERC721MultiVaultImplV1",
+        "HookERC721VaultImplV1",
         vaultAddress
       );
 
-      expect(await vault.getBeneficialOwner(optionTokenId)).to.eq(
+      expect(await vault.getBeneficialOwner(0)).to.eq(
         writer.address
       );
     });
@@ -2895,11 +2899,11 @@ describe("Call Instrument Tests", function () {
 
       const vaultAddress = await calls.getVaultAddress(secondOptionTokenId);
       const vault = await ethers.getContractAt(
-        "HookERC721MultiVaultImplV1",
+        "HookERC721VaultImplV1",
         vaultAddress
       );
 
-      expect(await vault.getBeneficialOwner(secondOptionTokenId)).to.eq(
+      expect(await vault.getBeneficialOwner(0)).to.eq(
         secondBidder.address
       );
     });
@@ -3049,9 +3053,7 @@ describe("Call Instrument Tests", function () {
       const reclaimAsset = calls
         .connect(writer)
         .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith(
-        "Pausable: paused"
-      );
+      await expect(reclaimAsset).to.be.revertedWith("Pausable: paused");
     });
   });
 
