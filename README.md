@@ -38,4 +38,4 @@ updated. `yarn add -D @openzeppelin/contracts`
 
 ## Licence
 
-[MIT](LICENCE) Copyright 2022 Abstract Labs, Inc.
+[MIT](LICENCE.md) Copyright 2022 Abstract Labs, Inc.
