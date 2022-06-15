@@ -13,6 +13,8 @@ import "../mixin/EIP712.sol";
 
 import "./utils/mocks/FlashLoan.sol";
 
+/// @notice Integration tests for the Hook Solo Vault
+/// @author Regynald Augustin -- regy@hook.xyz
 contract HookVaultTestsBase is HookProtocolTest {
   IHookERC721VaultFactory vault;
   uint32 tokenStartIndex = 300;

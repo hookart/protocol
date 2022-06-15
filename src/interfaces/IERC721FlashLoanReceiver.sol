@@ -38,6 +38,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 /// @title Flash Loan Operator Interface (ERC-721)
+/// @author Jake Nyquist -- j@hook.xyz
 /// @dev contracts that will utilize vaulted assets in flash loans should implement this interface in order to
 /// receive the asset. Users may want to receive the asset within a single block to claim airdrops, participate
 /// in governance, and other things with their assets.

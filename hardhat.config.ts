@@ -6,6 +6,9 @@ import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "hardhat-deploy";
+import "hardhat-deploy-ethers";
+import "hardhat-docgen";
 import { HardhatUserConfig, subtask } from "hardhat/config";
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from "hardhat/builtin-tasks/task-names";
 
@@ -38,6 +41,13 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(
 );
 
 const config: HardhatUserConfig = {
+  docgen: {
+    path: "./docs/generated",
+    clear: true,
+    runOnCompile: true,
+    only: ["src/"],
+    except: ["test/"],
+  },
   paths: {
     cache: "cache-hardhat",
     sources: "./src",

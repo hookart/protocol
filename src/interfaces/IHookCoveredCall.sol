@@ -40,13 +40,15 @@ import "../lib/Signatures.sol";
 
 /// @title A covered call instrument
 /// @author Jake Nyquist -- j@hook.xyz
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
 ///
 /// @notice This contract implements a "Covered Call Option". A call option gives the holder the right, but not
 /// the obligation to purchase an asset at a fixed time in the future (the expiry) for a fixed price (the strike).
-/// The call option implementation here is similar to a "european" call option because the asset can
+///
+///
+/// This call option implementation here is similar to a "european" call option because the asset can
 /// only be purchased at the expiration. The call option is "covered"  because the underlying
-/// asset, (in this case a NFT), must be held in escrow for the entire duration of the option. In the context
-/// of a single call option from this implementation contract, the role of the writer is non-transferrable.
+/// asset, (in this case a NFT), must be held in escrow for the entire duration of the option.
 ///
 /// There are three phases to the call option:
 ///
@@ -119,7 +121,7 @@ interface IHookCoveredCall is IERC721Metadata {
   ) external returns (uint256);
 
   /// @notice Mints a new call option for the assets deposited in a particular vault given strike price and expiration.
-  /// That vault must already have a registered entitlement for this contract with the correct expiration registered.
+  /// That vault must already have a registered entitlement for this contract with the an expiration equal to {expirationTime}
   /// @param vaultAddress the contract address of the vault currently holding the call option
   /// @param assetId the id of the asset within the vault
   /// @param strikePrice the strike price for the call option being written

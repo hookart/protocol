@@ -55,8 +55,10 @@ import "./mixin/HookInstrumentERC721.sol";
 
 /// @title HookCoveredCallImplV1 an implementation of covered calls on Hook
 /// @author Jake Nyquist -- j@hook.xyz
-/// @notice Covered call options use this logic to
-/// @dev Explain to a developer any extra details
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @notice See {IHookCoveredCall}.
+/// @dev In the context of a single call option, the role of the writer is non-transferrable.
+/// @dev This contract is intended to be an implementation referenced by a proxy
 contract HookCoveredCallImplV1 is
   IHookCoveredCall,
   HookInstrumentERC721,
@@ -66,7 +68,7 @@ contract HookCoveredCallImplV1 is
 {
   using Counters for Counters.Counter;
 
-  /// @notice The metadata for each covered call option
+  /// @notice The metadata for each covered call option stored within the protocol
   /// @param writer The address of the writer that created the call option
   /// @param owner The address of the current owner of the underlying, updated as bidding occurs
   /// @param vaultAddress the address of the vault holding the underlying asset
@@ -89,8 +91,8 @@ contract HookCoveredCallImplV1 is
 
   /// --- Storage
 
-  /// @dev holds the current ID for the last minted option. This is also the tokenID of the
-  // option NFT
+  /// @dev holds the current ID for the last minted option. The optionId also serves as the tokenId for
+  /// the associated option instrument NFT.
   Counters.Counter private _optionIds;
 
   /// @dev the address of the factory in the Hook protocol that can be used to generate ERC721 vaults
@@ -169,7 +171,7 @@ contract HookCoveredCallImplV1 is
     /// Initialize basic configuration.
     /// Even though these are defaults, we cannot set them in the constructor because
     /// each instance of this contract will need to have the storage initialized
-    /// to read from these values
+    /// to read from these values (this is the implementation contract pointed to by a proxy)
     minimumOptionDuration = 1 days;
     minBidIncrementBips = 0;
     settlementAuctionStartOffset = 1 days;
@@ -380,7 +382,7 @@ contract HookCoveredCallImplV1 is
     _safeMint(writer, newOptionId);
 
     // If msg.sender and tokenOwner are different accounts, approve the msg.sender
-    // msg.sendto transfer the option NFT as it already had the right to transfer the underlying NFT.
+    // to transfer the option NFT as it already had the right to transfer the underlying NFT.
     if (msg.sender != writer) {
       _approve(msg.sender, newOptionId);
     }
@@ -706,6 +708,7 @@ contract HookCoveredCallImplV1 is
   //// These functions are overrides needed by the HookInstrumentNFT library in order   ////
   //// to generate the NFT view for the project.                                       ////
 
+  /// @dev see {IHookCoveredCall-getVaultAddress}
   function getVaultAddress(uint256 optionId)
     public
     view
@@ -715,10 +718,12 @@ contract HookCoveredCallImplV1 is
     return optionParams[optionId].vaultAddress;
   }
 
+  /// @dev see {IHookCoveredCall-getAssetId}
   function getAssetId(uint256 optionId) public view override returns (uint32) {
     return optionParams[optionId].assetId;
   }
 
+  /// @dev see {IHookCoveredCall-getStrikePrice}
   function getStrikePrice(uint256 optionId)
     public
     view
@@ -728,6 +733,7 @@ contract HookCoveredCallImplV1 is
     return optionParams[optionId].strike;
   }
 
+  /// @dev see {IHookCoveredCall-getExpiration}
   function getExpiration(uint256 optionId)
     public
     view

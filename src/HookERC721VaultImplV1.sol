@@ -38,6 +38,7 @@ import "./HookERC721MultiVaultImplV1.sol";
 
 /// @title HookVault -- implementation of a Vault for a single NFT asset, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
 /// @notice HookVault holds a single NFT asset in escrow on behalf of a user. Other contracts are able
 /// to register "entitlements" for a fixed period of time on the asset, which give them the ability to
 /// change the vault's owner.
@@ -216,7 +217,10 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
   /// @dev modifier used to ensure that only the valid asset id
   /// may be passed into this vault.
   modifier assetIdIsZero(uint256 assetId) {
-    require(assetId == ASSET_ID, "assetIdIsZero -- this vault only supports asset id 0");
+    require(
+      assetId == ASSET_ID,
+      "assetIdIsZero -- this vault only supports asset id 0"
+    );
     _;
   }
 

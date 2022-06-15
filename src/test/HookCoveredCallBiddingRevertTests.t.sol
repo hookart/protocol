@@ -4,7 +4,8 @@ pragma solidity ^0.8.10;
 import "./utils/base.t.sol";
 import "./utils/mocks/MaliciousBidder.sol";
 
-// @dev these tests try cases where a bidder maliciously reverts on save.
+/// @dev these tests try cases where a bidder maliciously reverts on save.
+/// @author Jake Nyquist -- j@hook.xyz
 contract HookCoveredCallBiddingRevertTests is HookProtocolTest {
   function setUp() public {
     setUpAddresses();

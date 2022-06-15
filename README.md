@@ -1,71 +1,41 @@
 # Hook Protocol
 
-[White paper draft](https://hook.art/wp-draft)
+![Hook](img/hook-protocol-banner.png)
+
+## About
+
+[White paper](https://hook.art/whitepaper)
+
+Hook is an oracle-free, on-chain option protocol for non-fungible tokens (NFTs). Unlike many popular approaches to NFT DeFi, Hook does not sacrifice the non-fungible nature of NFTs by requiring that they are converted into fungible tokens.
+
+Note: NFTs deposited into the Hook protocol only contain unique artistic images and do not contain, reference, represent the price, rate or level of any security, commodity or financial instrument.
 
 ## Setup
 
+Hook utilizes Foundry for test suites and
 `forge install` to install dependencies from git submodules
 `npm install` to install hardhat dependencies
 
-the hardhat project is just used for coverage testing
+The hardhat project is used for coverage testing and deployments
 External non-test deps (ie openzeppelin contracts) are added using yarn,
 added to the `package.json` file, and then the {remappings.txt} is subsequently
 updated. `yarn add -D @openzeppelin/contracts`
+
+## Contract Addresses
+
+[ TODO: Update contract addresses with the mainnet deployment ]
 
 ## Testing
 
 `forge test` to run all forge tests
 `forge test --match-contract <Test Contract Name>` to run tests on a specific contract
-`npx hardhat test` to run integration tests
+`npx hardhat coverage` to run the coverage suite
 
-## Additional Forge Info
+## Additional Foundry Info
 
 [Foundry](https://github.com/foundry-rs/foundry)
 [Foundry Book](https://book.getfoundry.sh)
 
-# Advanced Sample Hardhat Project
+## Licence
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
-
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
-
-# Etherscan verification
-
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
-
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
-
-```shell
-hardhat run --network ropsten scripts/deploy.ts
-```
-
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
-
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
-
-# Performance optimizations
-
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+[MIT](LICENCE) Copyright 2022 Abstract Labs, Inc.

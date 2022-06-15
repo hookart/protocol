@@ -47,6 +47,7 @@ import "./mixin/EIP712.sol";
 
 /// @title  HookMultiVault -- implementation of a Vault for multiple assets within a NFT collection, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
 /// @notice HookVault holds a multiple NFT asset in escrow on behalf of multiple beneficial owners. Other contracts
 /// are able to register "entitlements" for a fixed period of time on the asset, which give them the ability to
 /// change the vault's owner.
