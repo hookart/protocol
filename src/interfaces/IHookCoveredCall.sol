@@ -48,7 +48,7 @@ import "../lib/Signatures.sol";
 ///
 /// This call option implementation here is similar to a "european" call option because the asset can
 /// only be purchased at the expiration. The call option is "covered"  because the underlying
-/// asset, (in this case a NFT), must be held in escrow for the entire duration of the option.
+/// asset, must be held in escrow within a IHookVault for the entire duration of the option.
 ///
 /// There are three phases to the call option:
 ///
@@ -89,7 +89,7 @@ interface IHookCoveredCall is IERC721Metadata {
 
   /// @notice emitted when a call option settlement auction gets and accepts a new bid
   /// @param bidder the account placing the bid that is now the high bidder
-  /// @param bidAmount the amount of the bid (in wei)
+  /// @param bidAmount the amount of wei bid
   /// @param optionId the option for the underlying that was bid on
   event Bid(uint256 optionId, uint256 bidAmount, address bidder);
 
@@ -135,6 +135,8 @@ interface IHookCoveredCall is IERC721Metadata {
 
   /// @notice Bid in the settlement auction for an option. The paid amount is the bid,
   /// and the bidder is required to escrow this amount until either the auction ends or another bidder bids higher
+  ///
+  /// The bid must be greater than the strike price
   /// @param optionId the optionId corresponding to the settlement to bid on.
   function bid(uint256 optionId) external payable;
 
@@ -145,12 +147,13 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @notice view function to get the current high bidder for an option settlement auction, or the null address if no
   /// high bidder exists
   /// @param optionId of the option to check
+  /// @return address of the account for the current high bidder, or the null address if there is none
   function currentBidder(uint256 optionId) external view returns (address);
 
-  /// @notice Allows the writer to reclaim an entitled asset. This is possible both if they are also the holder of the
-  /// option NFT or if the option expired early.
-  /// @dev Allows the writer to reclaim a NFT, either if the option expired OTM or if they also hold the option NFT.
-  /// @param optionId the asset to reclaim after the auction.
+  /// @notice Allows the writer to reclaim an entitled asset. This is only possible when the writer holds the option
+  /// nft and calls this function.
+  /// @dev Allows the writer to reclaim a NFT if they also hold the option NFT.
+  /// @param optionId the option being reclaimed.
   /// @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
   function reclaimAsset(uint256 optionId, bool returnNft) external;
 

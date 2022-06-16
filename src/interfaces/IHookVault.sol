@@ -43,13 +43,12 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 ///
 /// @notice The Vault holds an asset on behalf of the owner. The owner is able to post this
 /// asset as collateral to other protocols by signing a message, called an "entitlement", that gives
-/// a specific account the ability to change the owner. While the asset is held within the vault,
-/// any account set as the beneficial owner is able to make external contract calls to benefit from
-/// the utility of the asset. Specifically, that means this structure should not be used in order to
-/// hold assets in escrow away from owner to benefit an owner for a short period of time.
+/// a specific account the ability to change the owner.
 ///
 /// The vault can work with multiple assets via the assetId, where the asset or set of assets covered by
 /// each segment is granted an individual id.
+/// Every asset must be identified by an assetId to comply with this interface, even if the vault only contains
+/// one asset.
 ///
 /// ENTITLEMENTS -
 ///     (1) only one entitlement can be placed at a time.
@@ -118,7 +117,7 @@ interface IHookVault is IERC165 {
   ) external;
 
   /// @notice Allows the beneficial owner to grant an entitlement to an asset within the contract
-  /// @dev this function call is signed by the sender, so we know the entitlement is authentic
+  /// @dev this function call is signed by the sender per the EVM, so we know the entitlement is authentic
   /// @param entitlement The entitlement to impose onto the contract
   function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external;

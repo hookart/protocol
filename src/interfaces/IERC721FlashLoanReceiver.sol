@@ -58,7 +58,7 @@ interface IERC721FlashLoanReceiver is IERC721Receiver {
   ///
   /// @param nftContract the address of the underlying erc-721 asset
   /// @param tokenId the address of the received erc-721 asset
-  /// @param beneficialOwner the current beneficialOwner of the vault, who initialted the flashLoan
+  /// @param beneficialOwner the current beneficialOwner of the vault, who initialized the flashLoan
   /// @param vault the address of the vault performing the flashloan (in most cases, equal to msg.sender)
   /// @param params additional params passed by the caller into the flashloan
   function executeOperation(

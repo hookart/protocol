@@ -77,7 +77,7 @@ interface IHookERC721VaultFactory {
     external
     returns (IHookERC721Vault vault);
 
-  /// @notice gets the address of a vault for a particular ERC-721 token or creates one if one does not exist
+  /// @notice gets the address of a vault for a particular ERC-721 token or create a solo vault one if one does not exist
   /// @param nftAddress the contract address for the ERC-721
   /// @param tokenId the tokenId for the ERC-721
   function findOrCreateVault(address nftAddress, uint256 tokenId)

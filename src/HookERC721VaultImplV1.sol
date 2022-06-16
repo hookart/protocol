@@ -42,7 +42,14 @@ import "./HookERC721MultiVaultImplV1.sol";
 /// @notice HookVault holds a single NFT asset in escrow on behalf of a user. Other contracts are able
 /// to register "entitlements" for a fixed period of time on the asset, which give them the ability to
 /// change the vault's owner.
-/// @dev This contract implements ERC721Receiver and
+/// @dev This contract implements ERC721Receiver and extends the MultiVault, simply treating the stored
+/// asset as assetId 0 in all cases.
+///
+/// SEND TRANSACTION -
+///     (1) owners are able to forward transactions to this vault to other wallets
+///     (2) calls to the ERC-721 address are blocked to prevent approvals from being set on the
+///         NFT while in escrow, which could allow for theft
+///     (3) At the end of each transaction, the ownerOf the vaulted token must still be the vault
 contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
   uint32 private constant ASSET_ID = 0;
 
@@ -79,8 +86,8 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
   }
 
   /// @dev See {IHookERC721Vault-imposeEntitlement}.
-  /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone can submit the
-  /// entitlement
+  /// @dev The entitlement must be signed by the current beneficial owner of the contract. Anyone may call this
+  /// function and successfully impose the entitlement as long as the signature is valid.
   function imposeEntitlement(
     address operator,
     uint32 expiry,
@@ -104,11 +111,11 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     uint256 tokenId,
     bytes calldata data
   ) external virtual override returns (bytes4) {
-    /// We should make sure that the owner of an asset never changes simply as a result of someone sending
-    /// a NFT into this contract.
-    ///
     /// (1) If the contract is specified to hold a specific NFT, and that NFT is sent to the contract,
-    /// set the beneficial owner of this vault to be current owner of the asset getting sent.
+    /// set the beneficial owner of this vault to be current owner of the asset getting sent. Alternatively,
+    /// the sender can specify an entitlement which contains a different beneficial owner. We accept this because
+    /// that same sender could alternatively first send the token, become the beneficial owner, and then set it 
+    /// the beneficial owner to someone else and finally specify an entitlement. 
     ///
     /// (2) If another nft is sent to the contract, we should verify that airdrops are allowed to this vault;
     /// if they are disabled, we should not return the selector, otherwise we can allow them.

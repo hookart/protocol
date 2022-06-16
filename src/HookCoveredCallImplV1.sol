@@ -75,7 +75,8 @@ contract HookCoveredCallImplV1 is
   /// @param assetId the asset id of the underlying within the vault
   /// @param strike The strike price to exercise the call option
   /// @param expiration The expiration time of the call option
-  /// @param settled a flag that marks when a settlement action has taken place successfully
+  /// @param settled a flag that marks when a settlement action has taken place successfully. Once this flag is set, ETH should not
+  /// be sent from the contract related to this particular option
   /// @param bid is the current high bid in the settlement auction
   /// @param highBidder is the address that made the current winning bid in the settlement auction
   struct CallOption {
@@ -491,8 +492,9 @@ contract HookCoveredCallImplV1 is
     call.highBidder = msg.sender;
 
     // the new high bidder is the beneficial owner of the asset.
-    // The beneficial owner must be set here instead of with a final bid
-    // because the ability to
+    // The beneficial owner must be set here instead of with a settlement
+    // because otherwise the writer will be able to remove the asset from the vault
+    // between the expiration and the settlement call, effectively stealing the asset.
     IHookVault(call.vaultAddress).setBeneficialOwner(call.assetId, msg.sender);
 
     // emit event
@@ -647,7 +649,7 @@ contract HookCoveredCallImplV1 is
 
   //// ---- Administrative Fns.
 
-  // forward to protocol pauseability
+  // forward to protocol-level pauseability
   modifier whenNotPaused() {
     require(!marketPaused, "whenNotPaused -- market is paused");
     _protocol.throwWhenPaused();
@@ -708,7 +710,7 @@ contract HookCoveredCallImplV1 is
   //// These functions are overrides needed by the HookInstrumentNFT library in order   ////
   //// to generate the NFT view for the project.                                       ////
 
-  /// @dev see {IHookCoveredCall-getVaultAddress}
+  /// @dev see {IHookCoveredCall-getVaultAddress}.
   function getVaultAddress(uint256 optionId)
     public
     view
@@ -718,12 +720,12 @@ contract HookCoveredCallImplV1 is
     return optionParams[optionId].vaultAddress;
   }
 
-  /// @dev see {IHookCoveredCall-getAssetId}
+  /// @dev see {IHookCoveredCall-getAssetId}.
   function getAssetId(uint256 optionId) public view override returns (uint32) {
     return optionParams[optionId].assetId;
   }
 
-  /// @dev see {IHookCoveredCall-getStrikePrice}
+  /// @dev see {IHookCoveredCall-getStrikePrice}.
   function getStrikePrice(uint256 optionId)
     public
     view
@@ -733,7 +735,7 @@ contract HookCoveredCallImplV1 is
     return optionParams[optionId].strike;
   }
 
-  /// @dev see {IHookCoveredCall-getExpiration}
+  /// @dev see {IHookCoveredCall-getExpiration}.
   function getExpiration(uint256 optionId)
     public
     view
@@ -757,6 +759,8 @@ contract HookCoveredCallImplV1 is
 
   /// @notice Transfer ETH and return the success status.
   /// @dev This function only forwards 30,000 gas to the callee.
+  /// this prevents malicious contracts from causing the next bidder to run out of gas,
+  /// which would prevent them from bidding successfully
   function _safeTransferETH(address to, uint256 value) internal returns (bool) {
     (bool success, ) = to.call{value: value, gas: 30_000}(new bytes(0));
     return success;
