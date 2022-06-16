@@ -930,7 +930,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     uint256 writerStartBalance = writer.balance;
 
     vm.prank(writer);
-    calls.settleOption(optionTokenId, false);
+    calls.settleOption(optionTokenId);
 
     assertTrue(
       buyerStartBalance + (0.2 ether - 1000 wei) == buyer.balance,
@@ -942,7 +942,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     );
   }
 
-  function testSettleOptionReturnNft() public {
+  function testSettleOption2() public {
     uint256 buyerStartBalance = buyer.balance;
     uint256 writerStartBalance = writer.balance;
 
@@ -950,13 +950,9 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
       address(token),
       underlyingTokenId
     );
-    vm.expectCall(
-      address(vault),
-      abi.encodeWithSignature("withdrawalAsset(uint32)", 0)
-    );
 
     vm.prank(writer);
-    calls.settleOption(optionTokenId, true);
+    calls.settleOption(optionTokenId);
 
     assertTrue(
       buyerStartBalance + (0.2 ether - 1000 wei) == buyer.balance,
@@ -965,10 +961,6 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     assertTrue(
       writerStartBalance + 1000 wei == writer.balance,
       "buyer should have received the option"
-    );
-    assertTrue(
-      token.ownerOf(underlyingTokenId) == address(secondBidder),
-      "secondBidder (winner) should get the underlying asset"
     );
   }
 
@@ -992,7 +984,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     // Option expires in 3 days from current block; bidding starts in 2 days.
     vm.warp(block.timestamp + 3.1 days);
     vm.expectRevert("settle -- bid must be won by someone");
-    calls.settleOption(optionId, true);
+    calls.settleOption(optionId);
   }
 
   function testCannotSettleOptionBeforeExpiration() public {
@@ -1017,15 +1009,15 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.bid{value: 0.1 ether}(optionId);
 
     vm.expectRevert("settle -- option must be expired");
-    calls.settleOption(optionId, true);
+    calls.settleOption(optionId);
   }
 
   function testCannotSettleSettledOption() public {
     vm.prank(writer);
-    calls.settleOption(optionTokenId, false);
+    calls.settleOption(optionTokenId);
 
     vm.expectRevert("settle -- the call cannot already be settled");
-    calls.settleOption(optionTokenId, true);
+    calls.settleOption(optionTokenId);
   }
 
   function testSettleOptionWhenWriterHighBidder() public {
@@ -1058,7 +1050,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.bid{value: 1 wei}(optionId);
     vm.warp(block.timestamp + 1 days);
 
-    calls.settleOption(optionId, false);
+    calls.settleOption(optionId);
 
     assertTrue(
       buyerStartBalance + 1 wei == buyer.balance,
@@ -1109,7 +1101,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.warp(block.timestamp + 1 days);
 
     vm.prank(writer);
-    calls.settleOption(optionId, false);
+    calls.settleOption(optionId);
 
     assertTrue(
       buyerStartBalance + 1000 wei == buyer.balance,
@@ -1161,7 +1153,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.warp(block.timestamp + 1 days);
 
     vm.prank(writer);
-    calls.settleOption(optionId, false);
+    calls.settleOption(optionId);
 
     assertTrue(
       buyerStartBalance + 2 wei == buyer.balance,
@@ -1216,7 +1208,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.warp(block.timestamp + 1 days);
 
     vm.prank(writer);
-    calls.settleOption(optionId, false);
+    calls.settleOption(optionId);
 
     assertTrue(
       buyerStartBalance + 3 wei == buyer.balance,
@@ -1286,7 +1278,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     setUpOptionBids();
 
     vm.startPrank(writer);
-    calls.settleOption(optionTokenId, false);
+    calls.settleOption(optionTokenId);
 
     vm.expectRevert("reclaimAsset -- the option has already been settled");
     calls.reclaimAsset(optionTokenId, true);

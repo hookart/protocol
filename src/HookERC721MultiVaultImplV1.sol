@@ -114,6 +114,10 @@ contract HookERC721MultiVaultImplV1 is
       !hasActiveEntitlement(assetId),
       "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
     );
+    require(
+      assets[assetId].beneficialOwner == msg.sender,
+      "withdrawalAsset -- only the beneficial owner can withdrawal an asset"
+    );
 
     _nftContract.safeTransferFrom(
       address(this),
