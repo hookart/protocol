@@ -38,6 +38,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
+    "hardhat-deploy": "^0.11.10",
     "toml": "^3.0.0"
   }
 }
