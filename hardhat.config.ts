@@ -13,7 +13,7 @@ import { HardhatUserConfig, subtask } from "hardhat/config";
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from "hardhat/builtin-tasks/task-names";
 
 // default values here to avoid failures when running hardhat
-const RINKEBY_RPC = process.env.RINKEBY_RPC || "1".repeat(32);
+const ROPSTEN_RPC = process.env.ROPSTEN_RPC || "1".repeat(32);
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "1".repeat(64);
 const SOLC_DEFAULT = "0.8.10";
 
@@ -56,8 +56,8 @@ const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: { chainId: 1337, allowUnlimitedContractSize: true },
-    rinkeby: {
-      url: RINKEBY_RPC,
+    ropsten: {
+      url: ROPSTEN_RPC,
       accounts: [PRIVATE_KEY],
     },
   },
@@ -76,6 +76,13 @@ const config: HardhatUserConfig = {
     excludeContracts: ["src/test"],
     // API key for CoinMarketCap. https://pro.coinmarketcap.com/signup
     coinmarketcap: process.env.CMC_KEY ?? "",
+  },
+  namedAccounts: {
+    deployer: 0,
+    weth: process.env.WETH_ADDRESS || "",
+    approvedMarket:
+      process.env.APROVED_MARKET ||
+      "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
   },
   etherscan: {
     // API key for Etherscan. https://etherscan.io/
