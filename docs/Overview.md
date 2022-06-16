@@ -8,7 +8,7 @@ Currently, the protocol only supports covered call options; however, it's compon
 
 ### HookProtocol (`HookProtocol.sol`)
 
-The Hook Protocol contract contains the addresses of the vault factories and implements RBAC that can be called
+The Hook Protocol contract contains the addresses of the vault and instrument factories and implements OpenZeppelin's role-based access control (RBAC) that can be called
 by external contracts to verify that specific accounts posses roles across the protocol to take restricted actions.
 
 ### Vaults (`IHookVault.sol`, `HookERC721VaultImplV1.sol`, `HookERC712MultiVaultImplV1.sol`)
@@ -18,13 +18,14 @@ Other contracts are able to place a restriction (called an `entitlement`) on a v
 specific time and allows that entitled contract to change the beneficial owner. Entitlements can only be placed with the permission of a user, either by signing
 a specifically formatted message which can be passed by another caller, or by calling a function directly on the contract.
 
-The protocol includes two variants of the vault: one that supports a single ERC-721 token, and another that supports multiple tokens managed by a particular ERC-721 contract.
+The protocol includes two variants of the vault: one that supports a single ERC-721 token, and another that supports multiple tokenIds within a particular ERC-721 contract.
 
 #### Multi Vaults
 
 The `multi vault` can be deployed for a collection by any account that has a specific role in the protocol utilizing the call factory. It is more gas efficient because the
-user does not need to deploy the vault, and it still allows users to flash loan their assets out of the protocol. The multi vault does not support any collection with token
-ids that overflow uint32.
+user does not need to deploy the vault (the vault will already exist when depositing an asset for the first time), and it still allows users to flash loan their assets out of the protocol.
+The multi vault does not support any collection with token ids that overflow uint32. Uint32 is used to reduce the number of storage slots that must be allocated to add an asset to the vault;
+very few NFT projects based on ERC-721s actually utilize tokenIds outside this range.
 
 #### Solo Vaults
 
@@ -97,7 +98,7 @@ At a configurable time prior to expiration, the settlement process begins by all
 strike price.
 
 If these bids are received, anyone can permissionlessly after expiration call the settlement function. This function will distribute the auction proceeds (strike price to
-the writer, (high bid - strike price) to current instrument NFT holder) and burn the instrument nft.
+the writer, (high bid - strike price) to current instrument NFT holder) and burn the option instrument nft.
 
 At this point, the new beneficial owner of the asset can withdrawal that asset from the vault or utilize the `mintWithVault` function to mint a new option based on the
 already vaulted asset.
@@ -146,3 +147,9 @@ The protocol does not charge fees on the protocol level
 ### NFT Royalties
 
 The protocol does not pay out NFT royalties
+
+### Pausing
+
+The protocol can be paused in the event that an incident occurs. When the protocol is paused, no new options can be minted, no new assets can be deposited into any vault.
+However, in order to preserve the economic implications even in the event of a protocol pause, the settlement auctions may still occur. This is because options are time-sensitive; i.e.
+the value of the option is determined at a very specific time. If that time can be arbitrarily changed, it is difficult to assess the value of the option asset.
