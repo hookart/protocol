@@ -38,11 +38,14 @@ import "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /// @title HookProtocol configuration and access control repository
 /// @author Jake Nyquist -- j@hook.xyz
-/// @notice This contract contains the addresses of currently deployed Hook protocol
-/// contract and contains the centralized Access Control and protocol pausing functions
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+///
+/// @dev it is critically important that the particular protocol implementation
+/// is correct as, if it is not, all assets contained within protocol contracts
+/// can be easily compromised.
 interface IHookProtocol is IAccessControl {
   /// @notice emitted when the protocol is paused or unpaused
-  /// @notice paused true if paused false if unpaused
+  /// @param paused true if paused false if unpaused
   event PausedUpdated(bool paused);
 
   /// @notice the address of the deployed CoveredCallFactory used by the protocol
@@ -60,9 +63,13 @@ interface IHookProtocol is IAccessControl {
   /// kovan: 0xd0a1e359811322d97991e03f863a0c30c2cf029c
   /// ropsten: 0xc778417e063141139fce010982780140aa0cd5ab
   /// rinkeby: 0xc778417e063141139fce010982780140aa0cd5ab
+  /// @return the weth address
   function getWETHAddress() external view returns (address);
 
   /// @notice get a configuration flag with a specific key for a collection
+  /// @param collectionAddress the collection for which to lookup a configuration flag
+  /// @param conf the config identifier for the configuration flag
+  /// @return value the true or false value of the config
   function getCollectionConfig(address collectionAddress, bytes32 conf)
     external
     view

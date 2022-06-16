@@ -36,7 +36,7 @@ pragma solidity ^0.8.10;
 
 /// @dev EIP712 helpers for features.
 abstract contract EIP712 {
-  /// @dev The domain hash separator for the entire exchange proxy.
+  /// @dev The domain hash separator for the entire call option protocol
   bytes32 public EIP712_DOMAIN_SEPARATOR;
 
   function setAddressForEipDomain(address hookAddress) internal {

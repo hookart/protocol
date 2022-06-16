@@ -36,6 +36,8 @@ pragma solidity ^0.8.10;
 
 /// @title HookCoveredCallFactory -- factory for instances of the Covered Call contract
 /// @author Jake Nyquist -- j@hook.xyz
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+///
 /// @notice The Factory creates covered call instruments that support specific ERC-721 contracts, and
 /// also tracks all of the existing active markets.
 interface IHookCoveredCallFactory {
@@ -49,7 +51,7 @@ interface IHookCoveredCallFactory {
 
   /// @notice Lookup the call instrument contract based on the asset address
   /// @param assetAddress the contract address for the underlying asset
-  /// @return calls the address of the instrument contract
+  /// @return calls the address of the instrument contract or the null address if one does not exist
   function getCallInstrument(address assetAddress)
     external
     view

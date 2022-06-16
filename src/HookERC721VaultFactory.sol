@@ -47,6 +47,9 @@ import "./mixin/PermissionConstants.sol";
 
 import "./lib/BeaconSalts.sol";
 
+/// @title Hook Vault Factory
+/// @author Jake Nyquist -- j@hook.xyz
+/// @dev See {IHookERC721VaultFactory}.
 /// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
 /// created by this factory can be upgraded at one time via the beacon pattern.
 contract HookERC721VaultFactory is

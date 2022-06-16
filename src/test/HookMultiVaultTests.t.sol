@@ -13,6 +13,8 @@ import "../mixin/EIP712.sol";
 
 import "./utils/mocks/FlashLoan.sol";
 
+/// @notice Unit tests for the Hook Multi Vault
+/// @author Regynald Augustin -- regy@hook.xyz
 contract HookMultiVaultTests is HookProtocolTest {
   IHookERC721VaultFactory vault;
   uint256 tokenStartIndex = 300;

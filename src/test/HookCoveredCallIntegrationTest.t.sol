@@ -3,6 +3,8 @@ pragma solidity ^0.8.10;
 
 import "./utils/base.t.sol";
 
+/// @notice Integration tests for the Hook Protocol
+/// @author Regynald Augustin -- regy@hook.xyz
 contract HookCoveredCallIntegrationTest is HookProtocolTest {
   function setUp() public {
     setUpAddresses();
@@ -163,16 +165,12 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     // settle the auction
     // assertTrue(token.ownerOf(underlyingTokenId) == address(calls), "call contract should own the token");
     vm.warp(expiration + 3 seconds);
-    calls.settleOption(optionId, true);
+    calls.settleOption(optionId);
 
     // verify the balances are correct
     uint256 writerEndBalance = writer.balance;
     uint256 buyerEndBalance = buyer.balance;
 
-    assertTrue(
-      token.ownerOf(underlyingTokenId) == bidder2,
-      "the high bidder should own the nft"
-    );
     assertTrue(
       writerEndBalance - writerStartBalance == 1000,
       "the writer gets the strike price"

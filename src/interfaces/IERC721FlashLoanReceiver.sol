@@ -38,6 +38,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 /// @title Flash Loan Operator Interface (ERC-721)
+/// @author Jake Nyquist -- j@hook.xyz
 /// @dev contracts that will utilize vaulted assets in flash loans should implement this interface in order to
 /// receive the asset. Users may want to receive the asset within a single block to claim airdrops, participate
 /// in governance, and other things with their assets.
@@ -57,7 +58,7 @@ interface IERC721FlashLoanReceiver is IERC721Receiver {
   ///
   /// @param nftContract the address of the underlying erc-721 asset
   /// @param tokenId the address of the received erc-721 asset
-  /// @param beneficialOwner the current beneficialOwner of the vault, who initialted the flashLoan
+  /// @param beneficialOwner the current beneficialOwner of the vault, who initialized the flashLoan
   /// @param vault the address of the vault performing the flashloan (in most cases, equal to msg.sender)
   /// @param params additional params passed by the caller into the flashloan
   function executeOperation(

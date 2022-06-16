@@ -44,8 +44,11 @@ import "./mixin/PermissionConstants.sol";
 
 import "@openzeppelin/contracts/utils/Create2.sol";
 
+/// @title Hook Covered Call Factory
+/// @author Jake Nyquist -- j@hook.xyz
 /// @dev See {IHookCoveredCallFactory}.
-/// @dev Operating the factory requires specific permissions within the protocol.
+/// @dev The factory looks up certain roles by calling the {IHookProtocol} to verify
+//  that the caller is allowed to take certain actions
 contract HookCoveredCallFactory is
   PermissionConstants,
   IHookCoveredCallFactory
@@ -53,14 +56,20 @@ contract HookCoveredCallFactory is
   /// @notice Registry of all of the active markets projects with supported call instruments
   mapping(address => address) public override getCallInstrument;
 
+  /// @notice address of the beacon that contains the address of the current {IHookCoveredCall} implementation
   address private _beacon;
+
+  /// @notice the address of the protocol, which contains the rule
   IHookProtocol private _protocol;
+
+  /// @notice the address of an account that should automatically be approved to transfer the ERC-721 tokens
+  /// created by the {IHookCoveredCall} to represent instruments. This value is not used by the factory directly,
+  /// as this functionality is implemented by the {IHookCoveredCall}
   address private _preApprovedMarketplace;
 
-  /// @dev there is only one instance of this contract, so the constructor is called exactly once.
-  /// @param hookProtocolAddress the address of the deployed HookProtocol contract on this network
+  /// @param hookProtocolAddress the address of the deployed {IHookProtocol} contract on this chain
   /// @param beaconAddress the address of the deployed beacon pointing to the current covered call implementation
-  /// @param preApprovedMarketplace the address of a marketplace to automatically approve to transfer instruments
+  /// @param preApprovedMarketplace the address of an account approved to transfer instrument NFTs without owner approval
   constructor(
     address hookProtocolAddress,
     address beaconAddress,
@@ -72,7 +81,7 @@ contract HookCoveredCallFactory is
   }
 
   /// @dev See {IHookCoveredCallFactory-makeCallInstrument}.
-  /// @dev Only the admin can create these addresses.
+  /// @dev Only holders of the ALLOWLISTER_ROLE on the {IHookProtocol} can create these addresses.
   function makeCallInstrument(address assetAddress)
     external
     returns (address calls)
@@ -109,6 +118,7 @@ contract HookCoveredCallFactory is
       )
     );
 
+    // Persist the call instrument onto the hook protocol
     getCallInstrument[assetAddress] = address(bp);
 
     emit CoveredCallInstrumentCreated(
@@ -119,6 +129,9 @@ contract HookCoveredCallFactory is
     return getCallInstrument[assetAddress];
   }
 
+  /// @dev generate a consistent create2 salt to be used when deploying a
+  /// call instrument
+  /// @param underlyingAddress the account for the call option salt
   function _callInstrumentSalt(address underlyingAddress)
     internal
     pure
