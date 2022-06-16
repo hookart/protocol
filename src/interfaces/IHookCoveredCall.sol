@@ -169,8 +169,7 @@ interface IHookCoveredCall is IERC721Metadata {
   /// are subtracted from the distribution amounts.
   ///
   /// @param optionId of the option to settle.
-  /// @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
-  function settleOption(uint256 optionId, bool returnNft) external;
+  function settleOption(uint256 optionId) external;
 
   /// @notice Allows anyone to burn the instrument NFT for an expired option.
   /// @param optionId of the option to burn.

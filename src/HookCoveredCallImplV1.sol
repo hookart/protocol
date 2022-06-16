@@ -524,10 +524,7 @@ contract HookCoveredCallImplV1 is
   // ----- END OF OPTION FUNCTIONS ---------//
 
   /// @dev See {IHookCoveredCall-settleOption}.
-  function settleOption(uint256 optionId, bool returnNft)
-    external
-    nonReentrant
-  {
+  function settleOption(uint256 optionId) external nonReentrant {
     CallOption storage call = optionParams[optionId];
     require(
       call.highBidder != address(0),
@@ -555,12 +552,8 @@ contract HookCoveredCallImplV1 is
       _safeTransferETHWithFallback(call.writer, call.strike);
     }
 
-    // return send option holder their earnings
+    // send option holder their earnings
     _safeTransferETHWithFallback(optionOwner, spread);
-
-    if (returnNft) {
-      IHookVault(call.vaultAddress).withdrawalAsset(call.assetId);
-    }
 
     emit CallSettled(optionId);
   }
