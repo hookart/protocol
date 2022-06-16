@@ -9,6 +9,7 @@
 | option holder        | the person that holds the right but not the obligation to buy a specific underlying asset                           |
 | strike price         | the price for which, at the end of a european option, an underlying asset can be purchased by the option holder     |
 | covered option       | an option where the underlying asset is posted as collateral                                                        |
+| account              | either a smart contract or EOA (externally owned account, i.e. private key) on a EVM-compatible blockchain          |
 
 ## Hook Vault
 

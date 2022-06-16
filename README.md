@@ -14,7 +14,9 @@ Note: NFTs deposited into the Hook protocol only contain unique artistic images 
 <!-- TODO: Add whitepaper when published -->
 
 [Protocol Overview](docs/Overview.md)
+
 [Definitions](docs/Definitions.md)
+
 [Natspec Generated Docs](docs/generated/index.html)
 
 ## Setup
@@ -41,6 +43,7 @@ updated. `yarn add -D @openzeppelin/contracts`
 ## Additional Foundry Info
 
 [Foundry](https://github.com/foundry-rs/foundry)
+
 [Foundry Book](https://book.getfoundry.sh)
 
 ## Licence
