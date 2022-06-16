@@ -47,6 +47,7 @@ import "./mixin/EIP712.sol";
 
 /// @title  HookMultiVault -- implementation of a Vault for multiple assets within a NFT collection, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
 /// @notice HookVault holds a multiple NFT asset in escrow on behalf of multiple beneficial owners. Other contracts
 /// are able to register "entitlements" for a fixed period of time on the asset, which give them the ability to
 /// change the vault's owner.
@@ -177,9 +178,6 @@ contract HookERC721MultiVaultImplV1 is
     uint256 tokenId,
     bytes calldata data
   ) external virtual override returns (bytes4) {
-    /// We should make sure that the owner of an asset never changes simply as a result of someone sending
-    /// a NFT into this contract.
-    ///
     /// (1) When receiving a nft from the ERC-721 contract this vault covers, create a new entitlement entry
     /// with the sender as the beneficial owner to track the asset within the vault.
     ///
@@ -546,6 +544,7 @@ contract HookERC721MultiVaultImplV1 is
     return assetId;
   }
 
+  /// @dev sets the new beneficial owner for a particular asset within the vault
   function _setBeneficialOwner(uint32 assetId, address newBeneficialOwner)
     internal
   {

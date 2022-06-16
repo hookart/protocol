@@ -37,14 +37,12 @@ pragma solidity ^0.8.10;
 import "./IHookVault.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-/// @notice the IHookERC721 vault is an extension of the standard IHookVault
-/// specifically designed to hold and receive ERC721 Tokens.
+/// @title Hook ERC-721 Vault interface
+/// @author Jake Nyquist -- j@hook.xyz
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
 ///
-/// SEND TRANSACTION -
-///     (1) owners are able to forward transactions to this vault to other wallets
-///     (2) calls to the ERC-721 address are blocked to prevent approvals from being set on the
-///         NFT while in escrow, which could allow for theft
-///     (3) At the end of each transaction, the ownerOf the vaulted token must still be the vault
+/// @dev the IHookERC721 vault is an extension of the standard IHookVault
+/// specifically designed to hold and receive ERC721 Tokens.
 ///
 /// FLASH LOAN -
 ///     (1) beneficial owners are able to borrow the vaulted asset for a single function call

@@ -6,7 +6,8 @@ import "forge-std/Test.sol";
 
 import "./utils/base.t.sol";
 
-/// Mint ///
+/// @notice Covered call minting test cases
+/// @author Regynald Augustin -- regy@hook.xyz
 contract HookCoveredCallMintTests is HookProtocolTest {
   function setUp() public {
     setUpAddresses();

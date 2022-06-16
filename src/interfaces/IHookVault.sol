@@ -39,15 +39,16 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title Generic Hook Vault -- a vault designed to contain a single asset to be used as escrow.
 /// @author Jake Nyquist -- j@hook.xyz
+/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+///
 /// @notice The Vault holds an asset on behalf of the owner. The owner is able to post this
 /// asset as collateral to other protocols by signing a message, called an "entitlement", that gives
-/// a specific account the ability to change the owner. While the asset is held within the vault,
-/// any account set as the beneficial owner is able to make external contract calls to benefit from
-/// the utility of the asset. Specifically, that means this structure should not be used in order to
-/// hold assets in escrow away from owner to benefit an owner for a short period of time.
+/// a specific account the ability to change the owner.
 ///
 /// The vault can work with multiple assets via the assetId, where the asset or set of assets covered by
 /// each segment is granted an individual id.
+/// Every asset must be identified by an assetId to comply with this interface, even if the vault only contains
+/// one asset.
 ///
 /// ENTITLEMENTS -
 ///     (1) only one entitlement can be placed at a time.
@@ -116,7 +117,7 @@ interface IHookVault is IERC165 {
   ) external;
 
   /// @notice Allows the beneficial owner to grant an entitlement to an asset within the contract
-  /// @dev this function call is signed by the sender, so we know the entitlement is authentic
+  /// @dev this function call is signed by the sender per the EVM, so we know the entitlement is authentic
   /// @param entitlement The entitlement to impose onto the contract
   function grantEntitlement(Entitlements.Entitlement calldata entitlement)
     external;
@@ -131,13 +132,19 @@ interface IHookVault is IERC165 {
   function clearEntitlementAndDistribute(uint32 assetId, address receiver)
     external;
 
-  /// @notice looks up the current beneficial owner of the underlying asset
+  /// @notice looks up the current beneficial owner of the asset
+  /// @param assetId the referenced asset
+  /// @return the address of the beneficial owner of the asset
   function getBeneficialOwner(uint32 assetId) external view returns (address);
 
   /// @notice checks if the asset is currently stored in the vault
+  /// @param assetId the referenced asset
+  /// @return true if the asset is currently within the vault, false otherwise
   function getHoldsAsset(uint32 assetId) external view returns (bool);
 
   /// @notice the contract address of the vaulted asset
+  /// @param assetId the referenced asset
+  /// @return the contract address of the vaulted asset
   function assetAddress(uint32 assetId) external view returns (address);
 
   /// @notice looks up the current operator of an entitlement on an asset

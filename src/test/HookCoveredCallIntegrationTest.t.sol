@@ -3,6 +3,8 @@ pragma solidity ^0.8.10;
 
 import "./utils/base.t.sol";
 
+/// @notice Integration tests for the Hook Protocol
+/// @author Regynald Augustin -- regy@hook.xyz
 contract HookCoveredCallIntegrationTest is HookProtocolTest {
   function setUp() public {
     setUpAddresses();
