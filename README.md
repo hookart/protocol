@@ -4,11 +4,18 @@
 
 ## About
 
-[White paper](https://hook.art/whitepaper)
-
 Hook is an oracle-free, on-chain option protocol for non-fungible tokens (NFTs). Unlike many popular approaches to NFT DeFi, Hook does not sacrifice the non-fungible nature of NFTs by requiring that they are converted into fungible tokens.
 
 Note: NFTs deposited into the Hook protocol only contain unique artistic images and do not contain, reference, represent the price, rate or level of any security, commodity or financial instrument.
+
+## Documentation
+
+<!-- [White paper](https://hook.xyz/whitepaper)  -->
+<!-- TODO: Add whitepaper when published -->
+
+[Protocol Overview](docs/Overview.md)
+[Definitions](docs/Definitions.md)
+[Natspec Generated Docs](docs/generated/index.html)
 
 ## Setup
 
