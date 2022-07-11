@@ -2118,7 +2118,7 @@ describe("Call Instrument Tests", function () {
 
       expect(createCall).to.emit(calls, "CallCreated");
       expect(callCreatedEvent.args.writer).to.equal(writer.address);
-      expect(callCreatedEvent.args.optionId).to.equal(1);
+      expect(callCreatedEvent.args.optionId).to.equal(2);
       expect(callCreatedEvent.args.strikePrice).to.equal(1000);
       expect(callCreatedEvent.args.expiration).to.equal(expiration);
     });
@@ -2217,7 +2217,7 @@ describe("Call Instrument Tests", function () {
 
       expect(createCall).to.emit(calls, "CallCreated");
       expect(callCreatedEvent.args.writer).to.equal(writer.address);
-      expect(callCreatedEvent.args.optionId).to.equal(1);
+      expect(callCreatedEvent.args.optionId).to.equal(2);
       expect(callCreatedEvent.args.strikePrice).to.equal(1000);
       expect(callCreatedEvent.args.expiration).to.equal(expiration);
     });
@@ -2241,7 +2241,7 @@ describe("Call Instrument Tests", function () {
 
       expect(createCall).to.emit(calls, "CallCreated");
       expect(callCreatedEvent.args.writer).to.equal(writer.address);
-      expect(callCreatedEvent.args.optionId).to.equal(1);
+      expect(callCreatedEvent.args.optionId).to.equal(2);
       expect(callCreatedEvent.args.strikePrice).to.equal(1000);
       expect(callCreatedEvent.args.expiration).to.equal(expiration);
     });
