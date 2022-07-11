@@ -266,6 +266,11 @@ contract HookCoveredCallImplV1 is
     // they should receive the option.
     address writer = vault.getBeneficialOwner(assetId);
 
+    require(
+      writer == msg.sender,
+      "mintWithVault -- only the beneficial owner can create a call option with an entitled vault"
+    );
+
     return
       _mintOptionWithVault(writer, vault, assetId, strikePrice, expirationTime);
   }
