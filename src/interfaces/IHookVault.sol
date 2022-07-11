@@ -87,6 +87,13 @@ interface IHookVault is IERC165 {
     uint32 assetId
   );
 
+  /// @notice Emitted when `beneficialOwner` enables `approved` to manage the `assetId` asset.
+  event Approval(
+    address indexed beneficialOwner,
+    address indexed approved,
+    uint32 indexed assetId
+  );
+
   /// @notice emitted when an asset is withdrawn from the vault
   event AssetWithdrawn(uint32 assetId, address to, address beneficialOwner);
 
@@ -161,4 +168,23 @@ interface IHookVault is IERC165 {
     external
     view
     returns (uint32 expiry);
+
+  /// @notice Gives permission to `to` to impose an entitlement upon `assetId`
+  ///
+  /// @dev Only a single account can be approved at a time, so approving the zero address clears previous approvals.
+  ///   * Requirements:
+  ///
+  /// -  The caller must be the beneficial owner
+  /// - `tokenId` must exist.
+  ///
+  /// Emits an {Approval} event.
+  function approve(address to, uint32 assetId) external;
+
+  /// @dev Returns the account approved for `tokenId` token.
+  ///
+  /// Requirements:
+  ///
+  /// - `assetId` must exist.
+  ///
+  function getApproved(uint32 assetId) external view returns (address operator);
 }
