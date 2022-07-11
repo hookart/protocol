@@ -4,6 +4,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/proxy/Proxy.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
 
@@ -15,7 +16,7 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
 ///
 /// This is an extension of the OpenZeppelin beacon proxy, however differs in that it is initializeable, which means
 /// it is usable with Create2.
-contract HookBeaconProxy is Proxy, ERC1967Upgrade {
+contract HookBeaconProxy is Proxy, ERC1967Upgrade, Initializable {
   /// @dev  The constructor is empty in this case because the proxy is initializeable
   constructor() {}
 
@@ -29,7 +30,10 @@ contract HookBeaconProxy is Proxy, ERC1967Upgrade {
   ///
   ///- `beacon` must be a contract with the interface {IBeacon}.
   ///
-  function initializeBeacon(address beacon, bytes memory data) public {
+  function initializeBeacon(address beacon, bytes memory data)
+    public
+    initializer
+  {
     assert(
       _BEACON_SLOT == bytes32(uint256(keccak256("eip1967.proxy.beacon")) - 1)
     );
