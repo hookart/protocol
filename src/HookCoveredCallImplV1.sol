@@ -173,6 +173,8 @@ contract HookCoveredCallImplV1 is
     weth = _protocol.getWETHAddress();
     _preApprovedMarketplace = preApprovedMarketplace;
     allowedUnderlyingAddress = nftContract;
+    /// increment the optionId such that id=0 can be treated as the null value
+    _optionIds.increment();
 
     /// Initialize basic configuration.
     /// Even though these are defaults, we cannot set them in the constructor because
