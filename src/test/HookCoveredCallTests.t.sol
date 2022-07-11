@@ -77,7 +77,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     // limit this call to 300,000 gas
     // overall gas usage depends on the underlying NFT contract
-    uint256 optionId = calls.mintWithErc721{gas: 330_000}(
+    uint256 optionId = calls.mintWithErc721{gas: 340_000}(
       address(token),
       underlyingTokenId,
       1000,
@@ -514,6 +514,84 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Vault is now owner of the underlying token so this fails.
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
+  }
+
+  function testCannotMintMultipleOptionsWithSameAsset() public {
+    vm.startPrank(address(writer));
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      0,
+      1000,
+      expiration,
+      sig
+    );
+
+    vm.expectRevert("_mintOptionWithVault -- previous option must be settled");
+    calls.mintWithEntitledVault(address(vault), 0, 1000, expiration);
+  }
+
+  function cannotMintMultipleOptionsWithSameAssetAfterFirstExpires() public {
+    vm.startPrank(address(writer));
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      0,
+      1000,
+      expiration,
+      sig
+    );
+
+    vm.warp(expiration + 1 days);
+    calls.burnExpiredOption(optionId);
+
+    uint32 expiration2 = uint32(block.timestamp) + 3 days;
+    IHookVault(vault).grantEntitlement(
+      Entitlements.Entitlement(
+        writer,
+        address(calls),
+        address(vault),
+        0,
+        expiration2
+      )
+    );
+
+    // vm.expectRevert("_mintOptionWithVault -- previous option must be settled");
+    calls.mintWithEntitledVault(address(vault), 0, 1000, expiration);
   }
 
   function testCannotMintMultipleOptionsSameTokenAsOwnerThenOperator() public {

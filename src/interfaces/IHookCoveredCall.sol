@@ -157,6 +157,16 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
   function reclaimAsset(uint256 optionId, bool returnNft) external;
 
+  /// @notice Looks up the latest optionId that covers a particular asset, if one exists. This option may be already settled.
+  /// @dev getOptionIdForAsset
+  /// @param vault the address of the hook vault that holds the covered asset
+  /// @param assetId the id of the asset to check
+  /// @return the optionId, if one exists or 0 otherwise
+  function getOptionIdForAsset(address vault, uint32 assetId)
+    external
+    view
+    returns (uint256);
+
   /// @notice Permissionlessly settle an expired option when the option expires in the money, distributing
   /// the proceeds to the Writer, Holder, and Bidder as follows:
   ///
