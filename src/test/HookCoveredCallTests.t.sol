@@ -842,13 +842,13 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     calls.bid{value: 0.1 ether}(optionTokenId);
 
     uint256 strike = 1000;
-    uint256 bidAmount = 0.1 ether - strike + 1;
+    uint256 bidAmount = 0.1 ether - strike + 0.1 ether;
 
     vm.prank(writer);
     calls.bid{value: bidAmount}(optionTokenId);
 
     assertTrue(
-      calls.currentBid(optionTokenId) == 0.1 ether + 1,
+      calls.currentBid(optionTokenId) == 0.1 ether + 0.1 ether,
       "high bid should be 0.1 ether + 1 wei"
     );
     assertTrue(
@@ -879,18 +879,18 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     calls.bid{value: 0.1 ether}(optionTokenId);
 
     uint256 strike = 1000;
-    uint256 bidAmount = 0.1 ether - strike + 1;
+    uint256 bidAmount = 0.1 ether - strike + 0.1 ether;
 
     vm.prank(writer);
     calls.bid{value: bidAmount}(optionTokenId);
 
-    uint256 secondBidAmount = 0.1 ether - strike + 2;
+    uint256 secondBidAmount = 0.1 ether - strike + 0.2 ether;
     vm.prank(writer);
     calls.bid{value: secondBidAmount}(optionTokenId);
 
     assertTrue(
-      calls.currentBid(optionTokenId) == 0.1 ether + 2,
-      "high bid should be 0.1 ether + 1 wei"
+      calls.currentBid(optionTokenId) == 0.1 ether + 0.2 ether,
+      "high bid should be 0.1 ether + 0.2 ether"
     );
     assertTrue(
       calls.currentBidder(optionTokenId) == writer,
@@ -902,7 +902,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     );
     assertTrue(
       writer.balance == 1 ether - secondBidAmount,
-      "writer should have only used 0.1 ether + 1 wei to bid"
+      "writer should have only used 0.1 ether + 0.2 ether to bid"
     );
   }
 }
@@ -1149,7 +1149,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.bid{value: 1001 wei}(optionId);
 
     vm.prank(writer);
-    calls.bid{value: 2 wei}(optionId);
+    calls.bid{value: 200 wei}(optionId);
 
     vm.warp(block.timestamp + 1 days);
 
@@ -1157,11 +1157,11 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.settleOption(optionId);
 
     assertTrue(
-      buyerStartBalance + 2 wei == buyer.balance,
+      buyerStartBalance + 200 wei == buyer.balance,
       "buyer gets the spread (10002 wei - 1000 wei strike)"
     );
     assertTrue(
-      writerStartBalance - 2 wei == writer.balance,
+      writerStartBalance - 200 wei == writer.balance,
       "option writer bid on strike"
     );
   }
@@ -1201,10 +1201,10 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.bid{value: 1001 wei}(optionId);
 
     vm.prank(writer);
-    calls.bid{value: 2 wei}(optionId);
+    calls.bid{value: 200 wei}(optionId);
 
     vm.prank(firstBidder);
-    calls.bid{value: 1003 wei}(optionId);
+    calls.bid{value: 1300 wei}(optionId);
 
     vm.warp(block.timestamp + 1 days);
 
@@ -1212,7 +1212,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.settleOption(optionId);
 
     assertTrue(
-      buyerStartBalance + 3 wei == buyer.balance,
+      buyerStartBalance + 300 wei == buyer.balance,
       "buyer gets the spread (10002 wei - 1000 wei strike)"
     );
     assertTrue(
@@ -1384,7 +1384,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     calls.bid{value: 1001 wei}(optionId);
 
     vm.prank(writer);
-    calls.bid{value: 2 wei}(optionId);
+    calls.bid{value: 200 wei}(optionId);
 
     vm.startPrank(writer);
 
@@ -1425,10 +1425,10 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     calls.bid{value: 1001 wei}(optionId);
 
     vm.prank(writer);
-    calls.bid{value: 2 wei}(optionId);
+    calls.bid{value: 200 wei}(optionId);
 
     vm.prank(firstBidder);
-    calls.bid{value: 1003 wei}(optionId);
+    calls.bid{value: 1300 wei}(optionId);
 
     vm.startPrank(writer);
 

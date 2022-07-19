@@ -2685,13 +2685,13 @@ describe("Call Instrument Tests", function () {
 
       const secondBid = calls
         .connect(secondBidder)
-        .bid(optionTokenId, { value: 1002 });
+        .bid(optionTokenId, { value: 1202 });
       await expect(secondBid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(
         secondBidder.address
       );
-      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1202);
     });
 
     it("should bid and outbid as with malicious bidder", async function () {
@@ -2715,13 +2715,13 @@ describe("Call Instrument Tests", function () {
 
       const secondBid = calls
         .connect(secondBidder)
-        .bid(optionTokenId, { value: 1002 });
+        .bid(optionTokenId, { value: 1202 });
       await expect(secondBid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(
         secondBidder.address
       );
-      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1202);
       expect(await weth.balanceOf(deployedMaliciousBidder.address)).to.eq(1001);
     });
 
@@ -2739,22 +2739,24 @@ describe("Call Instrument Tests", function () {
       );
       expect(await calls.currentBid(optionTokenId)).to.equal(1001);
 
-      const secondBid = calls.connect(writer).bid(optionTokenId, { value: 2 });
+      const secondBid = calls
+        .connect(writer)
+        .bid(optionTokenId, { value: 202 });
       await expect(secondBid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(writer.address);
-      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1202);
     });
 
     it("should bid on spread as option writer", async function () {
       // Move forward to auction period
       await ethers.provider.send("evm_increaseTime", [2.1 * SECS_IN_A_DAY]);
 
-      const bid = calls.connect(writer).bid(optionTokenId, { value: 1 });
+      const bid = calls.connect(writer).bid(optionTokenId, { value: 201 });
       await expect(bid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(writer.address);
-      expect(await calls.currentBid(optionTokenId)).to.equal(1001);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1201);
     });
 
     it("should bid and outbid option writer", async function () {
@@ -2769,13 +2771,13 @@ describe("Call Instrument Tests", function () {
 
       const secondBid = calls
         .connect(secondBidder)
-        .bid(optionTokenId, { value: 1002 });
+        .bid(optionTokenId, { value: 1202 });
       await expect(secondBid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(
         secondBidder.address
       );
-      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1202);
     });
   });
 
@@ -2841,7 +2843,7 @@ describe("Call Instrument Tests", function () {
       // Create bids
       // First option the writer has the winning bid
       await calls.connect(firstBidder).bid(optionTokenId, { value: 1001 });
-      await calls.connect(writer).bid(optionTokenId, { value: 2 });
+      await calls.connect(writer).bid(optionTokenId, { value: 200 });
 
       // Second option the secondBidder has the winning bid
       await calls
@@ -2849,7 +2851,7 @@ describe("Call Instrument Tests", function () {
         .bid(secondOptionTokenId, { value: 1001 });
       await calls
         .connect(secondBidder)
-        .bid(secondOptionTokenId, { value: 1002 });
+        .bid(secondOptionTokenId, { value: 1202 });
     });
 
     it("should not settle auction with no bids", async function () {
