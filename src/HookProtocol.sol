@@ -95,7 +95,7 @@ contract HookProtocol is
   function getCollectionConfig(address collectionAddress, bytes32 conf)
     external
     view
-    returns (bool value)
+    returns (bool)
   {
     return collectionConfigs[collectionAddress][conf];
   }

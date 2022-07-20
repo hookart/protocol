@@ -160,7 +160,7 @@ contract HookERC721VaultFactory is
   /// does not need to be made.
   function findOrCreateVault(address nftAddress, uint256 tokenId)
     external
-    returns (IHookERC721Vault vault)
+    returns (IHookERC721Vault)
   {
     if (getMultiVault[nftAddress] != IHookERC721Vault(address(0))) {
       return getMultiVault[nftAddress];

@@ -331,7 +331,7 @@ contract HookERC721MultiVaultImplV1 is
   function entitlementExpiration(uint32 assetId)
     external
     view
-    returns (uint32 expiry)
+    returns (uint32)
   {
     if (!hasActiveEntitlement(assetId)) {
       return 0;
@@ -349,7 +349,7 @@ contract HookERC721MultiVaultImplV1 is
   function getHoldsAsset(uint32 assetId)
     external
     view
-    returns (bool holdsAsset)
+    returns (bool)
   {
     return _assetOwner(assetId) == address(this);
   }
