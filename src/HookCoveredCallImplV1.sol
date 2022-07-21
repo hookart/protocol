@@ -163,6 +163,17 @@ contract HookCoveredCallImplV1 is
     address hookVaultFactory,
     address preApprovedMarketplace
   ) public initializer {
+    require(protocol.code.length > 0, "protocol must be a contract");
+    require(nftContract.code.length > 0, "nftContract must be a contract");
+    require(
+      hookVaultFactory.code.length > 0,
+      "vault factory must be a contract"
+    );
+    require(
+      preApprovedMarketplace.code.length > 0,
+      "marketplace must be a contract"
+    );
+
     _protocol = IHookProtocol(protocol);
     _erc721VaultFactory = IHookERC721VaultFactory(hookVaultFactory);
     weth = _protocol.getWETHAddress();

@@ -61,12 +61,14 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
   /// Upgradeable Implementations cannot have a constructor, so we call the initialize instead;
   constructor() HookERC721MultiVaultImplV1() {}
 
-  /// -- constructor
+  /// -- initializer sets up standard values
   function initialize(
     address nftContract,
     uint256 tokenId,
     address hookAddress
   ) public {
+    require(nftContract.code.length > 0, "nft contract must be contract");
+    require(hookAddress.code.length > 0, "hookAddress must be contract");
     setAddressForEipDomain(hookAddress);
     _tokenId = tokenId;
     // the super function calls "Initialize"
@@ -114,8 +116,8 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     /// (1) If the contract is specified to hold a specific NFT, and that NFT is sent to the contract,
     /// set the beneficial owner of this vault to be current owner of the asset getting sent. Alternatively,
     /// the sender can specify an entitlement which contains a different beneficial owner. We accept this because
-    /// that same sender could alternatively first send the token, become the beneficial owner, and then set it 
-    /// the beneficial owner to someone else and finally specify an entitlement. 
+    /// that same sender could alternatively first send the token, become the beneficial owner, and then set it
+    /// the beneficial owner to someone else and finally specify an entitlement.
     ///
     /// (2) If another nft is sent to the contract, we should verify that airdrops are allowed to this vault;
     /// if they are disabled, we should not return the selector, otherwise we can allow them.
