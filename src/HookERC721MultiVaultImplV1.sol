@@ -240,7 +240,14 @@ contract HookERC721MultiVaultImplV1 is
         "onERC721Received -- non-escrow asset returned when airdrops are disabled"
       );
     }
-    emit AssetReceived(from, operator, msg.sender, uint32(tokenId));
+
+    emit AssetReceived(
+      from,
+      this.getBeneficialOwner(uint32(tokenId)),
+      msg.sender,
+      uint32(tokenId)
+    );
+
     return this.onERC721Received.selector;
   }
 
