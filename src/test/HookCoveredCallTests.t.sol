@@ -930,7 +930,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     uint256 buyerStartBalance = buyer.balance;
     uint256 writerStartBalance = writer.balance;
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionTokenId);
 
     assertTrue(
@@ -952,7 +952,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
       underlyingTokenId
     );
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionTokenId);
 
     assertTrue(
@@ -1051,7 +1051,56 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.bid{value: 1 wei}(optionId);
     vm.warp(block.timestamp + 1 days);
 
+    vm.stopPrank();
+    vm.prank(buyer);
     calls.settleOption(optionId);
+
+    assertTrue(
+      buyerStartBalance + 1 wei == buyer.balance,
+      "buyer gets the option spread (winning bid of 1001 wei - strike price of 1000)"
+    );
+
+    assertTrue(
+      writerStartBalance - 1 == writer.balance,
+      "option writer only loses spread (1 wei)"
+    );
+  }
+
+  function testSettleOptionWhenWriterHighBidderAndCallsSettle() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    uint256 optionId = calls.mintWithErc721(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+    calls.bid{value: 1 wei}(optionId);
+    vm.warp(block.timestamp + 1 days);
+
+    calls.settleOption(optionId);
+    vm.stopPrank();
+
+    vm.prank(buyer);
+    calls.claimOptionProceeds(optionId);
 
     assertTrue(
       buyerStartBalance + 1 wei == buyer.balance,
@@ -1101,7 +1150,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     vm.warp(block.timestamp + 1 days);
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionId);
 
     assertTrue(
@@ -1153,7 +1202,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     vm.warp(block.timestamp + 1 days);
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionId);
 
     assertTrue(
@@ -1208,7 +1257,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     vm.warp(block.timestamp + 1 days);
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionId);
 
     assertTrue(

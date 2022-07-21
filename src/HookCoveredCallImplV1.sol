@@ -105,6 +105,10 @@ contract HookCoveredCallImplV1 is
   /// @dev storage of all existing options contracts.
   mapping(uint256 => CallOption) public optionParams;
 
+  /// @dev mapping to store the amount of eth in wei that may
+  /// be claimed by the current ownerOf the option nft.
+  mapping(uint256 => uint256) public optionClaims;
+
   /// @dev the address of the token contract permitted to serve as underlying assets for this
   /// instrument.
   address public allowedUnderlyingAddress;
@@ -540,9 +544,6 @@ contract HookCoveredCallImplV1 is
 
     address optionOwner = ownerOf(optionId);
 
-    // burn nft
-    _burn(optionId);
-
     // set settled to prevent an additional attempt to settle the option
     optionParams[optionId].settled = true;
 
@@ -552,10 +553,18 @@ contract HookCoveredCallImplV1 is
       _safeTransferETHWithFallback(call.writer, call.strike);
     }
 
-    // send option holder their earnings
-    _safeTransferETHWithFallback(optionOwner, spread);
+    bool claimable = false;
+    if (msg.sender == optionOwner) {
+      // send option holder their earnings
+      _safeTransferETHWithFallback(optionOwner, spread);
 
-    emit CallSettled(optionId);
+      // burn nft
+      _burn(optionId);
+    } else {
+      optionClaims[optionId] = spread;
+      claimable = true;
+    }
+    emit CallSettled(optionId, claimable);
   }
 
   /// @dev See {IHookCoveredCall-reclaimAsset}.
@@ -638,6 +647,25 @@ contract HookCoveredCallImplV1 is
     call.settled = true;
 
     emit ExpiredCallBurned(optionId);
+  }
+
+  /// @dev See {IHookCoveredCall-claimOptionProceeds}
+  function claimOptionProceeds(uint256 optionId) external {
+    address optionOwner = ownerOf(optionId);
+    require(
+      msg.sender == optionOwner,
+      "claimOptionProceeds -- only the option owner can claim their proceeds"
+    );
+    if (optionClaims[optionId] != 0) {
+      emit CallProceedsDistributed(
+        optionId,
+        optionOwner,
+        optionClaims[optionId]
+      );
+      _safeTransferETHWithFallback(optionOwner, optionClaims[optionId]);
+      delete optionClaims[optionId];
+      _burn(optionId);
+    }
   }
 
   //// ---- Administrative Fns.

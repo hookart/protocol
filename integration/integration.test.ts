@@ -2912,6 +2912,27 @@ describe("Call Instrument Tests", function () {
       expect(await vault.getBeneficialOwner(0)).to.eq(writer.address);
     });
 
+    it("should settle auction and allow claims", async function () {
+      // Move forward to after auction period ends
+      await ethers.provider.send("evm_increaseTime", [1 * SECS_IN_A_DAY]);
+
+      const settleCall = calls.connect(writer).settleOption(optionTokenId);
+      await expect(settleCall).to.emit(calls, "CallSettled");
+
+      const distributeCall = calls
+        .connect(buyer)
+        .claimOptionProceeds(optionTokenId);
+      await expect(distributeCall).to.emit(calls, "CallProceedsDistributed");
+
+      const vaultAddress = await calls.getVaultAddress(optionTokenId);
+      const vault = await ethers.getContractAt(
+        "HookERC721VaultImplV1",
+        vaultAddress
+      );
+
+      expect(await vault.getBeneficialOwner(0)).to.eq(writer.address);
+    });
+
     it("should settle auction when option writer is high bidder", async function () {
       // Move forward to after auction period ends
       await ethers.provider.send("evm_increaseTime", [1 * SECS_IN_A_DAY]);
