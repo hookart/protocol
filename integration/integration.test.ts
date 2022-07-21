@@ -15,7 +15,15 @@ describe("Protocol", function () {
   beforeEach(async () => {
     [admin, one, two] = await ethers.getSigners();
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, admin.address);
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address
+    );
   });
 
   it("can be paused", async () => {
@@ -77,7 +85,15 @@ describe("UpgradeableBeacon", function () {
   beforeEach(async () => {
     [admin] = await ethers.getSigners();
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, admin.address);
+    protocol = protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address
+    );
 
     const vaultImplFactory = await ethers.getContractFactory(
       "HookERC721VaultImplV1"
@@ -172,7 +188,15 @@ describe("Vault", function () {
     weth = await weath.deploy();
     const token = await ethers.getContractFactory("TestERC721");
     testNFT = await token.deploy();
-    protocol = await protocolFactory.deploy(admin.address, weth.address);
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      weth.address
+    );
     const vaultImpl = await vaultImplFactory.deploy();
     const multiVaultImpl = await multiVaultImplFactory.deploy();
 
@@ -2004,7 +2028,15 @@ describe("Call Instrument Tests", function () {
 
     // // Deploy protocol
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, weth.address);
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      weth.address
+    );
 
     // Deploy multi vault
     const vaultFactoryFactory = await ethers.getContractFactory(
