@@ -233,9 +233,9 @@ contract HookERC721MultiVaultImplV1 is
       // If we're receiving an airdrop or other asset uncovered by escrow to this address, we should ensure
       // that this is allowed by our current settings.
       require(
-        !_hookProtocol.getCollectionConfig(
+        _hookProtocol.getCollectionConfig(
           address(_nftContract),
-          keccak256("vault.airdropsProhibited")
+          keccak256("vault.multiAirdropsAllowed")
         ),
         "onERC721Received -- non-escrow asset returned when airdrops are disabled"
       );
