@@ -87,6 +87,8 @@ contract HookERC721MultiVaultImplV1 is
     public
     initializer
   {
+    require(nftContract.code.length > 0, "nft contract must be contract");
+    require(hookAddress.code.length > 0, "hookAddress must be contract");
     setAddressForEipDomain(hookAddress);
     _nftContract = IERC721(nftContract);
     _hookProtocol = IHookProtocol(hookAddress);
