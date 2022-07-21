@@ -570,13 +570,13 @@ describe("Vault", function () {
         expect(await vaultInstance.getBeneficialOwner(0)).eq(
           beneficialOwner.address
         );
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(0))["operator"]
-        ).eq(runner.address);
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
-        ).to.be.true;
-        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
+        expect((await vaultInstance.getCurrentEntitlementOperator(0))[1]).eq(
+          runner.address
+        );
+        expect((await vaultInstance.getCurrentEntitlementOperator(0))[0]).eq(
+          true
+        );
+        expect(await vaultInstance.hasActiveEntitlement(0)).eq(true);
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -633,13 +633,13 @@ describe("Vault", function () {
           beneficialOwner.address
         );
 
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(0))["operator"]
-        ).eq(runner.address);
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
-        ).to.be.true;
-        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
+        expect((await vaultInstance.getCurrentEntitlementOperator(0))[1]).eq(
+          runner.address
+        );
+        expect((await vaultInstance.getCurrentEntitlementOperator(0))[0]).eq(
+          true
+        );
+        expect(await vaultInstance.hasActiveEntitlement(0)).eq(true);
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -679,14 +679,14 @@ describe("Vault", function () {
           beneficialOwner.address
         );
 
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(0))["operator"]
-        ).eq(runner.address);
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(0))["isActive"]
-        ).to.be.true;
+        expect((await vaultInstance.getCurrentEntitlementOperator(0))[1]).eq(
+          runner.address
+        );
+        expect((await vaultInstance.getCurrentEntitlementOperator(0))[0]).eq(
+          true
+        );
 
-        expect(await vaultInstance.hasActiveEntitlement(0)).to.be.true;
+        expect(await vaultInstance.hasActiveEntitlement(0)).eq(true);
         expect(await vaultInstance.entitlementExpiration(0)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -1424,12 +1424,12 @@ describe("Vault", function () {
         expect(await vaultInstance.getBeneficialOwner(1)).eq(
           beneficialOwner.address
         );
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(1))["operator"]
-        ).eq(runner.address);
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(1))["isActive"]
-        ).to.be.true;
+        expect((await vaultInstance.getCurrentEntitlementOperator(1))[1]).eq(
+          runner.address
+        );
+        expect((await vaultInstance.getCurrentEntitlementOperator(1))[0]).eq(
+          true
+        );
         expect(await vaultInstance.entitlementExpiration(1)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -1486,12 +1486,12 @@ describe("Vault", function () {
           beneficialOwner.address
         );
 
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(1))["operator"]
-        ).eq(runner.address);
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(1))["isActive"]
-        ).to.be.true;
+        expect((await vaultInstance.getCurrentEntitlementOperator(1))[1]).eq(
+          runner.address
+        );
+        expect((await vaultInstance.getCurrentEntitlementOperator(1))[0]).eq(
+          true
+        );
         expect(await vaultInstance.entitlementExpiration(1)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
         );
@@ -1531,12 +1531,12 @@ describe("Vault", function () {
           beneficialOwner.address
         );
 
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(1))["operator"]
-        ).eq(runner.address);
-        expect(
-          (await vaultInstance.getCurrentEntitlementOperator(1))["isActive"]
-        ).to.be.true;
+        expect((await vaultInstance.getCurrentEntitlementOperator(1))[1]).eq(
+          runner.address
+        );
+        expect((await vaultInstance.getCurrentEntitlementOperator(1))[0]).eq(
+          true
+        );
 
         expect(await vaultInstance.entitlementExpiration(1)).eq(
           Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5)
@@ -3039,7 +3039,7 @@ describe("Call Instrument Tests", function () {
       );
 
       const result = await vault.getCurrentEntitlementOperator(0);
-      expect(result.isActive).to.be.false;
+      expect(result[0]).eq(false);
     });
 
     it("should reclaim asset with no bids", async function () {
@@ -3057,7 +3057,7 @@ describe("Call Instrument Tests", function () {
       );
 
       const result = await vault.getCurrentEntitlementOperator(0);
-      expect(result.isActive).to.be.false;
+      expect(result[0]).eq(false);
     });
 
     it("should reclaim asset with no bids and return nft", async function () {
