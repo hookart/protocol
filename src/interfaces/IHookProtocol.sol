@@ -69,9 +69,9 @@ interface IHookProtocol is IAccessControl {
   /// @notice get a configuration flag with a specific key for a collection
   /// @param collectionAddress the collection for which to lookup a configuration flag
   /// @param conf the config identifier for the configuration flag
-  /// @return value the true or false value of the config
+  /// @return the true or false value of the config
   function getCollectionConfig(address collectionAddress, bytes32 conf)
     external
     view
-    returns (bool value);
+    returns (bool);
 }

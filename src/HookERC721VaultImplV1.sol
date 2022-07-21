@@ -178,7 +178,7 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     external
     payable
     virtual
-    returns (bool success)
+    returns (bool)
   {
     // Only the beneficial owner can make this call
     require(
@@ -207,9 +207,11 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     );
 
     // Execute transaction without further confirmations.
-    (success, ) = address(to).call{value: msg.value}(data);
+    (bool success, ) = address(to).call{value: msg.value}(data);
 
     require(_assetOwner(ASSET_ID) == address(this));
+    
+    return success;
   }
 
   /// @dev See {IHookERC721Vault-setBeneficialOwner}.

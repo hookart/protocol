@@ -522,10 +522,12 @@ contract HookERC721MultiVaultImplV1 is
   function getCurrentEntitlementOperator(uint32 assetId)
     external
     view
-    returns (bool isActive, address operator)
+    returns (bool, address)
   {
-    isActive = hasActiveEntitlement(assetId);
-    operator = assets[assetId].operator;
+    bool isActive = hasActiveEntitlement(assetId);
+    address operator = assets[assetId].operator;
+    
+    return (isActive, operator);
   }
 
   /// @dev determine the owner of a specific asset according to is contract based

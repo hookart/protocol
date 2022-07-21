@@ -50,7 +50,7 @@ library HookStrings {
     return string(s);
   }
 
-  function char(bytes1 b) internal pure returns (bytes1 c) {
+  function char(bytes1 b) internal pure returns (bytes1) {
     if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
     else return bytes1(uint8(b) + 0x57);
   }

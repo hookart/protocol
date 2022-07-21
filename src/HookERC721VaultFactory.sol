@@ -84,7 +84,7 @@ contract HookERC721VaultFactory is
   /// instance
   function makeMultiVault(address nftAddress)
     external
-    returns (IHookERC721Vault vault)
+    returns (IHookERC721Vault)
   {
     require(
       IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, msg.sender) ||
@@ -115,15 +115,17 @@ contract HookERC721VaultFactory is
       )
     );
 
-    vault = IHookERC721Vault(address(bp));
+    IHookERC721Vault vault = IHookERC721Vault(address(bp));
     getMultiVault[nftAddress] = vault;
     emit ERC721MultiVaultCreated(nftAddress, address(bp));
+    
+    return vault;
   }
 
   /// @notice make a new vault that can contain a single asset only
   function makeSoloVault(address nftAddress, uint256 tokenId)
     public
-    returns (IHookERC721Vault vault)
+    returns (IHookERC721Vault)
   {
     require(
       getVault[nftAddress][tokenId] == IHookERC721Vault(address(0)),
@@ -148,10 +150,12 @@ contract HookERC721VaultFactory is
         _hookProtocol
       )
     );
-    vault = IHookERC721Vault(address(bp));
+    IHookERC721Vault vault = IHookERC721Vault(address(bp));
     getVault[nftAddress][tokenId] = vault;
 
     emit ERC721VaultCreated(nftAddress, tokenId, address(vault));
+
+    return vault;
   }
 
   /// @notice creates a vault for a specific tokenId. If there
