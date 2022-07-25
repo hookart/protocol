@@ -664,6 +664,10 @@ contract HookCoveredCallImplV1 is
     public
     onlyMarketController
   {
+    require(
+      settlementAuctionStartOffset < newMinDuration,
+      "the settlement auctions cannot start sooner than an option expired"
+    );
     minimumOptionDuration = newMinDuration;
     emit MinOptionDurationUpdated(newMinDuration);
   }
@@ -674,6 +678,10 @@ contract HookCoveredCallImplV1 is
     public
     onlyMarketController
   {
+    require(
+      newBidIncrement < 20 * 100,
+      "the bid increment must be less than 20%"
+    );
     minBidIncrementBips = newBidIncrement;
     emit MinBidIncrementUpdated(newBidIncrement);
   }
