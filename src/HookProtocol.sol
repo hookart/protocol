@@ -63,6 +63,11 @@ contract HookProtocol is
   mapping(address => mapping(bytes32 => bool)) collectionConfigs;
 
   constructor(address admin, address weth) {
+    require(Address.isContract(weth), "weth must be a contract");
+    require(
+      admin != address(0),
+      "admin address cannot be set to the zero address"
+    );
     _setupRole(ALLOWLISTER_ROLE, admin);
     _setupRole(PAUSER_ROLE, admin);
     _setupRole(VAULT_UPGRADER, admin);

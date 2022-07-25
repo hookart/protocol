@@ -15,7 +15,13 @@ describe("Protocol", function () {
   beforeEach(async () => {
     [admin, one, two] = await ethers.getSigners();
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, admin.address);
+    const weth = await ethers.getContractFactory("WETH");
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      (
+        await weth.deploy()
+      ).address
+    );
   });
 
   it("can be paused", async () => {
@@ -77,7 +83,13 @@ describe("UpgradeableBeacon", function () {
   beforeEach(async () => {
     [admin] = await ethers.getSigners();
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, admin.address);
+    const weth = await ethers.getContractFactory("WETH");
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      (
+        await weth.deploy()
+      ).address
+    );
 
     const vaultImplFactory = await ethers.getContractFactory(
       "HookERC721VaultImplV1"
@@ -2069,7 +2081,7 @@ describe("Call Instrument Tests", function () {
     const callFactory = await callFactoryFactory.deploy(
       protocol.address,
       callBeacon.address,
-      getAddress("0x0000000000000000000000000000000000000000")
+      callBeacon.address // use this address for pre-approved marketplace to ensure its a contract
     );
 
     protocol.setCoveredCallFactory(callFactory.address);
