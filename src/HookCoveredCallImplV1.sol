@@ -285,14 +285,16 @@ contract HookCoveredCallImplV1 is
 
     require(
       msg.sender == tokenOwner ||
-        IERC721(tokenAddress).isApprovedForAll(tokenOwner, msg.sender),
+        IERC721(tokenAddress).isApprovedForAll(tokenOwner, msg.sender) ||
+        IERC721(tokenAddress).getApproved(tokenId) == msg.sender,
       "mintWithErc721 -- caller must be token owner or operator"
     );
 
     // NOTE: we can mint the option since our contract is approved
     // this is to ensure additionally that the msg.sender isn't a unexpected address
     require(
-      IERC721(tokenAddress).isApprovedForAll(tokenOwner, address(this)),
+      IERC721(tokenAddress).isApprovedForAll(tokenOwner, address(this)) ||
+        IERC721(tokenAddress).getApproved(tokenId) == address(this),
       "mintWithErc721 -- HookCoveredCall must be operator"
     );
 
