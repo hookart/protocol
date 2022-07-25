@@ -483,9 +483,9 @@ contract HookERC721MultiVaultImplV1 is
     );
   }
 
-  /**
-   * @dev See {IHookVault-approve}.
-   */
+  ///
+  /// @dev See {IHookVault-approve}.
+  ///
   function approve(address to, uint32 assetId) public virtual override {
     address beneficialOwner = assets[assetId].beneficialOwner;
 
@@ -502,9 +502,7 @@ contract HookERC721MultiVaultImplV1 is
     _approve(to, assetId);
   }
 
-  /**
-   * @dev See {IHookVault-getApproved}.
-   */
+  /// @dev See {IHookVault-getApproved}.
   function getApproved(uint32 assetId)
     public
     view
@@ -515,11 +513,11 @@ contract HookERC721MultiVaultImplV1 is
     return _assetApprovals[assetId];
   }
 
-  /**
-   * @dev Approve `to` to operate on `tokenId`
-   *
-   * Emits an {Approval} event.
-   */
+  /// @dev Approve `to` to operate on `tokenId`
+  ///
+  /// Emits an {Approval} event.
+  /// @param to the address to approve
+  /// @param assetId the assetId on which the address will be approved
   function _approve(address to, uint32 assetId) internal virtual {
     _assetApprovals[assetId] = to;
     emit Approval(assets[assetId].beneficialOwner, to, assetId);
@@ -626,7 +624,12 @@ contract HookERC721MultiVaultImplV1 is
       newBeneficialOwner != address(0),
       "_setBeneficialOwner -- new owner is the zero address"
     );
+    require(
+      assets[assetId].beneficialOwner == newBeneficialOwner,
+      "_setBeneficialOwner == new beneficial owner must be different"
+    );
     assets[assetId].beneficialOwner = newBeneficialOwner;
+    _approve(address(0), assetId);
     emit BeneficialOwnerSet(assetId, newBeneficialOwner, msg.sender);
   }
 }
