@@ -490,12 +490,12 @@ contract HookERC721MultiVaultImplV1 is
   ) internal {
     require(
       !hasActiveEntitlement(assetId),
-      "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
+      "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
     );
 
     require(
       expiry > block.timestamp,
-      "_verifyAndRegisterEntitlement -- entitlement must expire in the future"
+      "_registerEntitlement -- entitlement must expire in the future"
     );
     assets[assetId] = Asset({
       operator: operator,

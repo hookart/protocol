@@ -796,7 +796,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
+          "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
         );
       });
 
@@ -1647,7 +1647,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
+          "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
         );
       });
 

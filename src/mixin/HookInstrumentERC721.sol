@@ -48,7 +48,7 @@ import "../lib/TokenURI.sol";
 abstract contract HookInstrumentERC721 is ERC721Burnable {
   using Counters for Counters.Counter;
   mapping(uint256 => Counters.Counter) private _transfers;
-  bytes4 private constant ERC_721 = bytes4(keccak256("ERC712"));
+  bytes4 private constant ERC_721 = bytes4(keccak256("ERC721"));
 
   /// @dev the contact address for a marketplace to pre-approve
   address public _preApprovedMarketplace = address(0);
@@ -160,7 +160,8 @@ abstract contract HookInstrumentERC721 is ERC721Burnable {
       uint256 instrumentStrikePrice = this.getStrikePrice(tokenId);
       uint256 instrumentExpiration = this.getExpiration(tokenId);
       uint256 transfers = _transfers[tokenId].current();
-      return TokenURI.tokenURIERC721(
+      return
+        TokenURI.tokenURIERC721(
           tokenId,
           underlyingAddress,
           underlyingTokenId,

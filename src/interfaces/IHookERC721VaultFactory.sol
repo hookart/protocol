@@ -77,10 +77,21 @@ interface IHookERC721VaultFactory {
     external
     returns (IHookERC721Vault vault);
 
-  /// @notice gets the address of a vault for a particular ERC-721 token or create a solo vault one if one does not exist
+  /// @notice creates a vault for a specific tokenId. If there
+  /// is a multi-vault in existence which supports that address
+  /// the address for that vault is returned as a new one
+  /// does not need to be made.
   /// @param nftAddress the contract address for the ERC-721
   /// @param tokenId the tokenId for the ERC-721
   function findOrCreateVault(address nftAddress, uint256 tokenId)
+    external
+    returns (IHookERC721Vault vault);
+
+  /// @notice make a new vault that can contain a single asset only
+  /// @dev the only valid asset id in this vault is = 0
+  /// @param nftAddress the address of the underlying nft contract
+  /// @param tokenId the individual token that can be deposited into this vault
+  function makeSoloVault(address nftAddress, uint256 tokenId)
     external
     returns (IHookERC721Vault vault);
 }

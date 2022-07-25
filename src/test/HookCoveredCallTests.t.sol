@@ -203,7 +203,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     vm.expectRevert(
-      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
+      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
     );
     calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
   }
@@ -381,7 +381,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint32 expiration = uint32(block.timestamp) + 1 hours;
     vm.expectRevert(
-      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
+      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
     );
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
@@ -397,7 +397,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     uint32 expiration = uint32(block.timestamp) + 1 hours;
 
     vm.expectRevert(
-      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
+      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
     );
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
