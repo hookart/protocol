@@ -75,7 +75,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       expiration
     );
 
-    // limit this call to 300,000 gas
+    // limit this call to 340,000 gas
     // overall gas usage depends on the underlying NFT contract
     uint256 optionId = calls.mintWithErc721{gas: 340_000}(
       address(token),
@@ -565,7 +565,14 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
     vm.expectEmit(true, true, true, true);
-    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+    emit CallCreated(
+      address(writer),
+      address(vault),
+      underlyingTokenId,
+      1,
+      1000,
+      expiration
+    );
 
     uint256 optionId = calls.mintWithVault(
       address(vault),
@@ -575,7 +582,10 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       sig
     );
 
+    assertTrue(optionId == 1);
     vm.warp(expiration + 1 days);
+
+    calls.burnExpiredOption(1);
 
     uint32 expiration2 = uint32(block.timestamp) + 3 days;
     IHookVault(vault).grantEntitlement(
@@ -588,8 +598,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       )
     );
 
-    vm.expectRevert("_mintOptionWithVault -- previous option must be settled");
-    calls.mintWithEntitledVault(address(vault), 0, 1000, expiration);
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 2, 1000, expiration2);
+    calls.mintWithEntitledVault(address(vault), 0, 1000, expiration2);
   }
 
   function testCannotMintMultipleOptionsSameTokenAsOwnerThenOperator() public {
