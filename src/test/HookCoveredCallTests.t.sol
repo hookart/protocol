@@ -534,8 +534,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
     vm.expectEmit(true, true, true, true);
-    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
-
+    emit CallCreated(address(writer), address(vault), 0, 2, 1000, expiration);
     uint256 optionId = calls.mintWithVault(
       address(vault),
       0,
