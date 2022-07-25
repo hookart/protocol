@@ -188,7 +188,7 @@ contract HookCoveredCallImplV1 is
     uint128 strikePrice,
     uint32 expirationTime,
     Signatures.Signature calldata signature
-  ) external whenNotPaused returns (uint256) {
+  ) external nonReentrant whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
 
     require(
@@ -230,7 +230,7 @@ contract HookCoveredCallImplV1 is
     uint32 assetId,
     uint128 strikePrice,
     uint32 expirationTime
-  ) external whenNotPaused returns (uint256) {
+  ) external nonReentrant whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
 
     require(
@@ -276,7 +276,7 @@ contract HookCoveredCallImplV1 is
     uint256 tokenId,
     uint128 strikePrice,
     uint32 expirationTime
-  ) external whenNotPaused returns (uint256) {
+  ) external nonReentrant whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
       allowedUnderlyingAddress == tokenAddress,
@@ -613,7 +613,11 @@ contract HookCoveredCallImplV1 is
   }
 
   /// @dev See {IHookCoveredCall-burnExpiredOption}.
-  function burnExpiredOption(uint256 optionId) external whenNotPaused {
+  function burnExpiredOption(uint256 optionId)
+    external
+    nonReentrant
+    whenNotPaused
+  {
     CallOption storage call = optionParams[optionId];
 
     require(

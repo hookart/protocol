@@ -110,7 +110,7 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev See {IHookERC721Vault-withdrawalAsset}.
   /// @dev withdrawals can only be performed to the beneficial owner if there are no entitlements
-  function withdrawalAsset(uint32 assetId) public virtual {
+  function withdrawalAsset(uint32 assetId) public virtual nonReentrant {
     require(
       !hasActiveEntitlement(assetId),
       "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
