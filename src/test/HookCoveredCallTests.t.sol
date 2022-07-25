@@ -135,7 +135,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
     vm.expectEmit(true, true, true, true);
-    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+    emit CallCreated(address(writer), address(vault), 0, 2, 1000, expiration);
 
     uint256 optionId = calls.mintWithVault(
       address(vault),
@@ -548,7 +548,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     calls.mintWithEntitledVault(address(vault), 0, 1000, expiration);
   }
 
-  function cannotMintMultipleOptionsWithSameAssetAfterFirstExpires() public {
+  function canMintAdditionalOptionsWithSameAssetAfterFirstExpires() public {
     vm.startPrank(address(writer));
 
     IHookERC721Vault vault = IHookERC721Vault(
@@ -577,7 +577,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     vm.warp(expiration + 1 days);
-    calls.burnExpiredOption(optionId);
 
     uint32 expiration2 = uint32(block.timestamp) + 3 days;
     IHookVault(vault).grantEntitlement(
@@ -590,7 +589,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       )
     );
 
-    // vm.expectRevert("_mintOptionWithVault -- previous option must be settled");
+    vm.expectRevert("_mintOptionWithVault -- previous option must be settled");
     calls.mintWithEntitledVault(address(vault), 0, 1000, expiration);
   }
 
