@@ -624,10 +624,6 @@ contract HookERC721MultiVaultImplV1 is
       newBeneficialOwner != address(0),
       "_setBeneficialOwner -- new owner is the zero address"
     );
-    require(
-      assets[assetId].beneficialOwner == newBeneficialOwner,
-      "_setBeneficialOwner == new beneficial owner must be different"
-    );
     assets[assetId].beneficialOwner = newBeneficialOwner;
     _approve(address(0), assetId);
     emit BeneficialOwnerSet(assetId, newBeneficialOwner, msg.sender);
