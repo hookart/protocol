@@ -16,9 +16,53 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
 ///
 /// This is an extension of the OpenZeppelin beacon proxy, however differs in that it is initializeable, which means
 /// it is usable with Create2.
-contract HookBeaconProxy is Proxy, ERC1967Upgrade, Initializable {
+contract HookBeaconProxy is Proxy, ERC1967Upgrade {
   /// @dev  The constructor is empty in this case because the proxy is initializeable
   constructor() {}
+
+  bytes32 constant _INITIALIZED_SLOT =
+    bytes32(uint256(keccak256("initializeable.beacon.version")) - 1);
+  bytes32 constant _INITIALIZING_SLOT =
+    bytes32(uint256(keccak256("initializeable.beacon.initializing")) - 1);
+
+  ///
+  /// @dev Triggered when the contract has been initialized or reinitialized.
+  ///
+  event Initialized(uint8 version);
+
+  /// @dev A modifier that defines a protected initializer function that can be invoked at most once. In its scope,
+  /// `onlyInitializing` functions can be used to initialize parent contracts. Equivalent to `reinitializer(1)`.
+  modifier initializer() {
+    bool isTopLevelCall = _setInitializedVersion(1);
+    if (isTopLevelCall) {
+      StorageSlot.getBooleanSlot(_INITIALIZING_SLOT).value = true;
+    }
+    _;
+    if (isTopLevelCall) {
+      StorageSlot.getBooleanSlot(_INITIALIZING_SLOT).value = false;
+      emit Initialized(1);
+    }
+  }
+
+  function _setInitializedVersion(uint8 version) private returns (bool) {
+    // If the contract is initializing we ignore whether _initialized is set in order to support multiple
+    // inheritance patterns, but we only do this in the context of a constructor, and for the lowest level
+    // of initializers, because in other contexts the contract may have been reentered.
+    if (StorageSlot.getBooleanSlot(_INITIALIZING_SLOT).value) {
+      require(
+        version == 1 && !Address.isContract(address(this)),
+        "contract is already initialized"
+      );
+      return false;
+    } else {
+      require(
+        StorageSlot.getUint256Slot(_INITIALIZED_SLOT).value < version,
+        "contract is already initialized"
+      );
+      StorageSlot.getUint256Slot(_INITIALIZED_SLOT).value = version;
+      return true;
+    }
+  }
 
   /// @dev Initializes the proxy with `beacon`.
   ///
