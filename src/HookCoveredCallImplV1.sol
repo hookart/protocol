@@ -68,6 +68,13 @@ contract HookCoveredCallImplV1 is
 {
   using Counters for Counters.Counter;
 
+  event Initialized(
+    address protocol,
+    address nftContract,
+    address hookVaultFactory,
+    address preApprovedMarketplace
+  );
+
   /// @notice The metadata for each covered call option stored within the protocol
   /// @param writer The address of the writer that created the call option
   /// @param owner The address of the current owner of the underlying, updated as bidding occurs
@@ -188,6 +195,14 @@ contract HookCoveredCallImplV1 is
     minBidIncrementBips = 0;
     settlementAuctionStartOffset = 1 days;
     marketPaused = false;
+
+    /// @notice emitted when the initialization is complete
+    emit Initialized(
+      protocol,
+      nftContract,
+      hookVaultFactory,
+      preApprovedMarketplace
+    );
   }
 
   /// ---- Option Writer Functions ---- //
