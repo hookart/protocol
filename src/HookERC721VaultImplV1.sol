@@ -51,6 +51,9 @@ import "./HookERC721MultiVaultImplV1.sol";
 ///         NFT while in escrow, which could allow for theft
 ///     (3) At the end of each transaction, the ownerOf the vaulted token must still be the vault
 contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
+  /// @notice emitted when the vault is initialized successfully
+  event Initialized(address nftContract, uint256 tokenId, address hookAddress);
+
   uint32 private constant ASSET_ID = 0;
 
   /// ----------------  STORAGE ---------------- ///
@@ -73,6 +76,7 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     _tokenId = tokenId;
     // the super function calls "Initialize"
     super.initialize(nftContract, hookAddress);
+    emit Initialized(nftContract, tokenId, hookAddress);
   }
 
   /// ---------------- PUBLIC/EXTERNAL FUNCTIONS ---------------- ///
