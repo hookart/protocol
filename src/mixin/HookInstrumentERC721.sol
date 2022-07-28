@@ -181,7 +181,7 @@ abstract contract HookInstrumentERC721 is ERC721Burnable {
   function _underlyingClass(uint256 optionId)
     internal
     view
-    returns (bytes4 class)
+    returns (bytes4)
   {
     if (
       ERC165Checker.supportsInterface(
@@ -189,7 +189,7 @@ abstract contract HookInstrumentERC721 is ERC721Burnable {
         type(IHookERC721Vault).interfaceId
       )
     ) {
-      class = ERC_721;
+      return ERC_721;
     } else {
       revert("_underlying-class: Unsupported underlying type");
     }

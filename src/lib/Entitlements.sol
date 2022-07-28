@@ -69,7 +69,7 @@ library Entitlements {
   function getEntitlementStructHash(Entitlement memory entitlement)
     internal
     pure
-    returns (bytes32 structHash)
+    returns (bytes32)
   {
     // TODO: Hash in place to save gas.
     return

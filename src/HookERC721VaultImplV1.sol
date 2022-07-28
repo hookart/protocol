@@ -164,7 +164,12 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
         "onERC721Received -- non-escrow asset returned when airdrops are disabled"
       );
     }
-    emit AssetReceived(from, operator, msg.sender, ASSET_ID);
+    emit AssetReceived(
+      from,
+      this.getBeneficialOwner(uint32(ASSET_ID)),
+      msg.sender,
+      ASSET_ID
+    );
     return this.onERC721Received.selector;
   }
 
@@ -178,7 +183,7 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     external
     payable
     virtual
-    returns (bool success)
+    returns (bool)
   {
     // Only the beneficial owner can make this call
     require(
@@ -207,9 +212,11 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     );
 
     // Execute transaction without further confirmations.
-    (success, ) = address(to).call{value: msg.value}(data);
+    (bool success, ) = address(to).call{value: msg.value}(data);
 
     require(_assetOwner(ASSET_ID) == address(this));
+    
+    return success;
   }
 
   /// @dev See {IHookERC721Vault-setBeneficialOwner}.

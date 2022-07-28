@@ -51,16 +51,16 @@ interface IHookCoveredCallFactory {
 
   /// @notice Lookup the call instrument contract based on the asset address
   /// @param assetAddress the contract address for the underlying asset
-  /// @return calls the address of the instrument contract or the null address if one does not exist
+  /// @return the address of the instrument contract or the null address if one does not exist
   function getCallInstrument(address assetAddress)
     external
     view
-    returns (address calls);
+    returns (address);
 
   /// @notice Create a call option instrument for a specific underlying asset address
   /// @param assetAddress the address for the underling asset
-  /// @return calls the address of the call option instrument contract (upgradeable)
+  /// @return the address of the call option instrument contract (upgradeable)
   function makeCallInstrument(address assetAddress)
     external
-    returns (address calls);
+    returns (address);
 }

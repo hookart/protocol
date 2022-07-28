@@ -68,6 +68,15 @@ contract HookUpgradeableBeacon is IBeacon, PermissionConstants {
     address hookProtocol,
     bytes32 upgraderRole
   ) {
+    require(
+      Address.isContract(hookProtocol),
+      "UpgradeableBeacon: hookProtocol is not a contract"
+    );
+
+    require(
+      upgraderRole == VAULT_UPGRADER || upgraderRole == CALL_UPGRADER,
+      "upgrader role must be vault or call upgrader"
+    );
     _setImplementation(implementation_);
     _protocol = IHookProtocol(hookProtocol);
     _role = upgraderRole;

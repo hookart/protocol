@@ -97,6 +97,7 @@ contract HookCoveredCallBiddingRevertTests is HookProtocolTest {
     // settle the auction
     // assertTrue(token.ownerOf(underlyingTokenId) == address(calls), "call contract should own the token");
     vm.warp(expiration + 3 seconds);
+    vm.prank(buyer);
     calls.settleOption(optionId);
 
     // verify the balances are correct

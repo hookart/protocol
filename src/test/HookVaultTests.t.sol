@@ -27,13 +27,13 @@ contract HookVaultTestsBase is HookProtocolTest {
 
   function createVaultandAsset()
     internal
-    returns (address vaultAddress, uint32 tokenId)
+    returns (address, uint32)
   {
     vm.startPrank(admin);
     tokenStartIndex += 1;
-    tokenId = tokenStartIndex;
+    uint32 tokenId = tokenStartIndex;
     token.mint(address(writer), tokenId);
-    vaultAddress = address(vault.findOrCreateVault(address(token), tokenId));
+    address vaultAddress = address(vault.findOrCreateVault(address(token), tokenId));
     vm.stopPrank();
     return (vaultAddress, tokenId);
   }
@@ -46,13 +46,13 @@ contract HookVaultTestsBase is HookProtocolTest {
   )
     internal
     returns (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory signature
+      Entitlements.Entitlement memory,
+      Signatures.Signature memory
     )
   {
     address ownerAdd = vm.addr(writerpkey);
 
-    entitlement = Entitlements.Entitlement({
+    Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
       beneficialOwner: ownerAdd,
       operator: operator,
       vaultAddress: vaultAddress,
@@ -656,6 +656,8 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 }
 
 contract HookVaultTestsDistribution is HookVaultTestsBase {
+  event AssetWithdrawn(uint32, address, address);
+
   function testClearAndDistributeReturnsNFT() public {
     (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
@@ -672,6 +674,8 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     vm.prank(mockContract);
+    vm.expectEmit(true, true, true, false);
+    emit AssetWithdrawn(0, writer, writer);
     vaultImpl.clearEntitlementAndDistribute(0, writer);
 
     assertTrue(

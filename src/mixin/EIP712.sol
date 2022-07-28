@@ -68,7 +68,7 @@ abstract contract EIP712 {
   function _getEIP712Hash(bytes32 structHash)
     internal
     view
-    returns (bytes32 eip712Hash)
+    returns (bytes32)
   {
     return
       keccak256(
