@@ -3065,18 +3065,6 @@ describe("Call Instrument Tests", function () {
 
       expect(await token.ownerOf(0)).to.eq(writer.address);
     });
-
-    it("should not reclaim asset when paused", async function () {
-      // Pause protocol
-      await protocol.connect(admin).pause();
-      await expect(protocol.throwWhenPaused()).to.be.reverted;
-
-      // Attempt to reclaim asset
-      const reclaimAsset = calls
-        .connect(writer)
-        .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith("Pausable: paused");
-    });
   });
 
   /*
@@ -3289,20 +3277,6 @@ describe("Call Instrument Tests", function () {
       // Burn expired option
       await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith(
         "burnExpiredOption -- the option must not have bids"
-      );
-    });
-
-    it("should not burn expired option when paused", async function () {
-      // Pause protocol
-      await protocol.connect(admin).pause();
-      await expect(protocol.throwWhenPaused()).to.be.reverted;
-
-      // Move forward past expiration
-      await ethers.provider.send("evm_increaseTime", [2 * SECS_IN_A_DAY]);
-
-      // Attempt to burn expired option
-      await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith(
-        "Pausable: paused"
       );
     });
   });
