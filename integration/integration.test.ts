@@ -604,7 +604,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "grantEntitlement -- only the beneficial owner can grant an entitlement"
+          "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
         );
       });
 
@@ -1457,7 +1457,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "grantEntitlement -- only the beneficial owner can grant an entitlement"
+          "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
         );
       });
 

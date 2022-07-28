@@ -158,6 +158,100 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
   }
 
+  function test_MintOptionWithVaultRandomAddress() public {
+    vm.startPrank(address(writer));
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+
+    vm.stopPrank();
+    vm.prank(address(333456)); // simulating a replay attack, random address calling with the signature]
+    vm.expectRevert(
+      "mintWithVault -- called by someone other than the beneficial owner or approved operator"
+    );
+    calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
+
+    // in this replay attack, the writer's call would land second
+    vm.prank(address(writer));
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      0,
+      1000,
+      expiration,
+      sig
+    );
+
+    assertTrue(
+      calls.ownerOf(optionId) == address(writer),
+      "owner should own the option"
+    );
+
+    (bool isActive, address operator) = vault.getCurrentEntitlementOperator(0);
+    assertTrue(isActive, "there should be an active entitlement");
+    assertTrue(
+      operator == address(calls),
+      "the call options should be the operator"
+    );
+  }
+
+  function test_MintOptionWithVaultSpecifiedOperator() public {
+    vm.startPrank(address(writer));
+
+    address specifiedOperator = address(44556677);
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+    vault.approve(specifiedOperator, uint32(underlyingTokenId));
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+
+    vm.stopPrank();
+    vm.prank(specifiedOperator); // the specified operator may still mint
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      0,
+      1000,
+      expiration,
+      sig
+    );
+
+    assertTrue(
+      calls.ownerOf(optionId) == address(writer),
+      "owner should own the option"
+    );
+
+    (bool isActive, address operator) = vault.getCurrentEntitlementOperator(0);
+    assertTrue(isActive, "there should be an active entitlement");
+    assertTrue(
+      operator == address(calls),
+      "the call options should be the operator"
+    );
+  }
+
   function test_MintOptionWithAlienVault() public {
     vm.startPrank(address(writer));
 
