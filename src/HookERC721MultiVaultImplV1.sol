@@ -186,6 +186,10 @@ contract HookERC721MultiVaultImplV1 is
     uint256 tokenId,
     bytes calldata data
   ) external virtual override returns (bytes4) {
+    require(
+      tokenId <= type(uint32).max,
+      "onERC721Received -- tokenId is out of range"
+    );
     /// (1) When receiving a nft from the ERC-721 contract this vault covers, create a new entitlement entry
     /// with the sender as the beneficial owner to track the asset within the vault.
     ///
