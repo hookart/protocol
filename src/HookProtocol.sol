@@ -114,6 +114,12 @@ contract HookProtocol is
     getWETHAddress = weth;
   }
 
+  /// @notice allows an account with the COLLECTION_CONF role to set a boolean config
+  /// value for a collection
+  /// @dev the conf value can be read with getCollectionConfig
+  /// @param collectionAddress the address for the collection
+  /// @param config the configuration field to set
+  /// @param value the value to set for the configuration
   function setCollectionConfig(
     address collectionAddress,
     bytes32 config,
@@ -153,14 +159,16 @@ contract HookProtocol is
     return;
   }
 
+  /// @notice unpauses the protocol if the protocol is already paused
   function unpause() external {
-    require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an admin");
+    require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an pauser");
     require(paused() == true, "Protocol is already paused");
     _unpause();
   }
 
+  /// @notice pauses the protocol if the protocol is currently unpaused
   function pause() external {
-    require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an admin");
+    require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an pauser`");
     require(paused() == false, "Protocol is already paused");
     _pause();
   }

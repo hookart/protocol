@@ -166,6 +166,8 @@ contract HookCoveredCallImplV1 is
   /// @param protocol the address of the Hook protocol (which contains configurations)
   /// @param nftContract the address for the ERC-721 contract that can serve as underlying instruments
   /// @param hookVaultFactory the address of the ERC-721 vault registry
+  /// @param preApprovedMarketplace the address of the contract which will automatically approved
+  /// to transfer option ERC721s owned by any account when they're minted
   function initialize(
     address protocol,
     address nftContract,
@@ -250,23 +252,23 @@ contract HookCoveredCallImplV1 is
 
     require(
       allowedUnderlyingAddress == vault.assetAddress(assetId),
-      "mintWithVault -- token must be on the project allowlist"
+      "mintWithEntitledVault -- token must be on the project allowlist"
     );
     require(
       vault.getHoldsAsset(assetId),
-      "mintWithVault-- asset must be in vault"
+      "mintWithEntitledVault-- asset must be in vault"
     );
     (bool active, address operator) = vault.getCurrentEntitlementOperator(
       assetId
     );
     require(
       active && operator == address(this),
-      "mintWithVault -- call contact must be the entitled operator"
+      "mintWithEntitledVault -- call contact must be the entitled operator"
     );
 
     require(
       expirationTime == vault.entitlementExpiration(assetId),
-      "mintWithVault -- entitlement expiration must match call expiration"
+      "mintWithEntitledVault -- entitlement expiration must match call expiration"
     );
     require(
       _allowedVaultImplementation(
@@ -274,7 +276,7 @@ contract HookCoveredCallImplV1 is
         allowedUnderlyingAddress,
         assetId
       ),
-      "mintWithVault -- can only mint with protocol vaults"
+      "mintWithEntitledVault -- can only mint with protocol vaults"
     );
 
     // the beneficial owner owns the asset so
@@ -382,7 +384,7 @@ contract HookCoveredCallImplV1 is
     // NOTE: The settlement auction always occurs one day before expiration
     require(
       expirationTime > block.timestamp + minimumOptionDuration,
-      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
+      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
     );
 
     // verify that, if there is a previous option on this asset, it has already settled.

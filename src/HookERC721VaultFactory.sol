@@ -92,8 +92,7 @@ contract HookERC721VaultFactory is
     _multiBeacon = multiBeaconAddress;
   }
 
-  /// @notice create a new vault that can support multiple ERC-721s within the same
-  /// instance
+  /// @notice See {IHookERC721VaultFactory-makeMultiVault}.
   function makeMultiVault(address nftAddress)
     external
     returns (IHookERC721Vault)
@@ -130,13 +129,14 @@ contract HookERC721VaultFactory is
     IHookERC721Vault vault = IHookERC721Vault(address(bp));
     getMultiVault[nftAddress] = vault;
     emit ERC721MultiVaultCreated(nftAddress, address(bp));
-    
+
     return vault;
   }
 
-  /// @notice make a new vault that can contain a single asset only
+  /// @notice See {IHookERC721VaultFactory-makeSoloVault}.
   function makeSoloVault(address nftAddress, uint256 tokenId)
     public
+    override
     returns (IHookERC721Vault)
   {
     require(
@@ -170,10 +170,7 @@ contract HookERC721VaultFactory is
     return vault;
   }
 
-  /// @notice creates a vault for a specific tokenId. If there
-  /// is a multi-vault in existence which supports that address
-  /// the address for that vault is returned as a new one
-  /// does not need to be made.
+  /// @notice See {IHookERC721VaultFactory-findOrCreateVault}.
   function findOrCreateVault(address nftAddress, uint256 tokenId)
     external
     returns (IHookERC721Vault)

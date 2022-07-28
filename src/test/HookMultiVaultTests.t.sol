@@ -606,7 +606,7 @@ contract HookMultiVaultTests is HookProtocolTest {
 
     vm.prank(mockContract2);
     vm.expectRevert(
-      "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
+      "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
     );
 
     vaultImpl.imposeEntitlement(

@@ -77,7 +77,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.startPrank(address(writer));
 
     vm.expectRevert(
-      "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
+      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
     );
     calls.mintWithErc721(
       address(token),

@@ -826,7 +826,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
+          "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
         );
       });
 
@@ -1684,7 +1684,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "_verifyAndRegisterEntitlement -- existing entitlement must be cleared before registering a new one"
+          "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
         );
       });
 
@@ -2508,7 +2508,7 @@ describe("Call Instrument Tests", function () {
         expiration
       );
       await expect(createCall).to.be.revertedWith(
-        "mintWithVault -- token must be on the project allowlist"
+        "mintWithEntitledVault -- token must be on the project allowlist"
       );
     });
 
@@ -2522,7 +2522,7 @@ describe("Call Instrument Tests", function () {
         .connect(writer)
         .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
       await expect(createCall).to.be.revertedWith(
-        "mintWithVault-- asset must be in vault"
+        "mintWithEntitledVault-- asset must be in vault"
       );
     });
 
@@ -2545,7 +2545,7 @@ describe("Call Instrument Tests", function () {
         .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
       // TODO: Find revert reason
       await expect(createCall).to.be.revertedWith(
-        "mintWithVault -- call contact must be the entitled operator"
+        "mintWithEntitledVault -- call contact must be the entitled operator"
       );
     });
 
@@ -2576,7 +2576,7 @@ describe("Call Instrument Tests", function () {
         .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
 
       await expect(createCall).to.be.revertedWith(
-        "mintWithVault -- call contact must be the entitled operator"
+        "mintWithEntitledVault -- call contact must be the entitled operator"
       );
     });
 
@@ -2610,7 +2610,7 @@ describe("Call Instrument Tests", function () {
         );
 
       await expect(createCall).to.be.revertedWith(
-        "mintWithVault -- entitlement expiration must match call expiration"
+        "mintWithEntitledVault -- entitlement expiration must match call expiration"
       );
     });
 
