@@ -701,8 +701,8 @@ contract HookMultiVaultTests is HookProtocolTest {
     vm.prank(admin);
     protocol.setCollectionConfig(
       address(token),
-      keccak256("vault.airdropsProhibited"),
-      false
+      keccak256("vault.multiAirdropsAllowed"),
+      true
     );
 
     TestERC721 token2 = new TestERC721();

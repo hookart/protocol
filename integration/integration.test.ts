@@ -15,7 +15,18 @@ describe("Protocol", function () {
   beforeEach(async () => {
     [admin, one, two] = await ethers.getSigners();
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, admin.address);
+    const weth = await ethers.getContractFactory("WETH");
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      (
+        await weth.deploy()
+      ).address
+    );
   });
 
   it("can be paused", async () => {
@@ -77,7 +88,18 @@ describe("UpgradeableBeacon", function () {
   beforeEach(async () => {
     [admin] = await ethers.getSigners();
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, admin.address);
+    const weth = await ethers.getContractFactory("WETH");
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      (
+        await weth.deploy()
+      ).address
+    );
 
     const vaultImplFactory = await ethers.getContractFactory(
       "HookERC721VaultImplV1"
@@ -172,7 +194,15 @@ describe("Vault", function () {
     weth = await weath.deploy();
     const token = await ethers.getContractFactory("TestERC721");
     testNFT = await token.deploy();
-    protocol = await protocolFactory.deploy(admin.address, weth.address);
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      weth.address
+    );
     const vaultImpl = await vaultImplFactory.deploy();
     const multiVaultImpl = await multiVaultImplFactory.deploy();
 
@@ -604,7 +634,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "grantEntitlement -- only the beneficial owner can grant an entitlement"
+          "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
         );
       });
 
@@ -1301,6 +1331,13 @@ describe("Vault", function () {
         const newNFT = await erc721.deploy();
 
         newNFT.mint(beneficialOwner.address, 3);
+        await protocol
+          .connect(admin)
+          .setCollectionConfig(
+            testNFT.address,
+            ethers.utils.id("vault.multiAirdropsAllowed"),
+            true
+          );
         await newNFT
           .connect(beneficialOwner)
           ["safeTransferFrom(address,address,uint256)"](
@@ -1457,7 +1494,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "grantEntitlement -- only the beneficial owner can grant an entitlement"
+          "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
         );
       });
 
@@ -2004,7 +2041,15 @@ describe("Call Instrument Tests", function () {
 
     // // Deploy protocol
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, weth.address);
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      weth.address
+    );
 
     // Deploy multi vault
     const vaultFactoryFactory = await ethers.getContractFactory(
@@ -2069,7 +2114,7 @@ describe("Call Instrument Tests", function () {
     const callFactory = await callFactoryFactory.deploy(
       protocol.address,
       callBeacon.address,
-      getAddress("0x0000000000000000000000000000000000000000")
+      callBeacon.address // use this address for pre-approved marketplace to ensure its a contract
     );
 
     protocol.setCoveredCallFactory(callFactory.address);
@@ -2176,6 +2221,32 @@ describe("Call Instrument Tests", function () {
       await expect(createCall).to.be.revertedWith(
         "mintWithErc721 -- HookCoveredCall must be operator"
       );
+    });
+
+    it("should mint covered call when call instrument not approvedForAll but Approved", async function () {
+      // Unapprove call instrument
+      await token.connect(writer).setApprovalForAll(calls.address, false);
+
+      await token.connect(writer).approve(calls.address, 0);
+      const expiration = String(
+        Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5)
+      );
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithErc721(token.address, 0, 1000, expiration);
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      expect(createCall).to.emit(calls, "CallCreated");
+      expect(callCreatedEvent.args.writer).to.equal(writer.address);
+      expect(callCreatedEvent.args.optionId).to.equal(1);
+      expect(callCreatedEvent.args.strikePrice).to.equal(1000);
+      expect(callCreatedEvent.args.expiration).to.equal(expiration);
     });
 
     it("should not mint covered call when vault already holds an asset", async function () {
@@ -2685,13 +2756,13 @@ describe("Call Instrument Tests", function () {
 
       const secondBid = calls
         .connect(secondBidder)
-        .bid(optionTokenId, { value: 1002 });
+        .bid(optionTokenId, { value: 1202 });
       await expect(secondBid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(
         secondBidder.address
       );
-      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1202);
     });
 
     it("should bid and outbid as with malicious bidder", async function () {
@@ -2715,13 +2786,13 @@ describe("Call Instrument Tests", function () {
 
       const secondBid = calls
         .connect(secondBidder)
-        .bid(optionTokenId, { value: 1002 });
+        .bid(optionTokenId, { value: 1202 });
       await expect(secondBid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(
         secondBidder.address
       );
-      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1202);
       expect(await weth.balanceOf(deployedMaliciousBidder.address)).to.eq(1001);
     });
 
@@ -2739,22 +2810,24 @@ describe("Call Instrument Tests", function () {
       );
       expect(await calls.currentBid(optionTokenId)).to.equal(1001);
 
-      const secondBid = calls.connect(writer).bid(optionTokenId, { value: 2 });
+      const secondBid = calls
+        .connect(writer)
+        .bid(optionTokenId, { value: 202 });
       await expect(secondBid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(writer.address);
-      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1202);
     });
 
     it("should bid on spread as option writer", async function () {
       // Move forward to auction period
       await ethers.provider.send("evm_increaseTime", [2.1 * SECS_IN_A_DAY]);
 
-      const bid = calls.connect(writer).bid(optionTokenId, { value: 1 });
+      const bid = calls.connect(writer).bid(optionTokenId, { value: 201 });
       await expect(bid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(writer.address);
-      expect(await calls.currentBid(optionTokenId)).to.equal(1001);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1201);
     });
 
     it("should bid and outbid option writer", async function () {
@@ -2769,13 +2842,13 @@ describe("Call Instrument Tests", function () {
 
       const secondBid = calls
         .connect(secondBidder)
-        .bid(optionTokenId, { value: 1002 });
+        .bid(optionTokenId, { value: 1202 });
       await expect(secondBid).to.emit(calls, "Bid");
 
       expect(await calls.currentBidder(optionTokenId)).to.equal(
         secondBidder.address
       );
-      expect(await calls.currentBid(optionTokenId)).to.equal(1002);
+      expect(await calls.currentBid(optionTokenId)).to.equal(1202);
     });
   });
 
@@ -2841,7 +2914,7 @@ describe("Call Instrument Tests", function () {
       // Create bids
       // First option the writer has the winning bid
       await calls.connect(firstBidder).bid(optionTokenId, { value: 1001 });
-      await calls.connect(writer).bid(optionTokenId, { value: 2 });
+      await calls.connect(writer).bid(optionTokenId, { value: 200 });
 
       // Second option the secondBidder has the winning bid
       await calls
@@ -2849,7 +2922,7 @@ describe("Call Instrument Tests", function () {
         .bid(secondOptionTokenId, { value: 1001 });
       await calls
         .connect(secondBidder)
-        .bid(secondOptionTokenId, { value: 1002 });
+        .bid(secondOptionTokenId, { value: 1202 });
     });
 
     it("should not settle auction with no bids", async function () {
@@ -2902,6 +2975,27 @@ describe("Call Instrument Tests", function () {
 
       const settleCall = calls.connect(writer).settleOption(optionTokenId);
       await expect(settleCall).to.emit(calls, "CallSettled");
+
+      const vaultAddress = await calls.getVaultAddress(optionTokenId);
+      const vault = await ethers.getContractAt(
+        "HookERC721VaultImplV1",
+        vaultAddress
+      );
+
+      expect(await vault.getBeneficialOwner(0)).to.eq(writer.address);
+    });
+
+    it("should settle auction and allow claims", async function () {
+      // Move forward to after auction period ends
+      await ethers.provider.send("evm_increaseTime", [1 * SECS_IN_A_DAY]);
+
+      const settleCall = calls.connect(writer).settleOption(optionTokenId);
+      await expect(settleCall).to.emit(calls, "CallSettled");
+
+      const distributeCall = calls
+        .connect(buyer)
+        .claimOptionProceeds(optionTokenId);
+      await expect(distributeCall).to.emit(calls, "CallProceedsDistributed");
 
       const vaultAddress = await calls.getVaultAddress(optionTokenId);
       const vault = await ethers.getContractAt(
@@ -3106,9 +3200,9 @@ describe("Call Instrument Tests", function () {
     });
 
     it("should set min option duration as market controller", async function () {
-      await expect(calls.connect(marketController).setMinOptionDuration(100))
+      await expect(calls.connect(marketController).setMinOptionDuration(86401)) // Default is 86400 - 1 day
         .to.emit(calls, "MinOptionDurationUpdated")
-        .withArgs(100);
+        .withArgs(86401);
     });
 
     it("should set bid increment as market controller", async function () {
@@ -3125,11 +3219,11 @@ describe("Call Instrument Tests", function () {
         .withArgs(6);
     });
 
-    it("should no set settlement auction start offset when more than minimum option duration", async function () {
-      await calls.connect(marketController).setMinOptionDuration(100);
+    it("should not set settlement auction start offset when more than minimum option duration", async function () {
+      await calls.connect(marketController).setMinOptionDuration(86402);
 
       await expect(
-        calls.connect(marketController).setSettlementAuctionStartOffset(101)
+        calls.connect(marketController).setSettlementAuctionStartOffset(86403)
       ).to.be.revertedWith(
         "the settlement auctions cannot start sooner than an option expired"
       );

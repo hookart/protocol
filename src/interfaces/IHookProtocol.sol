@@ -44,10 +44,6 @@ import "@openzeppelin/contracts/access/IAccessControl.sol";
 /// is correct as, if it is not, all assets contained within protocol contracts
 /// can be easily compromised.
 interface IHookProtocol is IAccessControl {
-  /// @notice emitted when the protocol is paused or unpaused
-  /// @param paused true if paused false if unpaused
-  event PausedUpdated(bool paused);
-
   /// @notice the address of the deployed CoveredCallFactory used by the protocol
   function coveredCallContract() external view returns (address);
 

@@ -75,6 +75,18 @@ contract HookERC721VaultFactory is
     address beaconAddress,
     address multiBeaconAddress
   ) {
+    require(
+      Address.isContract(hookProtocolAddress),
+      "hook protocol must be a contract"
+    );
+    require(
+      Address.isContract(beaconAddress),
+      "beacon address must be a contract"
+    );
+    require(
+      Address.isContract(multiBeaconAddress),
+      "multi beacon address must be a contract"
+    );
     _hookProtocol = hookProtocolAddress;
     _beacon = beaconAddress;
     _multiBeacon = multiBeaconAddress;

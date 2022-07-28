@@ -77,6 +77,9 @@ contract HookERC721MultiVaultImplV1 is
   /// applied; however, that entitlement could still be expired (if block.timestamp > entitlement.expiry)
   mapping(uint32 => Asset) internal assets;
 
+  // Mapping from asset ID to approved address
+  mapping(uint32 => address) private _assetApprovals;
+
   IHookProtocol internal _hookProtocol;
 
   /// Upgradeable Implementations cannot have a constructor, so we call the initialize instead;
@@ -110,7 +113,7 @@ contract HookERC721MultiVaultImplV1 is
 
   /// @dev See {IHookERC721Vault-withdrawalAsset}.
   /// @dev withdrawals can only be performed to the beneficial owner if there are no entitlements
-  function withdrawalAsset(uint32 assetId) public virtual {
+  function withdrawalAsset(uint32 assetId) public virtual nonReentrant {
     require(
       !hasActiveEntitlement(assetId),
       "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
@@ -158,8 +161,9 @@ contract HookERC721MultiVaultImplV1 is
     external
   {
     require(
-      assets[entitlement.assetId].beneficialOwner == msg.sender,
-      "grantEntitlement -- only the beneficial owner can grant an entitlement"
+      assets[entitlement.assetId].beneficialOwner == msg.sender ||
+        _assetApprovals[entitlement.assetId] == msg.sender,
+      "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
     );
 
     // the beneficial owner of an asset is able to directly set any entitlement on their own asset
@@ -182,6 +186,10 @@ contract HookERC721MultiVaultImplV1 is
     uint256 tokenId,
     bytes calldata data
   ) external virtual override returns (bytes4) {
+    require(
+      tokenId <= type(uint32).max,
+      "onERC721Received -- tokenId is out of range"
+    );
     /// (1) When receiving a nft from the ERC-721 contract this vault covers, create a new entitlement entry
     /// with the sender as the beneficial owner to track the asset within the vault.
     ///
@@ -209,23 +217,47 @@ contract HookERC721MultiVaultImplV1 is
       // If additional data is sent with the transfer, we attempt to parse an entitlement from it.
       // this allows the entitlement to be registered ahead of time.
       if (data.length > 0) {
-        // Decode the order, signature from `data`. If `data` does not encode such parameters, this
-        // will throw.
-        (
-          address beneficialOwner,
-          address entitledOperator,
-          uint32 expirationTime
-        ) = abi.decode(data, (address, address, uint32));
+        /// If the abi-encoded parameters are 3 words long, assume no approved operator was provided.
+        if (data.length == 3 * 32) {
+          // Decode the order, signature from `data`. If `data` does not encode such parameters, this
+          // will throw.
+          (
+            address beneficialOwner,
+            address entitledOperator,
+            uint32 expirationTime
+          ) = abi.decode(data, (address, address, uint32));
 
-        // if someone has the asset, they should be able to set whichever beneficial owner they'd like.
-        // equally, they could transfer the asset first to themselves and subsequently grant a specific
-        // entitlement, which is equivalent to this.
-        _registerEntitlement(
-          uint32(tokenId),
-          entitledOperator,
-          expirationTime,
-          beneficialOwner
-        );
+          // if someone has the asset, they should be able to set whichever beneficial owner they'd like.
+          // equally, they could transfer the asset first to themselves and subsequently grant a specific
+          // entitlement, which is equivalent to this.
+          _registerEntitlement(
+            uint32(tokenId),
+            entitledOperator,
+            expirationTime,
+            beneficialOwner
+          );
+        } else {
+          /// additionally decode the approved operator from the payload. The abi decoder ensures that the
+          /// there are exactly 4 parameters
+          (
+            address beneficialOwner,
+            address entitledOperator,
+            uint32 expirationTime,
+            address approvedOperator
+          ) = abi.decode(data, (address, address, uint32, address));
+
+          _registerEntitlement(
+            uint32(tokenId),
+            entitledOperator,
+            expirationTime,
+            beneficialOwner
+          );
+
+          /// if an approved operator is provided with this contract call, set the approval accepting it for the
+          /// same reason.
+
+          _approve(approvedOperator, uint32(tokenId));
+        }
       } else {
         _setBeneficialOwner(uint32(tokenId), from);
       }
@@ -233,14 +265,21 @@ contract HookERC721MultiVaultImplV1 is
       // If we're receiving an airdrop or other asset uncovered by escrow to this address, we should ensure
       // that this is allowed by our current settings.
       require(
-        !_hookProtocol.getCollectionConfig(
+        _hookProtocol.getCollectionConfig(
           address(_nftContract),
-          keccak256("vault.airdropsProhibited")
+          keccak256("vault.multiAirdropsAllowed")
         ),
         "onERC721Received -- non-escrow asset returned when airdrops are disabled"
       );
     }
-    emit AssetReceived(from, operator, msg.sender, uint32(tokenId));
+
+    emit AssetReceived(
+      from,
+      this.getBeneficialOwner(uint32(tokenId)),
+      msg.sender,
+      uint32(tokenId)
+    );
+
     return this.onERC721Received.selector;
   }
 
@@ -422,7 +461,7 @@ contract HookERC721MultiVaultImplV1 is
       receiver,
       _assetTokenId(assetId)
     );
-    emit AssetWithdrawn(assetId, msg.sender, assets[assetId].beneficialOwner);
+    emit AssetWithdrawn(assetId, receiver, assets[assetId].beneficialOwner);
   }
 
   /// @dev Validates that a specific signature is actually the entitlement
@@ -453,6 +492,46 @@ contract HookERC721MultiVaultImplV1 is
       signer == assets[assetId].beneficialOwner,
       "validateEntitlementSignature --- not signed by beneficialOwner"
     );
+  }
+
+  ///
+  /// @dev See {IHookVault-approve}.
+  ///
+  function approve(address to, uint32 assetId) public virtual override {
+    address beneficialOwner = assets[assetId].beneficialOwner;
+
+    require(
+      to != beneficialOwner,
+      "approve -- approval to current beneficialOwner"
+    );
+
+    require(
+      msg.sender == beneficialOwner,
+      "approve -- approve caller is not current beneficial owner"
+    );
+
+    _approve(to, assetId);
+  }
+
+  /// @dev See {IHookVault-getApproved}.
+  function getApproved(uint32 assetId)
+    public
+    view
+    virtual
+    override
+    returns (address)
+  {
+    return _assetApprovals[assetId];
+  }
+
+  /// @dev Approve `to` to operate on `tokenId`
+  ///
+  /// Emits an {Approval} event.
+  /// @param to the address to approve
+  /// @param assetId the assetId on which the address will be approved
+  function _approve(address to, uint32 assetId) internal virtual {
+    _assetApprovals[assetId] = to;
+    emit Approval(assets[assetId].beneficialOwner, to, assetId);
   }
 
   /// ---------------- INTERNAL/PRIVATE FUNCTIONS ---------------- ///
@@ -559,6 +638,7 @@ contract HookERC721MultiVaultImplV1 is
       "_setBeneficialOwner -- new owner is the zero address"
     );
     assets[assetId].beneficialOwner = newBeneficialOwner;
+    _approve(address(0), assetId);
     emit BeneficialOwnerSet(assetId, newBeneficialOwner, msg.sender);
   }
 }
