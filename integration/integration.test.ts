@@ -2223,6 +2223,32 @@ describe("Call Instrument Tests", function () {
       );
     });
 
+    it("should mint covered call when call instrument not approvedForAll but Approved", async function () {
+      // Unapprove call instrument
+      await token.connect(writer).setApprovalForAll(calls.address, false);
+
+      await token.connect(writer).approve(calls.address, 0);
+      const expiration = String(
+        Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5)
+      );
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithErc721(token.address, 0, 1000, expiration);
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      expect(createCall).to.emit(calls, "CallCreated");
+      expect(callCreatedEvent.args.writer).to.equal(writer.address);
+      expect(callCreatedEvent.args.optionId).to.equal(1);
+      expect(callCreatedEvent.args.strikePrice).to.equal(1000);
+      expect(callCreatedEvent.args.expiration).to.equal(expiration);
+    });
+
     it("should not mint covered call when vault already holds an asset", async function () {
       const expiration = String(
         Math.floor(Date.now() / 1000 + SECS_IN_A_DAY * 1.5)
