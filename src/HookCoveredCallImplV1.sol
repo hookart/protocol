@@ -190,7 +190,6 @@ contract HookCoveredCallImplV1 is
     Signatures.Signature calldata signature
   ) external whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
-
     require(
       allowedUnderlyingAddress == vault.assetAddress(assetId),
       "mintWithVault -- token must be on the project allowlist"
@@ -210,6 +209,11 @@ contract HookCoveredCallImplV1 is
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
     address writer = vault.getBeneficialOwner(assetId);
+
+    require(
+      msg.sender == writer || msg.sender == vault.getApproved(assetId),
+      "mintWithVault -- called by someone other than the beneficial owner or approved operator"
+    );
 
     vault.imposeEntitlement(
       address(this),
@@ -265,6 +269,11 @@ contract HookCoveredCallImplV1 is
     // the beneficial owner owns the asset so
     // they should receive the option.
     address writer = vault.getBeneficialOwner(assetId);
+
+    require(
+      writer == msg.sender || vault.getApproved(assetId) == msg.sender,
+      "mintWithVault -- only the beneficial owner can create a call option with an entitled vault"
+    );
 
     return
       _mintOptionWithVault(writer, vault, assetId, strikePrice, expirationTime);
