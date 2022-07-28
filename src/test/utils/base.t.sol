@@ -94,7 +94,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     );
     protocolAddress = address(protocol);
     // set the operator to a new protocol to make it a contract
-    preApprovedOperator = address(new HookProtocol(admin, address(weth)));
+    preApprovedOperator = address(weth);
     setAddressForEipDomain(protocolAddress);
 
     // Deploy new vault factory

@@ -75,9 +75,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       expiration
     );
 
-    // limit this call to 340,000 gas
+    // limit this call to 350,000 gas
     // overall gas usage depends on the underlying NFT contract
-    uint256 optionId = calls.mintWithErc721{gas: 340_000}(
+    uint256 optionId = calls.mintWithErc721{gas: 350_000}(
       address(token),
       underlyingTokenId,
       1000,
@@ -176,7 +176,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
     vm.expectEmit(true, true, true, true);
-    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+    emit CallCreated(address(writer), address(vault), 0, 2, 1000, expiration);
 
     vm.stopPrank();
     vm.prank(address(333456)); // simulating a replay attack, random address calling with the signature]
@@ -227,7 +227,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
     vm.expectEmit(true, true, true, true);
-    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+    emit CallCreated(address(writer), address(vault), 0, 2, 1000, expiration);
 
     vm.stopPrank();
     vm.prank(specifiedOperator); // the specified operator may still mint
