@@ -77,7 +77,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     // limit this call to 300,000 gas
     // overall gas usage depends on the underlying NFT contract
-    uint256 optionId = calls.mintWithErc721{gas: 330_000}(
+    uint256 optionId = calls.mintWithErc721{gas: 340_000}(
       address(token),
       underlyingTokenId,
       1000,
