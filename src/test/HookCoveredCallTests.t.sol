@@ -75,9 +75,9 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       expiration
     );
 
-    // limit this call to 300,000 gas
+    // limit this call to 340,000 gas
     // overall gas usage depends on the underlying NFT contract
-    uint256 optionId = calls.mintWithErc721{gas: 330_000}(
+    uint256 optionId = calls.mintWithErc721{gas: 340_000}(
       address(token),
       underlyingTokenId,
       1000,
@@ -135,8 +135,102 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
     vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 2, 1000, expiration);
+
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      0,
+      1000,
+      expiration,
+      sig
+    );
+
+    assertTrue(
+      calls.ownerOf(optionId) == address(writer),
+      "owner should own the option"
+    );
+
+    (bool isActive, address operator) = vault.getCurrentEntitlementOperator(0);
+    assertTrue(isActive, "there should be an active entitlement");
+    assertTrue(
+      operator == address(calls),
+      "the call options should be the operator"
+    );
+  }
+
+  function test_MintOptionWithVaultRandomAddress() public {
+    vm.startPrank(address(writer));
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
     emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
 
+    vm.stopPrank();
+    vm.prank(address(333456)); // simulating a replay attack, random address calling with the signature]
+    vm.expectRevert(
+      "mintWithVault -- called by someone other than the beneficial owner or approved operator"
+    );
+    calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
+
+    // in this replay attack, the writer's call would land second
+    vm.prank(address(writer));
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      0,
+      1000,
+      expiration,
+      sig
+    );
+
+    assertTrue(
+      calls.ownerOf(optionId) == address(writer),
+      "owner should own the option"
+    );
+
+    (bool isActive, address operator) = vault.getCurrentEntitlementOperator(0);
+    assertTrue(isActive, "there should be an active entitlement");
+    assertTrue(
+      operator == address(calls),
+      "the call options should be the operator"
+    );
+  }
+
+  function test_MintOptionWithVaultSpecifiedOperator() public {
+    vm.startPrank(address(writer));
+
+    address specifiedOperator = address(44556677);
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+    vault.approve(specifiedOperator, uint32(underlyingTokenId));
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 1, 1000, expiration);
+
+    vm.stopPrank();
+    vm.prank(specifiedOperator); // the specified operator may still mint
     uint256 optionId = calls.mintWithVault(
       address(vault),
       0,
@@ -387,8 +481,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
   }
 
   function testCannotMintOptionInvalidExpiration2() public {
-    vm.prank(address(admin));
-    callInternal.setMinOptionDuration(3 hours);
     vm.startPrank(address(writer));
 
     // Writer approve covered call
@@ -402,15 +494,13 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
-  function testCanMintOptionShorterExpiration() public {
-    vm.prank(address(admin));
-    callInternal.setMinOptionDuration(3 hours);
+  function testCanMintOptionLongerExpiration() public {
     vm.startPrank(address(writer));
 
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint32 expiration = uint32(block.timestamp) + 5 hours;
+    uint32 expiration = uint32(block.timestamp) + 100 days;
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -514,6 +604,93 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     // Vault is now owner of the underlying token so this fails.
     vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
+  }
+
+  function testCannotMintMultipleOptionsWithSameAsset() public {
+    vm.startPrank(address(writer));
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 2, 1000, expiration);
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      0,
+      1000,
+      expiration,
+      sig
+    );
+
+    vm.expectRevert("_mintOptionWithVault -- previous option must be settled");
+    calls.mintWithEntitledVault(address(vault), 0, 1000, expiration);
+  }
+
+  function canMintAdditionalOptionsWithSameAssetAfterFirstExpires() public {
+    vm.startPrank(address(writer));
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // place token in the vault
+    token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
+
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    Signatures.Signature memory sig = makeSignature(
+      underlyingTokenId,
+      expiration,
+      writer
+    );
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(
+      address(writer),
+      address(vault),
+      underlyingTokenId,
+      1,
+      1000,
+      expiration
+    );
+
+    uint256 optionId = calls.mintWithVault(
+      address(vault),
+      0,
+      1000,
+      expiration,
+      sig
+    );
+
+    assertTrue(optionId == 1);
+    vm.warp(expiration + 1 days);
+
+    calls.burnExpiredOption(1);
+
+    uint32 expiration2 = uint32(block.timestamp) + 3 days;
+    IHookVault(vault).grantEntitlement(
+      Entitlements.Entitlement(
+        writer,
+        address(calls),
+        address(vault),
+        0,
+        expiration2
+      )
+    );
+
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 2, 1000, expiration2);
+    calls.mintWithEntitledVault(address(vault), 0, 1000, expiration2);
   }
 
   function testCannotMintMultipleOptionsSameTokenAsOwnerThenOperator() public {
@@ -842,13 +1019,13 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     calls.bid{value: 0.1 ether}(optionTokenId);
 
     uint256 strike = 1000;
-    uint256 bidAmount = 0.1 ether - strike + 1;
+    uint256 bidAmount = 0.1 ether - strike + 0.1 ether;
 
     vm.prank(writer);
     calls.bid{value: bidAmount}(optionTokenId);
 
     assertTrue(
-      calls.currentBid(optionTokenId) == 0.1 ether + 1,
+      calls.currentBid(optionTokenId) == 0.1 ether + 0.1 ether,
       "high bid should be 0.1 ether + 1 wei"
     );
     assertTrue(
@@ -879,18 +1056,18 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     calls.bid{value: 0.1 ether}(optionTokenId);
 
     uint256 strike = 1000;
-    uint256 bidAmount = 0.1 ether - strike + 1;
+    uint256 bidAmount = 0.1 ether - strike + 0.1 ether;
 
     vm.prank(writer);
     calls.bid{value: bidAmount}(optionTokenId);
 
-    uint256 secondBidAmount = 0.1 ether - strike + 2;
+    uint256 secondBidAmount = 0.1 ether - strike + 0.2 ether;
     vm.prank(writer);
     calls.bid{value: secondBidAmount}(optionTokenId);
 
     assertTrue(
-      calls.currentBid(optionTokenId) == 0.1 ether + 2,
-      "high bid should be 0.1 ether + 1 wei"
+      calls.currentBid(optionTokenId) == 0.1 ether + 0.2 ether,
+      "high bid should be 0.1 ether + 0.2 ether"
     );
     assertTrue(
       calls.currentBidder(optionTokenId) == writer,
@@ -902,7 +1079,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     );
     assertTrue(
       writer.balance == 1 ether - secondBidAmount,
-      "writer should have only used 0.1 ether + 1 wei to bid"
+      "writer should have only used 0.1 ether + 0.2 ether to bid"
     );
   }
 }
@@ -930,7 +1107,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     uint256 buyerStartBalance = buyer.balance;
     uint256 writerStartBalance = writer.balance;
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionTokenId);
 
     assertTrue(
@@ -952,7 +1129,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
       underlyingTokenId
     );
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionTokenId);
 
     assertTrue(
@@ -1051,7 +1228,56 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.bid{value: 1 wei}(optionId);
     vm.warp(block.timestamp + 1 days);
 
+    vm.stopPrank();
+    vm.prank(buyer);
     calls.settleOption(optionId);
+
+    assertTrue(
+      buyerStartBalance + 1 wei == buyer.balance,
+      "buyer gets the option spread (winning bid of 1001 wei - strike price of 1000)"
+    );
+
+    assertTrue(
+      writerStartBalance - 1 == writer.balance,
+      "option writer only loses spread (1 wei)"
+    );
+  }
+
+  function testSettleOptionWhenWriterHighBidderAndCallsSettle() public {
+    vm.startPrank(writer);
+    uint256 underlyingTokenId2 = 1;
+    token.mint(writer, underlyingTokenId2);
+    vm.deal(writer, 1 ether);
+
+    uint256 buyerStartBalance = buyer.balance;
+    uint256 writerStartBalance = writer.balance;
+
+    // Writer approve operator and covered call
+    token.setApprovalForAll(address(calls), true);
+
+    uint32 expiration = uint32(block.timestamp) + 3 days;
+
+    uint256 optionId = calls.mintWithErc721(
+      address(token),
+      underlyingTokenId2,
+      1000,
+      expiration
+    );
+
+    // Assume that the writer somehow sold the option NFT to the buyer.
+    // Outside of the scope of these tests.
+    calls.safeTransferFrom(writer, buyer, optionId);
+
+    // Option expires in 3 days from current block; bidding starts in 2 days.
+    vm.warp(block.timestamp + 2.1 days);
+    calls.bid{value: 1 wei}(optionId);
+    vm.warp(block.timestamp + 1 days);
+
+    calls.settleOption(optionId);
+    vm.stopPrank();
+
+    vm.prank(buyer);
+    calls.claimOptionProceeds(optionId);
 
     assertTrue(
       buyerStartBalance + 1 wei == buyer.balance,
@@ -1101,7 +1327,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     vm.warp(block.timestamp + 1 days);
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionId);
 
     assertTrue(
@@ -1149,19 +1375,19 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.bid{value: 1001 wei}(optionId);
 
     vm.prank(writer);
-    calls.bid{value: 2 wei}(optionId);
+    calls.bid{value: 200 wei}(optionId);
 
     vm.warp(block.timestamp + 1 days);
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionId);
 
     assertTrue(
-      buyerStartBalance + 2 wei == buyer.balance,
+      buyerStartBalance + 200 wei == buyer.balance,
       "buyer gets the spread (10002 wei - 1000 wei strike)"
     );
     assertTrue(
-      writerStartBalance - 2 wei == writer.balance,
+      writerStartBalance - 200 wei == writer.balance,
       "option writer bid on strike"
     );
   }
@@ -1201,18 +1427,18 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     calls.bid{value: 1001 wei}(optionId);
 
     vm.prank(writer);
-    calls.bid{value: 2 wei}(optionId);
+    calls.bid{value: 200 wei}(optionId);
 
     vm.prank(firstBidder);
-    calls.bid{value: 1003 wei}(optionId);
+    calls.bid{value: 1300 wei}(optionId);
 
     vm.warp(block.timestamp + 1 days);
 
-    vm.prank(writer);
+    vm.prank(buyer);
     calls.settleOption(optionId);
 
     assertTrue(
-      buyerStartBalance + 3 wei == buyer.balance,
+      buyerStartBalance + 300 wei == buyer.balance,
       "buyer gets the spread (10002 wei - 1000 wei strike)"
     );
     assertTrue(
@@ -1305,6 +1531,35 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     );
   }
 
+  function testReclaimWithActiveBidWriterHighBidder() public {
+    vm.warp(block.timestamp + 2.1 days);
+    vm.deal(address(firstBidder), 1 ether);
+    vm.deal(address(writer), 1 ether);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 0.1 ether}(optionTokenId);
+
+    vm.prank(writer);
+    calls.bid{value: 0.2 ether}(optionTokenId);
+
+    uint256 writerPostBidBalance = writer.balance;
+
+    vm.startPrank(writer);
+    vm.expectEmit(true, false, false, false);
+    emit CallReclaimed(optionTokenId);
+    calls.reclaimAsset(optionTokenId, true);
+
+    assertTrue(
+      token.ownerOf(0) == address(writer),
+      "writer should own the underlying asset"
+    );
+
+    assertTrue(
+      (writerPostBidBalance + 0.2 ether) == writer.balance,
+      "writer should have have bid returned post reclaim"
+    );
+  }
+
   function testCannotReclaimAfterExpiration() public {
     vm.startPrank(writer);
     vm.warp(block.timestamp + 3.1 days);
@@ -1332,10 +1587,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       expiration
     );
 
-    // Assume that the writer somehow sold the option NFT to the buyer.
-    // Outside of the scope of these tests.
-    calls.safeTransferFrom(writer, buyer, optionId);
-
     // Option expires in 3 days from current block; bidding starts in 2 days.
     vm.warp(block.timestamp + 2.1 days);
 
@@ -1348,8 +1599,8 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.startPrank(writer);
 
     vm.expectEmit(true, false, false, false);
-    emit CallReclaimed(optionTokenId);
-    calls.reclaimAsset(optionTokenId, true);
+    emit CallReclaimed(optionId);
+    calls.reclaimAsset(optionId, true);
   }
 
   function testReclaimAssetWriterBidLast() public {
@@ -1371,10 +1622,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       expiration
     );
 
-    // Assume that the writer somehow sold the option NFT to the buyer.
-    // Outside of the scope of these tests.
-    calls.safeTransferFrom(writer, buyer, optionId);
-
     vm.stopPrank();
 
     // Option expires in 3 days from current block; bidding starts in 2 days.
@@ -1384,13 +1631,13 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     calls.bid{value: 1001 wei}(optionId);
 
     vm.prank(writer);
-    calls.bid{value: 2 wei}(optionId);
+    calls.bid{value: 200 wei}(optionId);
 
     vm.startPrank(writer);
 
     vm.expectEmit(true, false, false, false);
-    emit CallReclaimed(optionTokenId);
-    calls.reclaimAsset(optionTokenId, true);
+    emit CallReclaimed(optionId);
+    calls.reclaimAsset(optionId, true);
   }
 
   function testReclaimAssetWriterBidMultiple() public {
@@ -1412,10 +1659,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       expiration
     );
 
-    // Assume that the writer somehow sold the option NFT to the buyer.
-    // Outside of the scope of these tests.
-    calls.safeTransferFrom(writer, buyer, optionId);
-
     vm.stopPrank();
 
     // Option expires in 3 days from current block; bidding starts in 2 days.
@@ -1425,15 +1668,15 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     calls.bid{value: 1001 wei}(optionId);
 
     vm.prank(writer);
-    calls.bid{value: 2 wei}(optionId);
+    calls.bid{value: 200 wei}(optionId);
 
     vm.prank(firstBidder);
-    calls.bid{value: 1003 wei}(optionId);
+    calls.bid{value: 1300 wei}(optionId);
 
     vm.startPrank(writer);
 
     vm.expectEmit(true, false, false, false);
-    emit CallReclaimed(optionTokenId);
-    calls.reclaimAsset(optionTokenId, true);
+    emit CallReclaimed(optionId);
+    calls.reclaimAsset(optionId, true);
   }
 }

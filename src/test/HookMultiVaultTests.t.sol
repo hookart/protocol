@@ -27,14 +27,14 @@ contract HookMultiVaultTests is HookProtocolTest {
 
   function createVaultandAsset()
     internal
-    returns (address vaultAddress, uint32 tokenId)
+    returns (address, uint32)
   {
     vm.startPrank(admin);
     tokenStartIndex += 1;
-    tokenId = uint32(tokenStartIndex);
+    uint32 tokenId = uint32(tokenStartIndex);
     token.mint(address(writer), tokenId);
     vault.makeMultiVault(address(token));
-    vaultAddress = address(vault.findOrCreateVault(address(token), tokenId));
+    address vaultAddress = address(vault.findOrCreateVault(address(token), tokenId));
     vm.stopPrank();
     return (vaultAddress, tokenId);
   }
@@ -48,13 +48,13 @@ contract HookMultiVaultTests is HookProtocolTest {
   )
     internal
     returns (
-      Entitlements.Entitlement memory entitlement,
-      Signatures.Signature memory signature
+      Entitlements.Entitlement memory,
+      Signatures.Signature memory
     )
   {
     address ownerAdd = vm.addr(writerpkey);
 
-    entitlement = Entitlements.Entitlement({
+    Entitlements.Entitlement memory entitlement = Entitlements.Entitlement({
       beneficialOwner: ownerAdd,
       operator: operator,
       vaultAddress: vaultAddress,
@@ -701,8 +701,8 @@ contract HookMultiVaultTests is HookProtocolTest {
     vm.prank(admin);
     protocol.setCollectionConfig(
       address(token),
-      keccak256("vault.airdropsProhibited"),
-      false
+      keccak256("vault.multiAirdropsAllowed"),
+      true
     );
 
     TestERC721 token2 = new TestERC721();

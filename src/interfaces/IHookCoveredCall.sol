@@ -79,7 +79,7 @@ interface IHookCoveredCall is IERC721Metadata {
   );
 
   /// @notice emitted when a call option is settled
-  event CallSettled(uint256 optionId);
+  event CallSettled(uint256 optionId, bool claimable);
 
   /// @notice emitted when a call option is reclaimed
   event CallReclaimed(uint256 optionId);
@@ -92,6 +92,12 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @param bidAmount the amount of wei bid
   /// @param optionId the option for the underlying that was bid on
   event Bid(uint256 optionId, uint256 bidAmount, address bidder);
+
+  /// @notice emitted when an option owner claims their proceeds
+  /// @param optionId the option the claim is on
+  /// @param to the option owner making the claim
+  /// @param amount the amount of the claim distributed
+  event CallProceedsDistributed(uint256 optionId, address to, uint256 amount);
 
   /// @notice Mints a new call option for a particular "underlying" ERC-721 NFT with a given strike price and expiration
   /// @param tokenAddress the contract address of the ERC-721 token that serves as the underlying asset for the call
@@ -157,6 +163,16 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @param returnNft true if token should be withdrawn from vault, false to leave token in the vault.
   function reclaimAsset(uint256 optionId, bool returnNft) external;
 
+  /// @notice Looks up the latest optionId that covers a particular asset, if one exists. This option may be already settled.
+  /// @dev getOptionIdForAsset
+  /// @param vault the address of the hook vault that holds the covered asset
+  /// @param assetId the id of the asset to check
+  /// @return the optionId, if one exists or 0 otherwise
+  function getOptionIdForAsset(address vault, uint32 assetId)
+    external
+    view
+    returns (uint256);
+
   /// @notice Permissionlessly settle an expired option when the option expires in the money, distributing
   /// the proceeds to the Writer, Holder, and Bidder as follows:
   ///
@@ -174,4 +190,11 @@ interface IHookCoveredCall is IERC721Metadata {
   /// @notice Allows anyone to burn the instrument NFT for an expired option.
   /// @param optionId of the option to burn.
   function burnExpiredOption(uint256 optionId) external;
+
+  /// @notice allows the option owner to claim proceeds if the option was settled
+  /// by another account. The option NFT is burned after settlement.
+  /// @dev this mechanism prevents the proceeds from being sent to an account
+  /// temporarily custodying the option asset.
+  /// @param optionId the option to claim and burn.
+  function claimOptionProceeds(uint256 optionId) external;
 }

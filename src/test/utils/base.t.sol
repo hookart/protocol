@@ -83,9 +83,18 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
   function setUpFullProtocol() public {
     weth = new WETH();
-    protocol = new HookProtocol(admin, address(weth));
+    protocol = new HookProtocol(
+      admin,
+      admin,
+      admin,
+      admin,
+      admin,
+      admin,
+      address(weth)
+    );
     protocolAddress = address(protocol);
-    preApprovedOperator = address(8845603894908);
+    // set the operator to a new protocol to make it a contract
+    preApprovedOperator = address(new HookProtocol(admin, address(weth)));
     setAddressForEipDomain(protocolAddress);
 
     // Deploy new vault factory
@@ -185,7 +194,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     uint256 tokenId,
     uint32 expiry,
     address _writer
-  ) internal returns (Signatures.Signature memory sig) {
+  ) internal returns (Signatures.Signature memory) {
     address va = address(
       vaultFactory.findOrCreateVault(address(token), tokenId)
     );
@@ -218,7 +227,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
       writerpkey,
       _getEIP712Hash(structHash)
     );
-    sig = Signatures.Signature({
+    Signatures.Signature memory sig = Signatures.Signature({
       signatureType: Signatures.SignatureType.EIP712,
       v: v,
       r: r,
