@@ -601,7 +601,6 @@ contract HookCoveredCallImplV1 is
   function reclaimAsset(uint256 optionId, bool returnNft)
     external
     nonReentrant
-    whenNotPaused
   {
     CallOption storage call = optionParams[optionId];
     require(
