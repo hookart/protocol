@@ -105,6 +105,10 @@ contract HookCoveredCallImplV1 is
   /// @dev storage of all existing options contracts.
   mapping(uint256 => CallOption) public optionParams;
 
+  /// @dev mapping to store the amount of eth in wei that may
+  /// be claimed by the current ownerOf the option nft.
+  mapping(uint256 => uint256) public optionClaims;
+
   /// @dev the address of the token contract permitted to serve as underlying assets for this
   /// instrument.
   address public allowedUnderlyingAddress;
@@ -188,9 +192,8 @@ contract HookCoveredCallImplV1 is
     uint128 strikePrice,
     uint32 expirationTime,
     Signatures.Signature calldata signature
-  ) external whenNotPaused returns (uint256) {
+  ) external nonReentrant whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
-
     require(
       allowedUnderlyingAddress == vault.assetAddress(assetId),
       "mintWithVault -- token must be on the project allowlist"
@@ -211,6 +214,11 @@ contract HookCoveredCallImplV1 is
     // we need to require that they've done so here.
     address writer = vault.getBeneficialOwner(assetId);
 
+    require(
+      msg.sender == writer || msg.sender == vault.getApproved(assetId),
+      "mintWithVault -- called by someone other than the beneficial owner or approved operator"
+    );
+
     vault.imposeEntitlement(
       address(this),
       expirationTime,
@@ -230,7 +238,7 @@ contract HookCoveredCallImplV1 is
     uint32 assetId,
     uint128 strikePrice,
     uint32 expirationTime
-  ) external whenNotPaused returns (uint256) {
+  ) external nonReentrant whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
 
     require(
@@ -266,6 +274,11 @@ contract HookCoveredCallImplV1 is
     // they should receive the option.
     address writer = vault.getBeneficialOwner(assetId);
 
+    require(
+      writer == msg.sender || vault.getApproved(assetId) == msg.sender,
+      "mintWithVault -- only the beneficial owner can create a call option with an entitled vault"
+    );
+
     return
       _mintOptionWithVault(writer, vault, assetId, strikePrice, expirationTime);
   }
@@ -276,7 +289,7 @@ contract HookCoveredCallImplV1 is
     uint256 tokenId,
     uint128 strikePrice,
     uint32 expirationTime
-  ) external whenNotPaused returns (uint256) {
+  ) external nonReentrant whenNotPaused returns (uint256) {
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
       allowedUnderlyingAddress == tokenAddress,
@@ -540,9 +553,6 @@ contract HookCoveredCallImplV1 is
 
     address optionOwner = ownerOf(optionId);
 
-    // burn nft
-    _burn(optionId);
-
     // set settled to prevent an additional attempt to settle the option
     optionParams[optionId].settled = true;
 
@@ -552,10 +562,18 @@ contract HookCoveredCallImplV1 is
       _safeTransferETHWithFallback(call.writer, call.strike);
     }
 
-    // send option holder their earnings
-    _safeTransferETHWithFallback(optionOwner, spread);
+    bool claimable = false;
+    if (msg.sender == optionOwner) {
+      // send option holder their earnings
+      _safeTransferETHWithFallback(optionOwner, spread);
 
-    emit CallSettled(optionId);
+      // burn nft
+      _burn(optionId);
+    } else {
+      optionClaims[optionId] = spread;
+      claimable = true;
+    }
+    emit CallSettled(optionId, claimable);
   }
 
   /// @dev See {IHookCoveredCall-reclaimAsset}.
@@ -590,8 +608,13 @@ contract HookCoveredCallImplV1 is
 
     if (call.highBidder != address(0)) {
       // return current bidder's money
-      _safeTransferETHWithFallback(call.highBidder, call.bid);
-
+      if (call.highBidder == call.writer) {
+        // handle the case where the writer is reclaiming as option they were the high bidder of
+        _safeTransferETHWithFallback(call.highBidder, call.bid - call.strike);
+      } else {
+        _safeTransferETHWithFallback(call.highBidder, call.bid);
+      }
+      
       // if we have a bid, we may have set the bidder, so make sure to revert it here.
       IHookVault(call.vaultAddress).setBeneficialOwner(
         call.assetId,
@@ -613,7 +636,11 @@ contract HookCoveredCallImplV1 is
   }
 
   /// @dev See {IHookCoveredCall-burnExpiredOption}.
-  function burnExpiredOption(uint256 optionId) external whenNotPaused {
+  function burnExpiredOption(uint256 optionId)
+    external
+    nonReentrant
+    whenNotPaused
+  {
     CallOption storage call = optionParams[optionId];
 
     require(
@@ -640,6 +667,25 @@ contract HookCoveredCallImplV1 is
     emit ExpiredCallBurned(optionId);
   }
 
+  /// @dev See {IHookCoveredCall-claimOptionProceeds}
+  function claimOptionProceeds(uint256 optionId) external {
+    address optionOwner = ownerOf(optionId);
+    require(
+      msg.sender == optionOwner,
+      "claimOptionProceeds -- only the option owner can claim their proceeds"
+    );
+    if (optionClaims[optionId] != 0) {
+      emit CallProceedsDistributed(
+        optionId,
+        optionOwner,
+        optionClaims[optionId]
+      );
+      _safeTransferETHWithFallback(optionOwner, optionClaims[optionId]);
+      delete optionClaims[optionId];
+      _burn(optionId);
+    }
+  }
+
   //// ---- Administrative Fns.
 
   // forward to protocol-level pauseability
@@ -664,6 +710,10 @@ contract HookCoveredCallImplV1 is
     public
     onlyMarketController
   {
+    require(
+      settlementAuctionStartOffset < newMinDuration,
+      "the settlement auctions cannot start sooner than an option expired"
+    );
     minimumOptionDuration = newMinDuration;
     emit MinOptionDurationUpdated(newMinDuration);
   }
@@ -674,6 +724,10 @@ contract HookCoveredCallImplV1 is
     public
     onlyMarketController
   {
+    require(
+      newBidIncrement < 20 * 100,
+      "the bid increment must be less than 20%"
+    );
     minBidIncrementBips = newBidIncrement;
     emit MinBidIncrementUpdated(newBidIncrement);
   }
@@ -695,6 +749,10 @@ contract HookCoveredCallImplV1 is
   /// @dev sets a paused / unpaused state for the market corresponding to this contract
   /// @param paused should the market be set to paused or unpaused
   function setMarketPaused(bool paused) public onlyMarketController {
+    require(
+      marketPaused == !paused,
+      "setMarketPaused -- cannot set to current state"
+    );
     marketPaused = paused;
     emit MarketPauseUpdated(paused);
   }
