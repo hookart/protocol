@@ -17,9 +17,5 @@ jobs:
         with:
           version: nightly
 
-      - name: Install packages (npm)
-        uses: actions/setup-node@v2
-        run: npm install
-
       - name: Run tests
         run: forge test -vvv
