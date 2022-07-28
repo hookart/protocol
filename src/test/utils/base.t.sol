@@ -194,7 +194,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     uint256 tokenId,
     uint32 expiry,
     address _writer
-  ) internal returns (Signatures.Signature memory sig) {
+  ) internal returns (Signatures.Signature memory) {
     address va = address(
       vaultFactory.findOrCreateVault(address(token), tokenId)
     );
@@ -227,7 +227,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
       writerpkey,
       _getEIP712Hash(structHash)
     );
-    sig = Signatures.Signature({
+    Signatures.Signature memory sig = Signatures.Signature({
       signatureType: Signatures.SignatureType.EIP712,
       v: v,
       r: r,

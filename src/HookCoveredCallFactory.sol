@@ -96,7 +96,7 @@ contract HookCoveredCallFactory is
   /// @dev Only holders of the ALLOWLISTER_ROLE on the {IHookProtocol} can create these addresses.
   function makeCallInstrument(address assetAddress)
     external
-    returns (address calls)
+    returns (address)
   {
     require(
       getCallInstrument[assetAddress] == address(0),

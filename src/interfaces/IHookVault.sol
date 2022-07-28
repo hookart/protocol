@@ -159,15 +159,12 @@ interface IHookVault is IERC165 {
   function getCurrentEntitlementOperator(uint32 assetId)
     external
     view
-    returns (bool isActive, address operator);
+    returns (bool, address);
 
   /// @notice Looks up the expiration timestamp of the current entitlement
   /// @dev returns the 0 if no entitlement is set
-  /// @return expiry the block timestamp after which the entitlement expires
-  function entitlementExpiration(uint32 assetId)
-    external
-    view
-    returns (uint32 expiry);
+  /// @return the block timestamp after which the entitlement expires
+  function entitlementExpiration(uint32 assetId) external view returns (uint32);
 
   /// @notice Gives permission to `to` to impose an entitlement upon `assetId`
   ///
@@ -186,5 +183,5 @@ interface IHookVault is IERC165 {
   ///
   /// - `assetId` must exist.
   ///
-  function getApproved(uint32 assetId) external view returns (address operator);
+  function getApproved(uint32 assetId) external view returns (address);
 }
