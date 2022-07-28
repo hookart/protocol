@@ -450,7 +450,7 @@ contract HookERC721MultiVaultImplV1 is
       receiver,
       _assetTokenId(assetId)
     );
-    emit AssetWithdrawn(assetId, msg.sender, assets[assetId].beneficialOwner);
+    emit AssetWithdrawn(assetId, receiver, assets[assetId].beneficialOwner);
   }
 
   /// @dev Validates that a specific signature is actually the entitlement
