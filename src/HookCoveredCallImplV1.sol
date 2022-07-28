@@ -608,8 +608,13 @@ contract HookCoveredCallImplV1 is
 
     if (call.highBidder != address(0)) {
       // return current bidder's money
-      _safeTransferETHWithFallback(call.highBidder, call.bid);
-
+      if (call.highBidder == call.writer) {
+        // handle the case where the writer is reclaiming as option they were the high bidder of
+        _safeTransferETHWithFallback(call.highBidder, call.bid - call.strike);
+      } else {
+        _safeTransferETHWithFallback(call.highBidder, call.bid);
+      }
+      
       // if we have a bid, we may have set the bidder, so make sure to revert it here.
       IHookVault(call.vaultAddress).setBeneficialOwner(
         call.assetId,

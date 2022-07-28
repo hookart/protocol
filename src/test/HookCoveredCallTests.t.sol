@@ -1448,6 +1448,35 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     );
   }
 
+  function testReclaimWithActiveBidWriterHighBidder() public {
+    vm.warp(block.timestamp + 2.1 days);
+    vm.deal(address(firstBidder), 1 ether);
+    vm.deal(address(writer), 1 ether);
+
+    vm.prank(firstBidder);
+    calls.bid{value: 0.1 ether}(optionTokenId);
+
+    vm.prank(writer);
+    calls.bid{value: 0.2 ether}(optionTokenId);
+
+    uint256 writerPostBidBalance = writer.balance;
+
+    vm.startPrank(writer);
+    vm.expectEmit(true, false, false, false);
+    emit CallReclaimed(optionTokenId);
+    calls.reclaimAsset(optionTokenId, true);
+
+    assertTrue(
+      token.ownerOf(0) == address(writer),
+      "writer should own the underlying asset"
+    );
+
+    assertTrue(
+      (writerPostBidBalance + 0.2 ether) == writer.balance,
+      "writer should have have bid returned post reclaim"
+    );
+  }
+
   function testCannotReclaimAfterExpiration() public {
     vm.startPrank(writer);
     vm.warp(block.timestamp + 3.1 days);
@@ -1475,10 +1504,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       expiration
     );
 
-    // Assume that the writer somehow sold the option NFT to the buyer.
-    // Outside of the scope of these tests.
-    calls.safeTransferFrom(writer, buyer, optionId);
-
     // Option expires in 3 days from current block; bidding starts in 2 days.
     vm.warp(block.timestamp + 2.1 days);
 
@@ -1491,8 +1516,8 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.startPrank(writer);
 
     vm.expectEmit(true, false, false, false);
-    emit CallReclaimed(optionTokenId);
-    calls.reclaimAsset(optionTokenId, true);
+    emit CallReclaimed(optionId);
+    calls.reclaimAsset(optionId, true);
   }
 
   function testReclaimAssetWriterBidLast() public {
@@ -1514,10 +1539,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       expiration
     );
 
-    // Assume that the writer somehow sold the option NFT to the buyer.
-    // Outside of the scope of these tests.
-    calls.safeTransferFrom(writer, buyer, optionId);
-
     vm.stopPrank();
 
     // Option expires in 3 days from current block; bidding starts in 2 days.
@@ -1532,8 +1553,8 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.startPrank(writer);
 
     vm.expectEmit(true, false, false, false);
-    emit CallReclaimed(optionTokenId);
-    calls.reclaimAsset(optionTokenId, true);
+    emit CallReclaimed(optionId);
+    calls.reclaimAsset(optionId, true);
   }
 
   function testReclaimAssetWriterBidMultiple() public {
@@ -1555,10 +1576,6 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
       expiration
     );
 
-    // Assume that the writer somehow sold the option NFT to the buyer.
-    // Outside of the scope of these tests.
-    calls.safeTransferFrom(writer, buyer, optionId);
-
     vm.stopPrank();
 
     // Option expires in 3 days from current block; bidding starts in 2 days.
@@ -1576,7 +1593,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.startPrank(writer);
 
     vm.expectEmit(true, false, false, false);
-    emit CallReclaimed(optionTokenId);
-    calls.reclaimAsset(optionTokenId, true);
+    emit CallReclaimed(optionId);
+    calls.reclaimAsset(optionId, true);
   }
 }
