@@ -83,7 +83,15 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
 
   function setUpFullProtocol() public {
     weth = new WETH();
-    protocol = new HookProtocol(admin, address(weth));
+    protocol = new HookProtocol(
+      admin,
+      admin,
+      admin,
+      admin,
+      admin,
+      admin,
+      address(weth)
+    );
     protocolAddress = address(protocol);
     preApprovedOperator = address(8845603894908);
     setAddressForEipDomain(protocolAddress);

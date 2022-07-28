@@ -62,15 +62,21 @@ contract HookProtocol is
   address public override getWETHAddress;
   mapping(address => mapping(bytes32 => bool)) collectionConfigs;
 
-  constructor(address admin, address weth) {
-    _setupRole(ALLOWLISTER_ROLE, admin);
-    _setupRole(PAUSER_ROLE, admin);
-    _setupRole(VAULT_UPGRADER, admin);
-    _setupRole(CALL_UPGRADER, admin);
-    // create a distinct admin role
-    _setupRole(ADMIN_ROLE, admin);
-    _setupRole(MARKET_CONF, admin);
-    _setupRole(COLLECTION_CONF, admin);
+  constructor(
+    address allowlister,
+    address pauser,
+    address vaultUpgrader,
+    address callUpgrader,
+    address marketConf,
+    address collectionConf,
+    address weth
+  ) {
+    _setupRole(ALLOWLISTER_ROLE, allowlister);
+    _setupRole(PAUSER_ROLE, pauser);
+    _setupRole(VAULT_UPGRADER, vaultUpgrader);
+    _setupRole(CALL_UPGRADER, callUpgrader);
+    _setupRole(MARKET_CONF, marketConf);
+    _setupRole(COLLECTION_CONF, collectionConf);
 
     // allow the admin to add and remove other roles
     _setRoleAdmin(ALLOWLISTER_ROLE, ALLOWLISTER_ROLE);
@@ -100,8 +106,19 @@ contract HookProtocol is
     return collectionConfigs[collectionAddress][conf];
   }
 
-  modifier adminOnly() {
-    require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
+  modifier callUpgraderOnly() {
+    require(
+      hasRole(CALL_UPGRADER, msg.sender),
+      "Caller is not a call upgrader"
+    );
+    _;
+  }
+
+  modifier vaultUpgraderOnly() {
+    require(
+      hasRole(VAULT_UPGRADER, msg.sender),
+      "Caller is not a vault upgrader"
+    );
     _;
   }
 
@@ -129,7 +146,7 @@ contract HookProtocol is
   /// @param coveredCallFactoryContract the address of the deployed covered call contract
   function setCoveredCallFactory(address coveredCallFactoryContract)
     external
-    adminOnly
+    callUpgraderOnly
   {
     require(
       Address.isContract(coveredCallFactoryContract),
@@ -142,7 +159,10 @@ contract HookProtocol is
   /// @dev allows all protocol components, including the call factory, to look up the
   /// vault factory.
   /// @param vaultFactoryContract the deployed vault factory
-  function setVaultFactory(address vaultFactoryContract) external adminOnly {
+  function setVaultFactory(address vaultFactoryContract)
+    external
+    vaultUpgraderOnly
+  {
     require(
       Address.isContract(vaultFactoryContract),
       "setVaultFactory: implementation is not a contract"
