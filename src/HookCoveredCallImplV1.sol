@@ -105,6 +105,11 @@ contract HookCoveredCallImplV1 is
   /// @dev storage of all existing options contracts.
   mapping(uint256 => CallOption) public optionParams;
 
+  /// @dev storage of current call active call option for a specific asset
+  /// mapping(vaultAddress => mapping(assetId => CallOption))
+  // the call option is is referenced via the optionID stored in optionParams
+  mapping(IHookVault => mapping(uint32 => uint256)) public assetOptions;
+
   /// @dev mapping to store the amount of eth in wei that may
   /// be claimed by the current ownerOf the option nft.
   mapping(uint256 => uint256) public optionClaims;
@@ -172,6 +177,8 @@ contract HookCoveredCallImplV1 is
     weth = _protocol.getWETHAddress();
     _preApprovedMarketplace = preApprovedMarketplace;
     allowedUnderlyingAddress = nftContract;
+    /// increment the optionId such that id=0 can be treated as the null value
+    _optionIds.increment();
 
     /// Initialize basic configuration.
     /// Even though these are defaults, we cannot set them in the constructor because
@@ -378,6 +385,15 @@ contract HookCoveredCallImplV1 is
       "_mintOptionWithVault -- expirationTime must be more than one day in the future time"
     );
 
+    // verify that, if there is a previous option on this asset, it has already settled.
+    uint256 prevOptionId = assetOptions[vault][assetId];
+    if (prevOptionId != 0) {
+      require(
+        optionParams[prevOptionId].settled,
+        "_mintOptionWithVault -- previous option must be settled"
+      );
+    }
+
     // generate the next optionId
     _optionIds.increment();
     uint256 newOptionId = _optionIds.current();
@@ -402,6 +418,9 @@ contract HookCoveredCallImplV1 is
     if (msg.sender != writer) {
       _approve(msg.sender, newOptionId);
     }
+
+    // OptionID is null
+    assetOptions[vault][assetId] = newOptionId;
 
     emit CallCreated(
       writer,
@@ -616,7 +635,7 @@ contract HookCoveredCallImplV1 is
       } else {
         _safeTransferETHWithFallback(call.highBidder, call.bid);
       }
-      
+
       // if we have a bid, we may have set the bidder, so make sure to revert it here.
       IHookVault(call.vaultAddress).setBeneficialOwner(
         call.assetId,
@@ -771,6 +790,15 @@ contract HookCoveredCallImplV1 is
     returns (address)
   {
     return optionParams[optionId].vaultAddress;
+  }
+
+  /// @dev see {IHookCoveredCall-getOptionIdForAsset}
+  function getOptionIdForAsset(address vault, uint32 assetId)
+    external
+    view
+    returns (uint256)
+  {
+    return assetOptions[IHookVault(vault)][assetId];
   }
 
   /// @dev see {IHookCoveredCall-getAssetId}.

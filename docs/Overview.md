@@ -48,6 +48,8 @@ to pay the option writer the strike price and pay the current option holder the 
 The option instrument is represented in the system as a ERC-721 token that can be transferred. The owner of this particular
 token receives the economic value of the call option at settlement.
 
+Only one call option can be outstanding at a given time for a specific underlying asset. The contract stores a mapping from the vault and assetId to the current optionId. If that optionId is 0, it means there is no current outstanding option backed by that asset in the specified vault, so an option may be written. No valid option may have optionId 0.
+
 ### Factories & Beacon Pattern
 
 One call option instrument is deployed for each asset contract. All NFTs minted from the instrument appear to be in a single "collection" by NFT aggregators.
