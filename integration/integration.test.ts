@@ -1301,6 +1301,13 @@ describe("Vault", function () {
         const newNFT = await erc721.deploy();
 
         newNFT.mint(beneficialOwner.address, 3);
+        await protocol
+          .connect(admin)
+          .setCollectionConfig(
+            testNFT.address,
+            ethers.utils.id("vault.multiAirdropsAllowed"),
+            true
+          );
         await newNFT
           .connect(beneficialOwner)
           ["safeTransferFrom(address,address,uint256)"](
