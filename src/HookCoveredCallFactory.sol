@@ -75,6 +75,18 @@ contract HookCoveredCallFactory is
     address beaconAddress,
     address preApprovedMarketplace
   ) {
+    require(
+      Address.isContract(hookProtocolAddress),
+      "hook protocol must be a contract"
+    );
+    require(
+      Address.isContract(beaconAddress),
+      "beacon address must be a contract"
+    );
+    require(
+      Address.isContract(preApprovedMarketplace),
+      "pre-approved marketplace must be a contract"
+    );
     _beacon = beaconAddress;
     _protocol = IHookProtocol(hookProtocolAddress);
     _preApprovedMarketplace = preApprovedMarketplace;

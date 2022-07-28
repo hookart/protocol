@@ -656,6 +656,8 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 }
 
 contract HookVaultTestsDistribution is HookVaultTestsBase {
+  event AssetWithdrawn(uint32, address, address);
+
   function testClearAndDistributeReturnsNFT() public {
     (address vaultAddress, uint32 tokenId) = createVaultandAsset();
 
@@ -672,6 +674,8 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     vm.prank(mockContract);
+    vm.expectEmit(true, true, true, false);
+    emit AssetWithdrawn(0, writer, writer);
     vaultImpl.clearEntitlementAndDistribute(0, writer);
 
     assertTrue(
