@@ -75,6 +75,18 @@ contract HookCoveredCallFactory is
     address beaconAddress,
     address preApprovedMarketplace
   ) {
+    require(
+      Address.isContract(hookProtocolAddress),
+      "hook protocol must be a contract"
+    );
+    require(
+      Address.isContract(beaconAddress),
+      "beacon address must be a contract"
+    );
+    require(
+      Address.isContract(preApprovedMarketplace),
+      "pre-approved marketplace must be a contract"
+    );
     _beacon = beaconAddress;
     _protocol = IHookProtocol(hookProtocolAddress);
     _preApprovedMarketplace = preApprovedMarketplace;
@@ -84,7 +96,7 @@ contract HookCoveredCallFactory is
   /// @dev Only holders of the ALLOWLISTER_ROLE on the {IHookProtocol} can create these addresses.
   function makeCallInstrument(address assetAddress)
     external
-    returns (address calls)
+    returns (address)
   {
     require(
       getCallInstrument[assetAddress] == address(0),

@@ -56,31 +56,31 @@ interface IHookERC721VaultFactory {
   /// @notice gets the address of a vault for a particular ERC-721 token
   /// @param nftAddress the contract address for the ERC-721
   /// @param tokenId the tokenId for the ERC-721
-  /// @return vault the address of a {IERC721Vault} if one exists that supports the particular ERC-721, or the null address otherwise
+  /// @return the address of a {IERC721Vault} if one exists that supports the particular ERC-721, or the null address otherwise
   function getVault(address nftAddress, uint256 tokenId)
     external
     view
-    returns (IHookERC721Vault vault);
+    returns (IHookERC721Vault);
 
   /// @notice gets the address of a multi-asset vault for a particular ERC-721 contract, if one exists
   /// @param nftAddress the contract address for the ERC-721
-  /// @return vault the address of the {IERC721Vault} multi asset vault, or the null address if one does not exist
+  /// @return the address of the {IERC721Vault} multi asset vault, or the null address if one does not exist
   function getMultiVault(address nftAddress)
     external
     view
-    returns (IHookERC721Vault vault);
+    returns (IHookERC721Vault);
 
   /// @notice deploy a multi-asset vault if one has not already been deployed
   /// @param nftAddress the contract address for the ERC-721 to be supported by the vault
-  /// @return vault the address of the newly deployed {IERC721Vault} multi asset vault
+  /// @return the address of the newly deployed {IERC721Vault} multi asset vault
   function makeMultiVault(address nftAddress)
     external
-    returns (IHookERC721Vault vault);
+    returns (IHookERC721Vault);
 
   /// @notice gets the address of a vault for a particular ERC-721 token or create a solo vault one if one does not exist
   /// @param nftAddress the contract address for the ERC-721
   /// @param tokenId the tokenId for the ERC-721
   function findOrCreateVault(address nftAddress, uint256 tokenId)
     external
-    returns (IHookERC721Vault vault);
+    returns (IHookERC721Vault);
 }

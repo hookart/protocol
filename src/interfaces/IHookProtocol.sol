@@ -44,10 +44,6 @@ import "@openzeppelin/contracts/access/IAccessControl.sol";
 /// is correct as, if it is not, all assets contained within protocol contracts
 /// can be easily compromised.
 interface IHookProtocol is IAccessControl {
-  /// @notice emitted when the protocol is paused or unpaused
-  /// @param paused true if paused false if unpaused
-  event PausedUpdated(bool paused);
-
   /// @notice the address of the deployed CoveredCallFactory used by the protocol
   function coveredCallContract() external view returns (address);
 
@@ -69,9 +65,9 @@ interface IHookProtocol is IAccessControl {
   /// @notice get a configuration flag with a specific key for a collection
   /// @param collectionAddress the collection for which to lookup a configuration flag
   /// @param conf the config identifier for the configuration flag
-  /// @return value the true or false value of the config
+  /// @return the true or false value of the config
   function getCollectionConfig(address collectionAddress, bytes32 conf)
     external
     view
-    returns (bool value);
+    returns (bool);
 }
