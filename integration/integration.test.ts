@@ -18,6 +18,11 @@ describe("Protocol", function () {
     const weth = await ethers.getContractFactory("WETH");
     protocol = await protocolFactory.deploy(
       admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
       (
         await weth.deploy()
       ).address
@@ -85,6 +90,11 @@ describe("UpgradeableBeacon", function () {
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
     const weth = await ethers.getContractFactory("WETH");
     protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
       admin.address,
       (
         await weth.deploy()
@@ -184,7 +194,15 @@ describe("Vault", function () {
     weth = await weath.deploy();
     const token = await ethers.getContractFactory("TestERC721");
     testNFT = await token.deploy();
-    protocol = await protocolFactory.deploy(admin.address, weth.address);
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      weth.address
+    );
     const vaultImpl = await vaultImplFactory.deploy();
     const multiVaultImpl = await multiVaultImplFactory.deploy();
 
@@ -616,7 +634,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "grantEntitlement -- only the beneficial owner can grant an entitlement"
+          "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
         );
       });
 
@@ -1313,6 +1331,13 @@ describe("Vault", function () {
         const newNFT = await erc721.deploy();
 
         newNFT.mint(beneficialOwner.address, 3);
+        await protocol
+          .connect(admin)
+          .setCollectionConfig(
+            testNFT.address,
+            ethers.utils.id("vault.multiAirdropsAllowed"),
+            true
+          );
         await newNFT
           .connect(beneficialOwner)
           ["safeTransferFrom(address,address,uint256)"](
@@ -1469,7 +1494,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "grantEntitlement -- only the beneficial owner can grant an entitlement"
+          "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
         );
       });
 
@@ -2016,7 +2041,15 @@ describe("Call Instrument Tests", function () {
 
     // // Deploy protocol
     const protocolFactory = await ethers.getContractFactory("HookProtocol");
-    protocol = await protocolFactory.deploy(admin.address, weth.address);
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      weth.address
+    );
 
     // Deploy multi vault
     const vaultFactoryFactory = await ethers.getContractFactory(
@@ -2914,6 +2947,27 @@ describe("Call Instrument Tests", function () {
 
       const settleCall = calls.connect(writer).settleOption(optionTokenId);
       await expect(settleCall).to.emit(calls, "CallSettled");
+
+      const vaultAddress = await calls.getVaultAddress(optionTokenId);
+      const vault = await ethers.getContractAt(
+        "HookERC721VaultImplV1",
+        vaultAddress
+      );
+
+      expect(await vault.getBeneficialOwner(0)).to.eq(writer.address);
+    });
+
+    it("should settle auction and allow claims", async function () {
+      // Move forward to after auction period ends
+      await ethers.provider.send("evm_increaseTime", [1 * SECS_IN_A_DAY]);
+
+      const settleCall = calls.connect(writer).settleOption(optionTokenId);
+      await expect(settleCall).to.emit(calls, "CallSettled");
+
+      const distributeCall = calls
+        .connect(buyer)
+        .claimOptionProceeds(optionTokenId);
+      await expect(distributeCall).to.emit(calls, "CallProceedsDistributed");
 
       const vaultAddress = await calls.getVaultAddress(optionTokenId);
       const vault = await ethers.getContractAt(
