@@ -60,6 +60,8 @@ contract HookERC721MultiVaultImplV1 is
   Initializable,
   ReentrancyGuard
 {
+  /// @notice emitted when the multivault is initialized successfully
+  event Initialized(address nftContract, address hookAddress);
   /// ----------------  STORAGE ---------------- ///
 
   /// @dev these are the NFT contract address and tokenId the vault is covering
@@ -90,9 +92,12 @@ contract HookERC721MultiVaultImplV1 is
     public
     initializer
   {
+    require(nftContract.code.length > 0, "nft contract must be contract");
+    require(hookAddress.code.length > 0, "hookAddress must be contract");
     setAddressForEipDomain(hookAddress);
     _nftContract = IERC721(nftContract);
     _hookProtocol = IHookProtocol(hookAddress);
+    emit Initialized(nftContract, hookAddress);
   }
 
   /// ---------------- PUBLIC FUNCTIONS ---------------- ///
