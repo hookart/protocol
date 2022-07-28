@@ -155,12 +155,14 @@ contract HookProtocol is
 
   function unpause() external {
     require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an admin");
+    require(paused() == true, "Protocol is already paused");
     _unpause();
     emit PausedUpdated(false);
   }
 
   function pause() external {
     require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not an admin");
+    require(paused() == false, "Protocol is already paused");
     _pause();
     emit PausedUpdated(true);
   }

@@ -745,6 +745,10 @@ contract HookCoveredCallImplV1 is
   /// @dev sets a paused / unpaused state for the market corresponding to this contract
   /// @param paused should the market be set to paused or unpaused
   function setMarketPaused(bool paused) public onlyMarketController {
+    require(
+      marketPaused == !paused,
+      "setMarketPaused -- cannot set to current state"
+    );
     marketPaused = paused;
     emit MarketPauseUpdated(paused);
   }
