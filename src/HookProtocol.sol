@@ -71,6 +71,31 @@ contract HookProtocol is
     address collectionConf,
     address weth
   ) {
+    require(Address.isContract(weth), "weth must be a contract");
+    require(
+      allowlister != address(0),
+      "allowlister address cannot be set to the zero address"
+    );
+    require(
+      pauser != address(0),
+      "pauser address cannot be set to the zero address"
+    );
+    require(
+      vaultUpgrader != address(0),
+      "admin address cannot be set to the zero address"
+    );
+    require(
+      callUpgrader != address(0),
+      "callUpgrader address cannot be set to the zero address"
+    );
+    require(
+      marketConf != address(0),
+      "marketConf address cannot be set to the zero address"
+    );
+    require(
+      collectionConf != address(0),
+      "collectionConf address cannot be set to the zero address"
+    );
     _setupRole(ALLOWLISTER_ROLE, allowlister);
     _setupRole(PAUSER_ROLE, pauser);
     _setupRole(VAULT_UPGRADER, vaultUpgrader);
