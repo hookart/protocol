@@ -3172,9 +3172,9 @@ describe("Call Instrument Tests", function () {
     });
 
     it("should set min option duration as market controller", async function () {
-      await expect(calls.connect(marketController).setMinOptionDuration(100))
+      await expect(calls.connect(marketController).setMinOptionDuration(86401)) // Default is 86400 - 1 day
         .to.emit(calls, "MinOptionDurationUpdated")
-        .withArgs(100);
+        .withArgs(86401);
     });
 
     it("should set bid increment as market controller", async function () {
@@ -3191,11 +3191,11 @@ describe("Call Instrument Tests", function () {
         .withArgs(6);
     });
 
-    it("should no set settlement auction start offset when more than minimum option duration", async function () {
-      await calls.connect(marketController).setMinOptionDuration(100);
+    it("should not set settlement auction start offset when more than minimum option duration", async function () {
+      await calls.connect(marketController).setMinOptionDuration(86402);
 
       await expect(
-        calls.connect(marketController).setSettlementAuctionStartOffset(101)
+        calls.connect(marketController).setSettlementAuctionStartOffset(86403)
       ).to.be.revertedWith(
         "the settlement auctions cannot start sooner than an option expired"
       );

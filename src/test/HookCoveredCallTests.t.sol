@@ -481,8 +481,6 @@ contract HookCoveredCallMintTests is HookProtocolTest {
   }
 
   function testCannotMintOptionInvalidExpiration2() public {
-    vm.prank(address(admin));
-    callInternal.setMinOptionDuration(3 hours);
     vm.startPrank(address(writer));
 
     // Writer approve covered call
@@ -496,15 +494,13 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
-  function testCanMintOptionShorterExpiration() public {
-    vm.prank(address(admin));
-    callInternal.setMinOptionDuration(3 hours);
+  function testCanMintOptionLongerExpiration() public {
     vm.startPrank(address(writer));
 
     // Writer approve covered call
     token.setApprovalForAll(address(calls), true);
 
-    uint32 expiration = uint32(block.timestamp) + 5 hours;
+    uint32 expiration = uint32(block.timestamp) + 100 days;
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
