@@ -178,7 +178,7 @@ contract HookCoveredCallImplV1 is
     /// each instance of this contract will need to have the storage initialized
     /// to read from these values (this is the implementation contract pointed to by a proxy)
     minimumOptionDuration = 1 days;
-    minBidIncrementBips = 0;
+    minBidIncrementBips = 50;
     settlementAuctionStartOffset = 1 days;
     marketPaused = false;
   }
