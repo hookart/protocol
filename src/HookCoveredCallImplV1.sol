@@ -544,7 +544,9 @@ contract HookCoveredCallImplV1 is
     }
 
     // return current bidder's money
-    _safeTransferETHWithFallback(call.highBidder, unNormalizedHighBid);
+    if (unNormalizedHighBid > 0) {
+      _safeTransferETHWithFallback(call.highBidder, unNormalizedHighBid);
+    }
   }
 
   /// @dev See {IHookCoveredCall-currentBid}.
@@ -663,7 +665,7 @@ contract HookCoveredCallImplV1 is
     nonReentrant
     whenNotPaused
   {
-    CallOption storage call = optionParams[optionId];
+    CallOption memory call = optionParams[optionId];
 
     require(
       block.timestamp > call.expiration,

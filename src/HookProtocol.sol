@@ -59,7 +59,7 @@ contract HookProtocol is
 {
   address public override coveredCallContract;
   address public override vaultContract;
-  address public override getWETHAddress;
+  address public immutable override getWETHAddress;
   mapping(address => mapping(bytes32 => bool)) collectionConfigs;
 
   constructor(

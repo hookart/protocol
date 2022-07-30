@@ -66,9 +66,9 @@ contract HookERC721VaultFactory is
   /// @notice Registry of all of the active multi-vaults within the protocol
   mapping(address => IHookERC721Vault) public override getMultiVault;
 
-  address private _hookProtocol;
-  address private _beacon;
-  address private _multiBeacon;
+  address private immutable _hookProtocol;
+  address private immutable _beacon;
+  address private immutable _multiBeacon;
 
   constructor(
     address hookProtocolAddress,
