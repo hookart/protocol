@@ -45,7 +45,7 @@ import "./mixin/PermissionConstants.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 
 /// @title Hook Covered Call Factory
-/// @author Jake Nyquist -- j@hook.xyz
+/// @author Jake Nyquist-j@hook.xyz
 /// @dev See {IHookCoveredCallFactory}.
 /// @dev The factory looks up certain roles by calling the {IHookProtocol} to verify
 //  that the caller is allowed to take certain actions
@@ -97,14 +97,14 @@ contract HookCoveredCallFactory is
   function makeCallInstrument(address assetAddress) external returns (address) {
     require(
       getCallInstrument[assetAddress] == address(0),
-      "makeCallInstrument -- a call instrument already exists"
+      "makeCallInstrument-a call instrument already exists"
     );
     // make sure new instruments created by admins or the role
     // has been burned
     require(
       _protocol.hasRole(ALLOWLISTER_ROLE, msg.sender) ||
         _protocol.hasRole(ALLOWLISTER_ROLE, address(0)),
-      "makeCallInstrument -- Only admins can make instruments"
+      "makeCallInstrument-Only admins can make instruments"
     );
 
     IInitializeableBeacon bp = IInitializeableBeacon(

@@ -25,7 +25,7 @@ import "../../interfaces/IHookProtocol.sol";
 import "../../interfaces/IHookCoveredCall.sol";
 
 /// @notice Utils to setup the protocol to build various test cases
-/// @author Regynald Augustin -- regy@hook.xyz
+/// @author Regynald Augustin-regy@hook.xyz
 contract HookProtocolTest is Test, EIP712, PermissionConstants {
   address internal admin;
   address internal buyer;

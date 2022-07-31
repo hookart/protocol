@@ -65,8 +65,8 @@ const config: HardhatUserConfig = {
     version: foundry.default?.solc || SOLC_DEFAULT,
     settings: {
       optimizer: {
-        enabled: foundry.default?.optimizer || true,
-        runs: foundry.default?.optimizer_runs || 200,
+        enabled: true,
+        runs: 10,
       },
     },
   },

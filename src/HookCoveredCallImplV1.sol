@@ -54,8 +54,8 @@ import "./mixin/PermissionConstants.sol";
 import "./mixin/HookInstrumentERC721.sol";
 
 /// @title HookCoveredCallImplV1 an implementation of covered calls on Hook
-/// @author Jake Nyquist -- j@hook.xyz
-/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @author Jake Nyquist-j@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
 /// @notice See {IHookCoveredCall}.
 /// @dev In the context of a single call option, the role of the writer is non-transferrable.
 /// @dev This contract is intended to be an implementation referenced by a proxy
@@ -205,19 +205,16 @@ contract HookCoveredCallImplV1 is
     IHookVault vault = IHookVault(vaultAddress);
     require(
       allowedUnderlyingAddress == vault.assetAddress(assetId),
-      "mintWithVault -- token must be on the project allowlist"
+      "mWV-token not allowed"
     );
-    require(
-      vault.getHoldsAsset(assetId),
-      "mintWithVault-- asset must be in vault"
-    );
+    require(vault.getHoldsAsset(assetId), "mWV-asset not in vault");
     require(
       _allowedVaultImplementation(
         vaultAddress,
         allowedUnderlyingAddress,
         assetId
       ),
-      "mintWithVault -- can only mint with protocol vaults"
+      "mWV-can only mint with protocol vaults"
     );
     // the beneficial owner is the only one able to impose entitlements, so
     // we need to require that they've done so here.
@@ -225,7 +222,7 @@ contract HookCoveredCallImplV1 is
 
     require(
       msg.sender == writer || msg.sender == vault.getApproved(assetId),
-      "mintWithVault -- called by someone other than the beneficial owner or approved operator"
+      "mWV-called by someone other than the owner or operator"
     );
 
     vault.imposeEntitlement(
@@ -252,23 +249,20 @@ contract HookCoveredCallImplV1 is
 
     require(
       allowedUnderlyingAddress == vault.assetAddress(assetId),
-      "mintWithEntitledVault -- token must be on the project allowlist"
+      "mWEV-token not allowed"
     );
-    require(
-      vault.getHoldsAsset(assetId),
-      "mintWithEntitledVault-- asset must be in vault"
-    );
+    require(vault.getHoldsAsset(assetId), "mWEV-asset must be in vault");
     (bool active, address operator) = vault.getCurrentEntitlementOperator(
       assetId
     );
     require(
       active && operator == address(this),
-      "mintWithEntitledVault -- call contact must be the entitled operator"
+      "mWEV-call contract not operator"
     );
 
     require(
       expirationTime == vault.entitlementExpiration(assetId),
-      "mintWithEntitledVault -- entitlement expiration must match call expiration"
+      "mWEV-entitlement expiration different"
     );
     require(
       _allowedVaultImplementation(
@@ -276,7 +270,7 @@ contract HookCoveredCallImplV1 is
         allowedUnderlyingAddress,
         assetId
       ),
-      "mintWithEntitledVault -- can only mint with protocol vaults"
+      "mWEV-only protocol vaults allowed"
     );
 
     // the beneficial owner owns the asset so
@@ -285,7 +279,7 @@ contract HookCoveredCallImplV1 is
 
     require(
       writer == msg.sender || vault.getApproved(assetId) == msg.sender,
-      "mintWithVault -- only the beneficial owner can create a call option with an entitled vault"
+      "mWEV-only owner or operator may mint"
     );
 
     return
@@ -302,14 +296,14 @@ contract HookCoveredCallImplV1 is
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
       allowedUnderlyingAddress == tokenAddress,
-      "mintWithErc721 -- token must be on the project allowlist"
+      "mWE7-token not on allowlist"
     );
 
     require(
       msg.sender == tokenOwner ||
         IERC721(tokenAddress).isApprovedForAll(tokenOwner, msg.sender) ||
         IERC721(tokenAddress).getApproved(tokenId) == msg.sender,
-      "mintWithErc721 -- caller must be token owner or operator"
+      "mWE7-caller not owner or operator"
     );
 
     // NOTE: we can mint the option since our contract is approved
@@ -317,7 +311,7 @@ contract HookCoveredCallImplV1 is
     require(
       IERC721(tokenAddress).isApprovedForAll(tokenOwner, address(this)) ||
         IERC721(tokenAddress).getApproved(tokenId) == address(this),
-      "mintWithErc721 -- HookCoveredCall must be operator"
+      "mWE7-not approved operator"
     );
 
     // FIND OR CREATE HOOK VAULT, SET AN ENTITLEMENT
@@ -360,7 +354,7 @@ contract HookCoveredCallImplV1 is
     // make sure that the vault actually has the asset.
     require(
       IERC721(tokenAddress).ownerOf(tokenId) == address(vault),
-      "mintWithErc712 -- asset must be in vault"
+      "mWE7-asset not in vault"
     );
 
     return optionId;
@@ -384,7 +378,7 @@ contract HookCoveredCallImplV1 is
     // NOTE: The settlement auction always occurs one day before expiration
     require(
       expirationTime > block.timestamp + minimumOptionDuration,
-      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
+      "_mOWV-expires sooner than min duration"
     );
 
     // verify that, if there is a previous option on this asset, it has already settled.
@@ -392,7 +386,7 @@ contract HookCoveredCallImplV1 is
     if (prevOptionId != 0) {
       require(
         optionParams[prevOptionId].settled,
-        "_mintOptionWithVault -- previous option must be settled"
+        "_mOWV-previous option must be settled"
       );
     }
 
@@ -440,18 +434,12 @@ contract HookCoveredCallImplV1 is
 
   modifier biddingEnabled(uint256 optionId) {
     CallOption memory call = optionParams[optionId];
-    require(
-      call.expiration > block.timestamp,
-      "biddingEnabled -- option already expired"
-    );
+    require(call.expiration > block.timestamp, "bE-expired");
     require(
       (call.expiration - settlementAuctionStartOffset) <= block.timestamp,
-      "biddingEnabled -- bidding starts on last day"
+      "bE-bidding starts on last day"
     );
-    require(
-      !call.settled,
-      "biddingEnabled -- the owner has already settled the call option"
-    );
+    require(!call.settled, "bE-already settled");
     _;
   }
 
@@ -517,9 +505,9 @@ contract HookCoveredCallImplV1 is
 
     require(
       bidAmt >= call.bid + ((call.bid * minBidIncrementBips) / 10000),
-      "bid - bid is lower than the current bid + minBidIncrementBips"
+      "b-must overbid by minBidIncrementBips"
     );
-    require(bidAmt > call.strike, "bid - bid is lower than the strike price");
+    require(bidAmt > call.strike, "b-bid is lower than the strike price");
 
     _returnBidToPreviousBidder(call);
 
@@ -564,15 +552,9 @@ contract HookCoveredCallImplV1 is
   /// @dev See {IHookCoveredCall-settleOption}.
   function settleOption(uint256 optionId) external nonReentrant {
     CallOption storage call = optionParams[optionId];
-    require(
-      call.highBidder != address(0),
-      "settle -- bid must be won by someone"
-    );
-    require(
-      call.expiration < block.timestamp,
-      "settle -- option must be expired"
-    );
-    require(!call.settled, "settle -- the call cannot already be settled");
+    require(call.highBidder != address(0), "s-bid must be won by someone");
+    require(call.expiration < block.timestamp, "s-option must be expired");
+    require(!call.settled, "s-the call cannot already be settled");
 
     uint256 spread = call.bid - call.strike;
 
@@ -607,22 +589,10 @@ contract HookCoveredCallImplV1 is
     nonReentrant
   {
     CallOption storage call = optionParams[optionId];
-    require(
-      msg.sender == call.writer,
-      "reclaimAsset -- asset can only be reclaimed by the writer"
-    );
-    require(
-      !call.settled,
-      "reclaimAsset -- the option has already been settled"
-    );
-    require(
-      call.writer == ownerOf(optionId),
-      "reclaimAsset -- the option must be owned by the writer"
-    );
-    require(
-      call.expiration > block.timestamp,
-      "reclaimAsset -- the option must not be expired"
-    );
+    require(msg.sender == call.writer, "rA-only writer");
+    require(!call.settled, "rA-option settled");
+    require(call.writer == ownerOf(optionId), "rA-writer must own");
+    require(call.expiration > block.timestamp, "rA-option expired");
 
     // burn the option NFT
     _burn(optionId);
@@ -667,20 +637,11 @@ contract HookCoveredCallImplV1 is
   {
     CallOption memory call = optionParams[optionId];
 
-    require(
-      block.timestamp > call.expiration,
-      "burnExpiredOption -- the option must be expired"
-    );
+    require(block.timestamp > call.expiration, "bEO-option expired");
 
-    require(
-      !call.settled,
-      "burnExpiredOption -- the option has already been settled"
-    );
+    require(!call.settled, "bEO-option settled");
 
-    require(
-      call.highBidder == address(0),
-      "burnExpiredOption -- the option must not have bids"
-    );
+    require(call.highBidder == address(0), "bEO-option has bids");
 
     // burn the option NFT
     _burn(optionId);
@@ -694,10 +655,7 @@ contract HookCoveredCallImplV1 is
   /// @dev See {IHookCoveredCall-claimOptionProceeds}
   function claimOptionProceeds(uint256 optionId) external {
     address optionOwner = ownerOf(optionId);
-    require(
-      msg.sender == optionOwner,
-      "claimOptionProceeds -- only the option owner can claim their proceeds"
-    );
+    require(msg.sender == optionOwner, "cOP-owner only");
     if (optionClaims[optionId] != 0) {
       emit CallProceedsDistributed(
         optionId,
@@ -714,7 +672,7 @@ contract HookCoveredCallImplV1 is
 
   // forward to protocol-level pauseability
   modifier whenNotPaused() {
-    require(!marketPaused, "whenNotPaused -- market is paused");
+    require(!marketPaused, "market paused");
     _protocol.throwWhenPaused();
     _;
   }
@@ -722,7 +680,7 @@ contract HookCoveredCallImplV1 is
   modifier onlyMarketController() {
     require(
       _protocol.hasRole(MARKET_CONF, msg.sender),
-      "onlyMarketController -- caller does not have the MARKET_CONF protocol role"
+      "caller needs MARKET_CONF"
     );
     _;
   }
@@ -734,10 +692,7 @@ contract HookCoveredCallImplV1 is
     public
     onlyMarketController
   {
-    require(
-      settlementAuctionStartOffset < newMinDuration,
-      "the settlement auctions cannot start sooner than an option expired"
-    );
+    require(settlementAuctionStartOffset < newMinDuration);
     minimumOptionDuration = newMinDuration;
     emit MinOptionDurationUpdated(newMinDuration);
   }
@@ -748,10 +703,7 @@ contract HookCoveredCallImplV1 is
     public
     onlyMarketController
   {
-    require(
-      newBidIncrement < 20 * 100,
-      "the bid increment must be less than 20%"
-    );
+    require(newBidIncrement < 20 * 100);
     minBidIncrementBips = newBidIncrement;
     emit MinBidIncrementUpdated(newBidIncrement);
   }
@@ -762,10 +714,7 @@ contract HookCoveredCallImplV1 is
     public
     onlyMarketController
   {
-    require(
-      newSettlementStartOffset < minimumOptionDuration,
-      "the settlement auctions cannot start sooner than an option expired"
-    );
+    require(newSettlementStartOffset < minimumOptionDuration);
     settlementAuctionStartOffset = newSettlementStartOffset;
     emit SettlementAuctionStartOffsetUpdated(newSettlementStartOffset);
   }
@@ -773,10 +722,7 @@ contract HookCoveredCallImplV1 is
   /// @dev sets a paused / unpaused state for the market corresponding to this contract
   /// @param paused should the market be set to paused or unpaused
   function setMarketPaused(bool paused) public onlyMarketController {
-    require(
-      marketPaused == !paused,
-      "setMarketPaused -- cannot set to current state"
-    );
+    require(marketPaused == !paused, "sMP-must change");
     marketPaused = paused;
     emit MarketPauseUpdated(paused);
   }

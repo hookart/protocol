@@ -39,8 +39,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "../lib/Signatures.sol";
 
 /// @title A covered call instrument
-/// @author Jake Nyquist -- j@hook.xyz
-/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @author Jake Nyquist-j@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
 ///
 /// @notice This contract implements a "Covered Call Option". A call option gives the holder the right, but not
 /// the obligation to purchase an asset at a fixed time in the future (the expiry) for a fixed price (the strike).
@@ -64,7 +64,7 @@ import "../lib/Signatures.sol";
 ///
 /// (3) SETTLEMENT:
 /// One day prior to the expiration, and auction begins. People are able to call bid() for more than the strike price to
-/// place a bid. If, at settlement, the high bid is greater than the strike, (bid - strike) is transferred to the holder
+/// place a bid. If, at settlement, the high bid is greater than the strike, (b-strike) is transferred to the holder
 /// of the instrument NFT, the strike price is transferred to the writer. The high bid is transferred to the holder of
 /// the option.
 interface IHookCoveredCall is IERC721Metadata {
@@ -177,7 +177,7 @@ interface IHookCoveredCall is IERC721Metadata {
   /// the proceeds to the Writer, Holder, and Bidder as follows:
   ///
   /// WRITER (who originally called mint() and owned underlying asset) - receives the `strike`
-  /// HOLDER (ownerOf(optionId)) - receives `bid - strike`
+  /// HOLDER (ownerOf(optionId)) - receives `b-strike`
   /// HIGH BIDDER (call.highBidder) - becomes ownerOf NFT, pays `bid`.
   ///
   /// @dev the return nft param allows the underlying asset to remain in its vault. This saves gas

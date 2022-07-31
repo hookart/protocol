@@ -38,8 +38,8 @@ import "./IHookVault.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 /// @title Hook ERC-721 Vault interface
-/// @author Jake Nyquist -- j@hook.xyz
-/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @author Jake Nyquist-j@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
 ///
 /// @dev the IHookERC721 vault is an extension of the standard IHookVault
 /// specifically designed to hold and receive ERC721 Tokens.
