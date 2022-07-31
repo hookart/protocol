@@ -36,9 +36,9 @@ pragma solidity ^0.8.10;
 
 import "./HookERC721MultiVaultImplV1.sol";
 
-/// @title HookVault -- implementation of a Vault for a single NFT asset, with entitlements.
+/// @title HookVault-implementation of a Vault for a single NFT asset, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
-/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
 /// @notice HookVault holds a single NFT asset in escrow on behalf of a user. Other contracts are able
 /// to register "entitlements" for a fixed period of time on the asset, which give them the ability to
 /// change the vault's owner.
@@ -61,13 +61,12 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
   /// Upgradeable Implementations cannot have a constructor, so we call the initialize instead;
   constructor() HookERC721MultiVaultImplV1() {}
 
-  /// -- constructor
+  ///-constructor
   function initialize(
     address nftContract,
     uint256 tokenId,
     address hookAddress
   ) public {
-    setAddressForEipDomain(hookAddress);
     _tokenId = tokenId;
     // the super function calls "Initialize"
     super.initialize(nftContract, hookAddress);
@@ -106,7 +105,7 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
   /// This method requires an override implementation because the the arguments must be embedded in the body of the
   /// function
   function onERC721Received(
-    address operator, // this arg is the address of the operator
+    address, // this arg is the address of the operator
     address from,
     uint256 tokenId,
     bytes calldata data
@@ -114,8 +113,8 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     /// (1) If the contract is specified to hold a specific NFT, and that NFT is sent to the contract,
     /// set the beneficial owner of this vault to be current owner of the asset getting sent. Alternatively,
     /// the sender can specify an entitlement which contains a different beneficial owner. We accept this because
-    /// that same sender could alternatively first send the token, become the beneficial owner, and then set it 
-    /// the beneficial owner to someone else and finally specify an entitlement. 
+    /// that same sender could alternatively first send the token, become the beneficial owner, and then set it
+    /// the beneficial owner to someone else and finally specify an entitlement.
     ///
     /// (2) If another nft is sent to the contract, we should verify that airdrops are allowed to this vault;
     /// if they are disabled, we should not return the selector, otherwise we can allow them.
@@ -161,7 +160,7 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
           address(_nftContract),
           keccak256("vault.airdropsProhibited")
         ),
-        "onERC721Received -- non-escrow asset returned when airdrops are disabled"
+        "onERC721Received-non-escrow asset returned when airdrops are disabled"
       );
     }
     emit AssetReceived(
@@ -188,19 +187,19 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
     // Only the beneficial owner can make this call
     require(
       msg.sender == assets[ASSET_ID].beneficialOwner,
-      "execTransaction -- only the beneficial owner can use the transaction"
+      "execTransaction-only the beneficial owner can use the transaction"
     );
 
     // block transactions to the NFT contract to ensure that people cant set approvals as the owner.
     require(
       to != address(_nftContract),
-      "execTransaction -- cannot send transactions to the NFT contract itself"
+      "execTransaction-cannot send transactions to the NFT contract itself"
     );
 
     // block transactions to the vault to mitigate reentrancy vulnerabilities
     require(
       to != address(this),
-      "execTransaction -- cannot call the vault contract"
+      "execTransaction-cannot call the vault contract"
     );
 
     require(
@@ -208,14 +207,14 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
         address(_nftContract),
         keccak256("vault.execTransactionDisabled")
       ),
-      "execTransaction -- feature is disabled for this collection"
+      "execTransaction-feature is disabled for this collection"
     );
 
     // Execute transaction without further confirmations.
     (bool success, ) = address(to).call{value: msg.value}(data);
 
     require(_assetOwner(ASSET_ID) == address(this));
-    
+
     return success;
   }
 
@@ -233,7 +232,7 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
   modifier assetIdIsZero(uint256 assetId) {
     require(
       assetId == ASSET_ID,
-      "assetIdIsZero -- this vault only supports asset id 0"
+      "assetIdIsZero-this vault only supports asset id 0"
     );
     _;
   }

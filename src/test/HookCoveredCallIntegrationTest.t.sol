@@ -4,7 +4,7 @@ pragma solidity ^0.8.10;
 import "./utils/base.t.sol";
 
 /// @notice Integration tests for the Hook Protocol
-/// @author Regynald Augustin -- regy@hook.xyz
+/// @author Regynald Augustin-regy@hook.xyz
 contract HookCoveredCallIntegrationTest is HookProtocolTest {
   function setUp() public {
     setUpAddresses();
@@ -62,7 +62,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   }
 
   function testRevertMintOptionMustBeOwnerOrOperator() public {
-    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    vm.expectRevert("mWE7-caller not owner or operator");
     calls.mintWithErc721(
       address(token),
       underlyingTokenId,
@@ -76,9 +76,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
   {
     vm.startPrank(address(writer));
 
-    vm.expectRevert(
-      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
-    );
+    vm.expectRevert("_mOWV-expires sooner than min duration");
     calls.mintWithErc721(
       address(token),
       underlyingTokenId,
@@ -113,14 +111,14 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     // bid at an invalid time
     vm.warp(baseTime + 0.5 days);
     vm.prank(bidder1);
-    vm.expectRevert("biddingEnabled -- bidding starts on last day");
+    vm.expectRevert("bE-bidding starts on last day");
     calls.bid{value: 0}(optionId);
 
     // make the first bid, but have it be too low
     vm.warp(baseTime + 2.1 days);
     vm.deal(bidder1, 300);
     vm.prank(bidder1);
-    vm.expectRevert("bid - bid is lower than the strike price");
+    vm.expectRevert("b-bid is lower than the strike price");
     calls.bid{value: 300}(optionId);
 
     // made a bid
@@ -228,9 +226,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.warp(expiration + 3 seconds);
 
     vm.prank(address(5555));
-    vm.expectRevert(
-      "reclaimAsset -- asset can only be reclaimed by the writer"
-    );
+    vm.expectRevert("rA-only writer");
     calls.reclaimAsset(optionId, true);
   }
 
@@ -265,7 +261,7 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     calls.safeTransferFrom(buyer, writer, optionId);
 
     vm.prank(address(writer));
-    vm.expectRevert("reclaimAsset -- the option must not be expired");
+    vm.expectRevert("rA-option expired");
     calls.reclaimAsset(optionId, true);
   }
 }

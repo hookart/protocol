@@ -7,7 +7,7 @@ import "forge-std/Test.sol";
 import "./utils/base.t.sol";
 
 /// @notice Covered call minting test cases
-/// @author Regynald Augustin -- regy@hook.xyz
+/// @author Regynald Augustin-regy@hook.xyz
 contract HookCoveredCallMintTests is HookProtocolTest {
   function setUp() public {
     setUpAddresses();
@@ -180,9 +180,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     vm.stopPrank();
     vm.prank(address(333456)); // simulating a replay attack, random address calling with the signature]
-    vm.expectRevert(
-      "mintWithVault -- called by someone other than the beneficial owner or approved operator"
-    );
+    vm.expectRevert("mWV-called by someone other than the owner or operator");
     calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
 
     // in this replay attack, the writer's call would land second
@@ -274,7 +272,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
 
-    vm.expectRevert("mintWithVault -- can only mint with protocol vaults");
+    vm.expectRevert("mWV-can only mint with protocol vaults");
     calls.mintWithVault(address(alienVault), 0, 1000, expiration, sig);
   }
 
@@ -296,9 +294,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
 
-    vm.expectRevert(
-      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
-    );
+    vm.expectRevert("_mOWV-expires sooner than min duration");
     calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
   }
 
@@ -317,7 +313,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
 
-    vm.expectRevert("mintWithVault-- asset must be in vault");
+    vm.expectRevert("mWV-asset not in vault");
     calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
   }
 
@@ -339,7 +335,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       writer
     );
 
-    vm.expectRevert("mintWithVault -- token must be on the project allowlist");
+    vm.expectRevert("mWV-token not allowed");
     calls.mintWithVault(address(vault), 0, 1000, expiration, sig);
   }
 
@@ -474,9 +470,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     token.setApprovalForAll(address(calls), true);
 
     uint32 expiration = uint32(block.timestamp) + 1 hours;
-    vm.expectRevert(
-      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
-    );
+    vm.expectRevert("_mOWV-expires sooner than min duration");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -488,9 +482,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint32 expiration = uint32(block.timestamp) + 1 hours;
 
-    vm.expectRevert(
-      "_mintOptionWithVault -- expirationTime must be further in the future than the minimum option duration"
-    );
+    vm.expectRevert("_mOWV-expires sooner than min duration");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -520,7 +512,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint32 expiration = uint32(block.timestamp) + 3 days;
 
-    vm.expectRevert("whenNotPaused -- market is paused");
+    vm.expectRevert("market paused");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -529,7 +521,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint32 expiration = uint32(block.timestamp) + 3 days;
 
-    vm.expectRevert("mintWithErc721 -- HookCoveredCall must be operator");
+    vm.expectRevert("mWE7-not approved operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -538,7 +530,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     uint32 expiration = uint32(block.timestamp) + 3 days;
 
-    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    vm.expectRevert("mWE7-caller not owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -572,7 +564,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     // Vault is now owner of the underlying token so this fails.
-    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    vm.expectRevert("mWE7-caller not owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
     vm.stopPrank();
   }
@@ -602,7 +594,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
 
     // Vault is now owner of the underlying token so this fails.
-    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    vm.expectRevert("mWE7-caller not owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -633,7 +625,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       sig
     );
 
-    vm.expectRevert("_mintOptionWithVault -- previous option must be settled");
+    vm.expectRevert("_mOWV-previous option must be settled");
     calls.mintWithEntitledVault(address(vault), 0, 1000, expiration);
   }
 
@@ -720,7 +712,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     vm.startPrank(operator);
 
     // Vault is now owner of the underlying token so this fails.
-    vm.expectRevert("mintWithErc721 -- caller must be token owner or operator");
+    vm.expectRevert("mWE7-caller not owner or operator");
     calls.mintWithErc721(address(token), underlyingTokenId, 1000, expiration);
   }
 
@@ -749,7 +741,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
     );
 
     // Minting should only work for TestERC721
-    vm.expectRevert("mintWithErc721 -- token must be on the project allowlist");
+    vm.expectRevert("mWE7-token not on allowlist");
     calls.mintWithErc721(address(calls), optionId, 1000, expiration);
   }
 
@@ -893,7 +885,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     // Option expires in 3 days from current block; bidding starts in 2 days.
     vm.warp(block.timestamp + 1.9 days);
     hoax(bidder);
-    vm.expectRevert("biddingEnabled -- bidding starts on last day");
+    vm.expectRevert("bE-bidding starts on last day");
     calls.bid{value: 0.1 ether}(optionTokenId);
   }
 
@@ -904,7 +896,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     // Option expires in 3 days from current block; bidding starts in 2 days.
     vm.warp(block.timestamp + 4 days);
     hoax(bidder);
-    vm.expectRevert("biddingEnabled -- option already expired");
+    vm.expectRevert("bE-expired");
     calls.bid{value: 0.1 ether}(optionTokenId);
   }
 
@@ -916,7 +908,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     hoax(bidder);
 
     /// Option strike price is 1000 wei.
-    vm.expectRevert("bid - bid is lower than the strike price");
+    vm.expectRevert("b-bid is lower than the strike price");
     calls.bid{value: 1 wei}(optionTokenId);
   }
 
@@ -935,9 +927,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     calls.bid{value: 0.1 ether}(optionTokenId);
 
     vm.prank(secondBidder);
-    vm.expectRevert(
-      "bid - bid is lower than the current bid + minBidIncrementBips"
-    );
+    vm.expectRevert("b-must overbid by minBidIncrementBips");
     calls.bid{value: 0.09 ether}(optionTokenId);
   }
 
@@ -958,9 +948,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     calls.bid{value: 0.1 ether}(optionTokenId);
 
     vm.prank(secondBidder);
-    vm.expectRevert(
-      "bid - bid is lower than the current bid + minBidIncrementBips"
-    );
+    vm.expectRevert("b-must overbid by minBidIncrementBips");
     calls.bid{value: 0.105 ether}(optionTokenId);
   }
 
@@ -1112,7 +1100,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     assertTrue(
       buyerStartBalance + (0.2 ether - 1000 wei) == buyer.balance,
-      "buyer gets the option spread (winning bid - strike price"
+      "buyer gets the option spread (winning b-strike price"
     );
     assertTrue(
       writerStartBalance + 1000 wei == writer.balance,
@@ -1134,7 +1122,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     assertTrue(
       buyerStartBalance + (0.2 ether - 1000 wei) == buyer.balance,
-      "buyer gets the option spread (winning bid - strike price"
+      "buyer gets the option spread (winning b-strike price"
     );
     assertTrue(
       writerStartBalance + 1000 wei == writer.balance,
@@ -1161,7 +1149,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
 
     // Option expires in 3 days from current block; bidding starts in 2 days.
     vm.warp(block.timestamp + 3.1 days);
-    vm.expectRevert("settle -- bid must be won by someone");
+    vm.expectRevert("s-bid must be won by someone");
     calls.settleOption(optionId);
   }
 
@@ -1186,7 +1174,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.warp(block.timestamp + 2.1 days);
     calls.bid{value: 0.1 ether}(optionId);
 
-    vm.expectRevert("settle -- option must be expired");
+    vm.expectRevert("s-option must be expired");
     calls.settleOption(optionId);
   }
 
@@ -1194,7 +1182,7 @@ contract HookCoveredCallSettleTests is HookProtocolTest {
     vm.prank(writer);
     calls.settleOption(optionTokenId);
 
-    vm.expectRevert("settle -- the call cannot already be settled");
+    vm.expectRevert("s-the call cannot already be settled");
     calls.settleOption(optionTokenId);
   }
 
@@ -1495,9 +1483,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
 
     vm.startPrank(buyer);
 
-    vm.expectRevert(
-      "reclaimAsset -- asset can only be reclaimed by the writer"
-    );
+    vm.expectRevert("rA-only writer");
     calls.reclaimAsset(optionTokenId, true);
   }
 
@@ -1507,7 +1493,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.startPrank(writer);
     calls.settleOption(optionTokenId);
 
-    vm.expectRevert("reclaimAsset -- the option has already been settled");
+    vm.expectRevert("rA-option settled");
     calls.reclaimAsset(optionTokenId, true);
   }
 
@@ -1564,7 +1550,7 @@ contract HookCoveredCallReclaimTests is HookProtocolTest {
     vm.startPrank(writer);
     vm.warp(block.timestamp + 3.1 days);
 
-    vm.expectRevert("reclaimAsset -- the option must not be expired");
+    vm.expectRevert("rA-option expired");
     calls.reclaimAsset(optionTokenId, true);
   }
 

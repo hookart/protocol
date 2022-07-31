@@ -37,9 +37,9 @@ pragma solidity ^0.8.10;
 import "../lib/Entitlements.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-/// @title Generic Hook Vault -- a vault designed to contain a single asset to be used as escrow.
-/// @author Jake Nyquist -- j@hook.xyz
-/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @title Generic Hook Vault-a vault designed to contain a single asset to be used as escrow.
+/// @author Jake Nyquist-j@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
 ///
 /// @notice The Vault holds an asset on behalf of the owner. The owner is able to post this
 /// asset as collateral to other protocols by signing a message, called an "entitlement", that gives

@@ -14,7 +14,7 @@ import "../mixin/EIP712.sol";
 import "./utils/mocks/FlashLoan.sol";
 
 /// @notice Integration tests for the Hook Solo Vault
-/// @author Regynald Augustin -- regy@hook.xyz
+/// @author Regynald Augustin-regy@hook.xyz
 contract HookVaultTestsBase is HookProtocolTest {
   IHookERC721VaultFactory vault;
   uint32 tokenStartIndex = 300;
@@ -25,15 +25,14 @@ contract HookVaultTestsBase is HookProtocolTest {
     vault = IHookERC721VaultFactory(protocol.vaultContract());
   }
 
-  function createVaultandAsset()
-    internal
-    returns (address, uint32)
-  {
+  function createVaultandAsset() internal returns (address, uint32) {
     vm.startPrank(admin);
     tokenStartIndex += 1;
     uint32 tokenId = tokenStartIndex;
     token.mint(address(writer), tokenId);
-    address vaultAddress = address(vault.findOrCreateVault(address(token), tokenId));
+    address vaultAddress = address(
+      vault.findOrCreateVault(address(token), tokenId)
+    );
     vm.stopPrank();
     return (vaultAddress, tokenId);
   }
@@ -45,10 +44,7 @@ contract HookVaultTestsBase is HookProtocolTest {
     uint32 _expiry
   )
     internal
-    returns (
-      Entitlements.Entitlement memory,
-      Signatures.Signature memory
-    )
+    returns (Entitlements.Entitlement memory, Signatures.Signature memory)
   {
     address ownerAdd = vm.addr(writerpkey);
 
@@ -128,9 +124,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
       true
     );
     vm.prank(writer);
-    vm.expectRevert(
-      "flashLoan -- flashLoan feature disabled for this contract"
-    );
+    vm.expectRevert("flashLoan-flashLoan feature disabled for this contract");
     vaultImpl.flashLoan(0, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
@@ -183,7 +177,7 @@ contract HookVaultTestFlash is HookVaultTestsBase {
     IERC721FlashLoanReceiver flashLoan = new FlashLoanReturnsFalse();
 
     vm.prank(writer);
-    vm.expectRevert("flashLoan -- the flash loan contract must return true");
+    vm.expectRevert("flashLoan-the flash loan contract must return true");
     vaultImpl.flashLoan(0, address(flashLoan), " ");
     assertTrue(
       token.ownerOf(tokenId) == vaultAddress,
@@ -382,7 +376,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
     // verify that beneficial owner cannot withdrawl
     // during an active entitlement.
     vm.expectRevert(
-      "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
+      "withdrawalAsset-the asset cannot be withdrawn with an active entitlement"
     );
     vm.prank(writer);
     vaultImpl.withdrawalAsset(0);
@@ -608,7 +602,7 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
     vm.prank(mockContract2);
     vm.expectRevert(
-      "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
+      "_registerEntitlement-existing entitlement must be cleared before registering a new one"
     );
 
     vaultImpl.imposeEntitlement(
@@ -643,13 +637,13 @@ contract HookVaultTestEntitlement is HookVaultTestsBase {
 
     vm.prank(writer);
     vm.expectRevert(
-      "clearEntitlement -- only the entitled address can clear the entitlement"
+      "clearEntitlement-only the entitled address can clear the entitlement"
     );
     vaultImpl.clearEntitlement(0);
 
     vm.prank(address(55566677788899911));
     vm.expectRevert(
-      "clearEntitlement -- only the entitled address can clear the entitlement"
+      "clearEntitlement-only the entitled address can clear the entitlement"
     );
     vaultImpl.clearEntitlement(0);
   }
@@ -701,7 +695,7 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
 
     TestERC721 token2 = new TestERC721();
     vm.expectRevert(
-      "onERC721Received -- non-escrow asset returned when airdrops are disabled"
+      "onERC721Received-non-escrow asset returned when airdrops are disabled"
     );
     token2.mint(vaultAddress, 0);
   }
@@ -737,7 +731,7 @@ contract HookVaultTestsDistribution is HookVaultTestsBase {
     HookERC721VaultImplV1 vaultImpl = HookERC721VaultImplV1(vaultAddress);
 
     vm.expectRevert(
-      "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
+      "clearEntitlementAndDistribute-Only the beneficial owner can receive the asset"
     );
     vm.prank(mockContract);
     vaultImpl.clearEntitlementAndDistribute(0, address(0x033333344545));

@@ -235,7 +235,7 @@ describe("Vault", function () {
       (
         (await expect(vaultFactory.makeSoloVault(testNFT.address, 4)).to
           .be) as any
-      ).revertedWith("makeVault -- a vault cannot already exist");
+      ).revertedWith("makeVault-a vault cannot already exist");
     });
 
     it("the factory should be able to make a multi vault", async function () {
@@ -246,7 +246,7 @@ describe("Vault", function () {
       await expect(
         vaultFactory.connect(runner).makeMultiVault(testNFT.address)
       ).to.be.revertedWith(
-        "makeMultiVault -- Only accounts with the ALLOWLISTER role can make new multiVaults"
+        "makeMultiVault-Only accounts with the ALLOWLISTER role can make new multiVaults"
       );
     });
 
@@ -255,7 +255,7 @@ describe("Vault", function () {
       (
         (await expect(vaultFactory.makeMultiVault(testNFT.address)).to
           .be) as any
-      ).revertedWith("makeMultiVault -- vault cannot already exist");
+      ).revertedWith("makeMultiVault-vault cannot already exist");
     });
 
     it("the factory should be able to make both vault types, return them correctly on find or create", async function () {
@@ -511,7 +511,7 @@ describe("Vault", function () {
               3
             )
         ).to.be.revertedWith(
-          "onERC721Received -- non-escrow asset returned when airdrops are disabled"
+          "onERC721Received-non-escrow asset returned when airdrops are disabled"
         );
       });
 
@@ -541,7 +541,7 @@ describe("Vault", function () {
         await expect(
           vaultInstance.connect(runner).setBeneficialOwner(0, runner.address)
         ).to.be.revertedWith(
-          "setBeneficialOwner -- only the current owner can update the beneficial owner"
+          "setBeneficialOwner-only the current owner can update the beneficial owner"
         );
       });
 
@@ -559,7 +559,7 @@ describe("Vault", function () {
             .connect(beneficialOwner)
             .setBeneficialOwner(10, runner.address)
         ).to.be.revertedWith(
-          "assetIdIsZero -- this vault only supports asset id 0"
+          "assetIdIsZero-this vault only supports asset id 0"
         );
       });
     });
@@ -634,7 +634,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
+          "grantEntitlement-only the beneficial owner or approved operator can grant an entitlement"
         );
       });
 
@@ -826,7 +826,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
+          "_registerEntitlement-existing entitlement must be cleared before registering a new one"
         );
       });
 
@@ -896,7 +896,7 @@ describe("Vault", function () {
         await expect(
           vaultInstance.connect(runner).withdrawalAsset(0)
         ).to.be.revertedWith(
-          "withdrawalAsset -- only the beneficial owner can withdrawal an asset"
+          "withdrawalAsset-only the beneficial owner can withdrawal an asset"
         );
 
         expect(await vaultInstance.getHoldsAsset(0)).to.be.true;
@@ -963,7 +963,7 @@ describe("Vault", function () {
             .connect(runner)
             .clearEntitlementAndDistribute(0, runner.address)
         ).to.be.revertedWith(
-          "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
+          "clearEntitlementAndDistribute-Only the beneficial owner can receive the asset"
         );
       });
 
@@ -1031,7 +1031,7 @@ describe("Vault", function () {
             .connect(beneficialOwner)
             .setBeneficialOwner(0, vaultInstance.address)
         ).to.be.revertedWith(
-          "setBeneficialOwner -- only the contract with the active entitlement can update the beneficial owner"
+          "setBeneficialOwner-only the contract with the active entitlement can update the beneficial owner"
         );
       });
     });
@@ -1074,7 +1074,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "execTransaction -- cannot send transactions to the NFT contract itself"
+          "execTransaction-cannot send transactions to the NFT contract itself"
         );
       });
       it("doesn't allow transactions to be sent if disabled for a collection", async function () {
@@ -1091,7 +1091,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "execTransaction -- feature is disabled for this collection"
+          "execTransaction-feature is disabled for this collection"
         );
       });
       it("blocks exec transactions targeting the vault itself", async function () {
@@ -1102,9 +1102,7 @@ describe("Vault", function () {
               vaultInstance.address,
               "0x0000000000000000000000000000000000000000"
             )
-        ).to.be.revertedWith(
-          "execTransaction -- cannot call the vault contract"
-        );
+        ).to.be.revertedWith("execTransaction-cannot call the vault contract");
       });
 
       it("execs transactions ", async function () {
@@ -1135,7 +1133,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "flashLoan -- flashLoan feature disabled for this contract"
+          "flashLoan-flashLoan feature disabled for this contract"
         );
       });
 
@@ -1148,7 +1146,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000",
               "0x0000000000000000000000000000000000000000"
             )
-        ).to.be.revertedWith("flashLoan -- zero address");
+        ).to.be.revertedWith("flashLoan-zero address");
       });
 
       it("doesn't allow flashloans with invalid asset ids", async function () {
@@ -1161,7 +1159,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "assetIdIsZero -- this vault only supports asset id 0"
+          "assetIdIsZero-this vault only supports asset id 0"
         );
       });
 
@@ -1209,7 +1207,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "flashLoan -- the flash loan contract must return true"
+          "flashLoan-the flash loan contract must return true"
         );
       });
     });
@@ -1373,7 +1371,7 @@ describe("Vault", function () {
               3
             )
         ).to.be.revertedWith(
-          "onERC721Received -- non-escrow asset returned when airdrops are disabled"
+          "onERC721Received-non-escrow asset returned when airdrops are disabled"
         );
       });
 
@@ -1403,7 +1401,7 @@ describe("Vault", function () {
         await expect(
           vaultInstance.connect(runner).setBeneficialOwner(1, runner.address)
         ).to.be.revertedWith(
-          "setBeneficialOwner -- only the current owner can update the beneficial owner"
+          "setBeneficialOwner-only the current owner can update the beneficial owner"
         );
       });
 
@@ -1421,7 +1419,7 @@ describe("Vault", function () {
             .connect(beneficialOwner)
             .setBeneficialOwner(10, runner.address)
         ).to.be.revertedWith(
-          "setBeneficialOwner -- only the current owner can update the beneficial owner"
+          "setBeneficialOwner-only the current owner can update the beneficial owner"
         );
       });
     });
@@ -1494,7 +1492,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
+          "grantEntitlement-only the beneficial owner or approved operator can grant an entitlement"
         );
       });
 
@@ -1684,7 +1682,7 @@ describe("Vault", function () {
             expiry: Math.floor(nowEpoch + SECS_IN_A_DAY * 1.5),
           })
         ).to.be.revertedWith(
-          "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
+          "_registerEntitlement-existing entitlement must be cleared before registering a new one"
         );
       });
 
@@ -1778,7 +1776,7 @@ describe("Vault", function () {
             .connect(runner)
             .clearEntitlementAndDistribute(1, runner.address)
         ).to.be.revertedWith(
-          "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
+          "clearEntitlementAndDistribute-Only the beneficial owner can receive the asset"
         );
       });
 
@@ -1847,7 +1845,7 @@ describe("Vault", function () {
             .connect(runner)
             .setBeneficialOwner(12, vaultInstance.address)
         ).to.be.revertedWith(
-          "setBeneficialOwner -- only the current owner can update the beneficial owner"
+          "setBeneficialOwner-only the current owner can update the beneficial owner"
         );
       });
 
@@ -1881,7 +1879,7 @@ describe("Vault", function () {
             .connect(beneficialOwner)
             .setBeneficialOwner(1, vaultInstance.address)
         ).to.be.revertedWith(
-          "setBeneficialOwner -- only the contract with the active entitlement can update the beneficial owner"
+          "setBeneficialOwner-only the contract with the active entitlement can update the beneficial owner"
         );
       });
     });
@@ -1928,7 +1926,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "flashLoan -- flashLoan feature disabled for this contract"
+          "flashLoan-flashLoan feature disabled for this contract"
         );
       });
 
@@ -1941,7 +1939,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000",
               "0x0000000000000000000000000000000000000000"
             )
-        ).to.be.revertedWith("flashLoan -- zero address");
+        ).to.be.revertedWith("flashLoan-zero address");
       });
 
       it("doesn't allow flashloans with invalid asset ids", async function () {
@@ -2000,7 +1998,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "flashLoan -- the flash loan contract must return true"
+          "flashLoan-the flash loan contract must return true"
         );
       });
     });
@@ -2188,7 +2186,7 @@ describe("Call Instrument Tests", function () {
         .connect(writer)
         .mintWithErc721(newToken.address, 0, 1000, expiration);
       await expect(createCall).to.be.revertedWith(
-        "mintWithErc721 -- token must be on the project allowlist"
+        "mWE7-token not on allowlist"
       );
     });
 
@@ -2202,7 +2200,7 @@ describe("Call Instrument Tests", function () {
         .connect(buyer)
         .mintWithErc721(token.address, 0, 1000, expiration);
       await expect(createCall).to.be.revertedWith(
-        "mintWithErc721 -- caller must be token owner or operator"
+        "mWE7-caller not owner or operator"
       );
     });
 
@@ -2218,9 +2216,7 @@ describe("Call Instrument Tests", function () {
       const createCall = calls
         .connect(writer)
         .mintWithErc721(token.address, 0, 1000, expiration);
-      await expect(createCall).to.be.revertedWith(
-        "mintWithErc721 -- HookCoveredCall must be operator"
-      );
+      await expect(createCall).to.be.revertedWith("mWE7-not approved operator");
     });
 
     it("should mint covered call when call instrument not approvedForAll but Approved", async function () {
@@ -2265,7 +2261,7 @@ describe("Call Instrument Tests", function () {
         .mintWithErc721(token.address, 0, 1000, expiration);
 
       await expect(createCall2).to.be.revertedWith(
-        "mintWithErc721 -- caller must be token owner or operator"
+        "mWE7-caller not owner or operator"
       );
     });
 
@@ -2374,9 +2370,7 @@ describe("Call Instrument Tests", function () {
         expiration,
         signature
       );
-      await expect(createCall).to.be.revertedWith(
-        "mintWithVault -- token must be on the project allowlist"
-      );
+      await expect(createCall).to.be.revertedWith("mWV-token not allowed");
     });
 
     it("should not mint covered call with empty vault", async function () {
@@ -2396,9 +2390,7 @@ describe("Call Instrument Tests", function () {
       const createCall = calls
         .connect(writer)
         .mintWithVault(multiVault.address, 0, 1000, expiration, signature);
-      await expect(createCall).to.be.revertedWith(
-        "mintWithVault-- asset must be in vault"
-      );
+      await expect(createCall).to.be.revertedWith("mWV-asset not in vault");
     });
 
     it("should not mint covered call with invalid signature", async function () {
@@ -2507,9 +2499,7 @@ describe("Call Instrument Tests", function () {
         1000,
         expiration
       );
-      await expect(createCall).to.be.revertedWith(
-        "mintWithEntitledVault -- token must be on the project allowlist"
-      );
+      await expect(createCall).to.be.revertedWith("mWEV-token not allowed");
     });
 
     it("should not mint covered call with empty vault", async function () {
@@ -2522,7 +2512,7 @@ describe("Call Instrument Tests", function () {
         .connect(writer)
         .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
       await expect(createCall).to.be.revertedWith(
-        "mintWithEntitledVault-- asset must be in vault"
+        "mWEV-asset must be in vault"
       );
     });
 
@@ -2545,7 +2535,7 @@ describe("Call Instrument Tests", function () {
         .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
       // TODO: Find revert reason
       await expect(createCall).to.be.revertedWith(
-        "mintWithEntitledVault -- call contact must be the entitled operator"
+        "mWEV-call contract not operator"
       );
     });
 
@@ -2576,7 +2566,7 @@ describe("Call Instrument Tests", function () {
         .mintWithEntitledVault(multiVault.address, 0, 1000, expiration);
 
       await expect(createCall).to.be.revertedWith(
-        "mintWithEntitledVault -- call contact must be the entitled operator"
+        "mWEV-call contract not operator"
       );
     });
 
@@ -2610,7 +2600,7 @@ describe("Call Instrument Tests", function () {
         );
 
       await expect(createCall).to.be.revertedWith(
-        "mintWithEntitledVault -- entitlement expiration must match call expiration"
+        "mWEV-entitlement expiration different"
       );
     });
 
@@ -2708,9 +2698,7 @@ describe("Call Instrument Tests", function () {
       const bid = calls
         .connect(firstBidder)
         .bid(optionTokenId, { value: 1000 });
-      await expect(bid).to.be.revertedWith(
-        "biddingEnabled -- bidding starts on last day"
-      );
+      await expect(bid).to.be.revertedWith("bE-bidding starts on last day");
     });
 
     it("should not bid with bid lower than strike", async function () {
@@ -2721,7 +2709,7 @@ describe("Call Instrument Tests", function () {
         .connect(firstBidder)
         .bid(optionTokenId, { value: 1000 });
       await expect(bid).to.be.revertedWith(
-        "bid - bid is lower than the strike price"
+        "b-bid is lower than the strike price"
       );
     });
 
@@ -2947,15 +2935,13 @@ describe("Call Instrument Tests", function () {
 
       const settleCall = calls.connect(writer).settleOption(tokenId);
       await expect(settleCall).to.be.revertedWith(
-        "settle -- bid must be won by someone"
+        "s-bid must be won by someone"
       );
     });
 
     it("should not settle auction before expiration", async function () {
       const settleCall = calls.connect(writer).settleOption(optionTokenId);
-      await expect(settleCall).to.be.revertedWith(
-        "settle -- option must be expired"
-      );
+      await expect(settleCall).to.be.revertedWith("s-option must be expired");
     });
 
     it("should not settle settled auction", async function () {
@@ -2965,7 +2951,7 @@ describe("Call Instrument Tests", function () {
       await calls.connect(writer).settleOption(optionTokenId);
       const settleCallAgain = calls.connect(writer).settleOption(optionTokenId);
       await expect(settleCallAgain).to.be.revertedWith(
-        "settle -- the call cannot already be settled"
+        "s-the call cannot already be settled"
       );
     });
 
@@ -3056,9 +3042,7 @@ describe("Call Instrument Tests", function () {
       const reclaimAsset = calls
         .connect(buyer)
         .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith(
-        "reclaimAsset -- asset can only be reclaimed by the writer"
-      );
+      await expect(reclaimAsset).to.be.revertedWith("rA-only writer");
     });
 
     it("should not reclaim settled asset", async function () {
@@ -3077,9 +3061,7 @@ describe("Call Instrument Tests", function () {
       const reclaimAsset = calls
         .connect(writer)
         .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith(
-        "reclaimAsset -- the option has already been settled"
-      );
+      await expect(reclaimAsset).to.be.revertedWith("rA-option settled");
     });
 
     it("should not reclaim asset when writer is not option owner", async function () {
@@ -3095,9 +3077,7 @@ describe("Call Instrument Tests", function () {
       const reclaimAsset = calls
         .connect(writer)
         .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith(
-        "reclaimAsset -- the option must be owned by the writer"
-      );
+      await expect(reclaimAsset).to.be.revertedWith("rA-writer must own");
     });
 
     it("should not reclaim asset from expired option", async function () {
@@ -3107,9 +3087,7 @@ describe("Call Instrument Tests", function () {
       const reclaimAsset = calls
         .connect(writer)
         .reclaimAsset(optionTokenId, false);
-      await expect(reclaimAsset).to.be.revertedWith(
-        "reclaimAsset -- the option must not be expired"
-      );
+      await expect(reclaimAsset).to.be.revertedWith("rA-option expired");
     });
 
     it("should reclaim asset with an active bid", async function () {
@@ -3183,7 +3161,7 @@ describe("Call Instrument Tests", function () {
         .connect(writer)
         .setMinOptionDuration(0);
       await expect(setMinOptionDuration).to.be.revertedWith(
-        "onlyMarketController -- caller does not have the MARKET_CONF protocol role"
+        "caller needs MARKET_CONF"
       );
     });
 
@@ -3212,9 +3190,7 @@ describe("Call Instrument Tests", function () {
 
       await expect(
         calls.connect(marketController).setSettlementAuctionStartOffset(86403)
-      ).to.be.revertedWith(
-        "the settlement auctions cannot start sooner than an option expired"
-      );
+      ).to.be.reverted;
     });
 
     it("should set market paused as market controller", async function () {
@@ -3344,7 +3320,7 @@ describe("Call Instrument Tests", function () {
 
     it("should not burn expired option before expiration", async function () {
       await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith(
-        "burnExpiredOption -- the option must be expired"
+        "bEO-option expired"
       );
     });
 
@@ -3370,7 +3346,7 @@ describe("Call Instrument Tests", function () {
 
       // Burn expired option
       await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith(
-        "burnExpiredOption -- the option must not have bids"
+        "bEO-option has bids"
       );
     });
   });

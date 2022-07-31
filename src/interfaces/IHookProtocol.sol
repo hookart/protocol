@@ -37,8 +37,8 @@ pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /// @title HookProtocol configuration and access control repository
-/// @author Jake Nyquist -- j@hook.xyz
-/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @author Jake Nyquist-j@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
 ///
 /// @dev it is critically important that the particular protocol implementation
 /// is correct as, if it is not, all assets contained within protocol contracts

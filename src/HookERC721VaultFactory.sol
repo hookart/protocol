@@ -48,7 +48,7 @@ import "./mixin/PermissionConstants.sol";
 import "./lib/BeaconSalts.sol";
 
 /// @title Hook Vault Factory
-/// @author Jake Nyquist -- j@hook.xyz
+/// @author Jake Nyquist-j@hook.xyz
 /// @dev See {IHookERC721VaultFactory}.
 /// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
 /// created by this factory can be upgraded at one time via the beacon pattern.
@@ -66,9 +66,9 @@ contract HookERC721VaultFactory is
   /// @notice Registry of all of the active multi-vaults within the protocol
   mapping(address => IHookERC721Vault) public override getMultiVault;
 
-  address private _hookProtocol;
-  address private _beacon;
-  address private _multiBeacon;
+  address private immutable _hookProtocol;
+  address private immutable _beacon;
+  address private immutable _multiBeacon;
 
   constructor(
     address hookProtocolAddress,
@@ -100,12 +100,12 @@ contract HookERC721VaultFactory is
     require(
       IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, msg.sender) ||
         IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, address(0)),
-      "makeMultiVault -- Only accounts with the ALLOWLISTER role can make new multiVaults"
+      "makeMultiVault-Only accounts with the ALLOWLISTER role can make new multiVaults"
     );
 
     require(
       getMultiVault[nftAddress] == IHookERC721Vault(address(0)),
-      "makeMultiVault -- vault cannot already exist"
+      "makeMultiVault-vault cannot already exist"
     );
 
     IInitializeableBeacon bp = IInitializeableBeacon(
@@ -141,7 +141,7 @@ contract HookERC721VaultFactory is
   {
     require(
       getVault[nftAddress][tokenId] == IHookERC721Vault(address(0)),
-      "makeVault -- a vault cannot already exist"
+      "makeVault-a vault cannot already exist"
     );
 
     IInitializeableBeacon bp = IInitializeableBeacon(

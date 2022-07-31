@@ -5,7 +5,7 @@ import "./utils/base.t.sol";
 import "./utils/mocks/MaliciousBidder.sol";
 
 /// @dev these tests try cases where a bidder maliciously reverts on save.
-/// @author Jake Nyquist -- j@hook.xyz
+/// @author Jake Nyquist-j@hook.xyz
 contract HookCoveredCallBiddingRevertTests is HookProtocolTest {
   function setUp() public {
     setUpAddresses();

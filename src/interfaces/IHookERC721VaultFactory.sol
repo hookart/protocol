@@ -36,9 +36,9 @@ pragma solidity ^0.8.10;
 
 import "./IHookERC721Vault.sol";
 
-/// @title HookERC721Factory -- factory for instances of the hook vault
-/// @author Jake Nyquist -- j@hook.xyz
-/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @title HookERC721Factory-factory for instances of the hook vault
+/// @author Jake Nyquist-j@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
 ///
 /// @notice The Factory creates a specific vault for ERC721s.
 interface IHookERC721VaultFactory {

@@ -45,9 +45,9 @@ import "./lib/Entitlements.sol";
 import "./lib/Signatures.sol";
 import "./mixin/EIP712.sol";
 
-/// @title  HookMultiVault -- implementation of a Vault for multiple assets within a NFT collection, with entitlements.
+/// @title  HookMultiVault-implementation of a Vault for multiple assets within a NFT collection, with entitlements.
 /// @author Jake Nyquist - j@hook.xyz
-/// @custom:coauthor Regynald Augustin -- regy@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
 /// @notice HookVault holds a multiple NFT asset in escrow on behalf of multiple beneficial owners. Other contracts
 /// are able to register "entitlements" for a fixed period of time on the asset, which give them the ability to
 /// change the vault's owner.
@@ -85,7 +85,7 @@ contract HookERC721MultiVaultImplV1 is
   /// Upgradeable Implementations cannot have a constructor, so we call the initialize instead;
   constructor() {}
 
-  /// -- constructor
+  ///-constructor
   function initialize(address nftContract, address hookAddress)
     public
     initializer
@@ -116,11 +116,11 @@ contract HookERC721MultiVaultImplV1 is
   function withdrawalAsset(uint32 assetId) public virtual nonReentrant {
     require(
       !hasActiveEntitlement(assetId),
-      "withdrawalAsset -- the asset cannot be withdrawn with an active entitlement"
+      "withdrawalAsset-the asset cannot be withdrawn with an active entitlement"
     );
     require(
       assets[assetId].beneficialOwner == msg.sender,
-      "withdrawalAsset -- only the beneficial owner can withdrawal an asset"
+      "withdrawalAsset-only the beneficial owner can withdrawal an asset"
     );
 
     _nftContract.safeTransferFrom(
@@ -147,7 +147,7 @@ contract HookERC721MultiVaultImplV1 is
     // before creating a new entitlement
     require(
       assets[assetId].beneficialOwner != address(0),
-      "imposeEntitlement -- beneficial owner must be set to impose an entitlement"
+      "imposeEntitlement-beneficial owner must be set to impose an entitlement"
     );
 
     // the beneficial owner of an asset is able to set any entitlement on their own asset
@@ -163,7 +163,7 @@ contract HookERC721MultiVaultImplV1 is
     require(
       assets[entitlement.assetId].beneficialOwner == msg.sender ||
         _assetApprovals[entitlement.assetId] == msg.sender,
-      "grantEntitlement -- only the beneficial owner or approved operator can grant an entitlement"
+      "grantEntitlement-only the beneficial owner or approved operator can grant an entitlement"
     );
 
     // the beneficial owner of an asset is able to directly set any entitlement on their own asset
@@ -181,14 +181,14 @@ contract HookERC721MultiVaultImplV1 is
   ///
   /// Always returns `IERC721Receiver.onERC721Received.selector`.
   function onERC721Received(
-    address operator, // this arg is the address of the operator
+    address, // this arg is the address of the operator
     address from,
     uint256 tokenId,
     bytes calldata data
   ) external virtual override returns (bytes4) {
     require(
       tokenId <= type(uint32).max,
-      "onERC721Received -- tokenId is out of range"
+      "onERC721Received-tokenId is out of range"
     );
     /// (1) When receiving a nft from the ERC-721 contract this vault covers, create a new entitlement entry
     /// with the sender as the beneficial owner to track the asset within the vault.
@@ -269,7 +269,7 @@ contract HookERC721MultiVaultImplV1 is
           address(_nftContract),
           keccak256("vault.multiAirdropsAllowed")
         ),
-        "onERC721Received -- non-escrow asset returned when airdrops are disabled"
+        "onERC721Received-non-escrow asset returned when airdrops are disabled"
       );
     }
 
@@ -292,14 +292,14 @@ contract HookERC721MultiVaultImplV1 is
     IERC721FlashLoanReceiver receiver = IERC721FlashLoanReceiver(
       receiverAddress
     );
-    require(receiverAddress != address(0), "flashLoan -- zero address");
+    require(receiverAddress != address(0), "flashLoan-zero address");
     require(
       _assetOwner(assetId) == address(this),
-      "flashLoan -- asset not in vault"
+      "flashLoan-asset not in vault"
     );
     require(
       msg.sender == assets[assetId].beneficialOwner,
-      "flashLoan -- not called by the asset owner"
+      "flashLoan-not called by the asset owner"
     );
 
     require(
@@ -307,7 +307,7 @@ contract HookERC721MultiVaultImplV1 is
         address(_nftContract),
         keccak256("vault.flashLoanDisabled")
       ),
-      "flashLoan -- flashLoan feature disabled for this contract"
+      "flashLoan-flashLoan feature disabled for this contract"
     );
 
     // (1) store a hash of our current entitlement state as a snapshot to diff
@@ -331,7 +331,7 @@ contract HookERC721MultiVaultImplV1 is
         address(this),
         params
       ),
-      "flashLoan -- the flash loan contract must return true"
+      "flashLoan-the flash loan contract must return true"
     );
 
     // (4) return the nft back into the vault
@@ -355,7 +355,7 @@ contract HookERC721MultiVaultImplV1 is
     // prematurely
     require(
       startState == keccak256(abi.encode(assets[assetId])),
-      "flashLoan -- entitlement state cannot be modified"
+      "flashLoan-entitlement state cannot be modified"
     );
 
     // (7) emit an event to record the flashloan
@@ -385,11 +385,7 @@ contract HookERC721MultiVaultImplV1 is
   }
 
   /// @dev See {IHookERC721Vault-getHoldsAsset}.
-  function getHoldsAsset(uint32 assetId)
-    external
-    view
-    returns (bool)
-  {
+  function getHoldsAsset(uint32 assetId) external view returns (bool) {
     return _assetOwner(assetId) == address(this);
   }
 
@@ -412,12 +408,12 @@ contract HookERC721MultiVaultImplV1 is
     if (hasActiveEntitlement(assetId)) {
       require(
         msg.sender == assets[assetId].operator,
-        "setBeneficialOwner -- only the contract with the active entitlement can update the beneficial owner"
+        "setBeneficialOwner-only the contract with the active entitlement can update the beneficial owner"
       );
     } else {
       require(
         msg.sender == assets[assetId].beneficialOwner,
-        "setBeneficialOwner -- only the current owner can update the beneficial owner"
+        "setBeneficialOwner-only the current owner can update the beneficial owner"
       );
     }
     _setBeneficialOwner(assetId, newBeneficialOwner);
@@ -428,11 +424,11 @@ contract HookERC721MultiVaultImplV1 is
   function clearEntitlement(uint32 assetId) public {
     require(
       hasActiveEntitlement(assetId),
-      "clearEntitlement -- an active entitlement must exist"
+      "clearEntitlement-an active entitlement must exist"
     );
     require(
       msg.sender == assets[assetId].operator,
-      "clearEntitlement -- only the entitled address can clear the entitlement"
+      "clearEntitlement-only the entitled address can clear the entitlement"
     );
     _clearEntitlement(assetId);
   }
@@ -449,11 +445,11 @@ contract HookERC721MultiVaultImplV1 is
   {
     require(
       assets[assetId].beneficialOwner == receiver,
-      "clearEntitlementAndDistribute -- Only the beneficial owner can receive the asset"
+      "clearEntitlementAndDistribute-Only the beneficial owner can receive the asset"
     );
     require(
       receiver != address(0),
-      "clearEntitlementAndDistribute -- assets cannot be sent to null address"
+      "clearEntitlementAndDistribute-assets cannot be sent to null address"
     );
     clearEntitlement(assetId);
     IERC721(_nftContract).safeTransferFrom(
@@ -502,12 +498,12 @@ contract HookERC721MultiVaultImplV1 is
 
     require(
       to != beneficialOwner,
-      "approve -- approval to current beneficialOwner"
+      "approve-approval to current beneficialOwner"
     );
 
     require(
       msg.sender == beneficialOwner,
-      "approve -- approve caller is not current beneficial owner"
+      "approve-approve caller is not current beneficial owner"
     );
 
     _approve(to, assetId);
@@ -569,12 +565,12 @@ contract HookERC721MultiVaultImplV1 is
   ) internal {
     require(
       !hasActiveEntitlement(assetId),
-      "_registerEntitlement -- existing entitlement must be cleared before registering a new one"
+      "_registerEntitlement-existing entitlement must be cleared before registering a new one"
     );
 
     require(
       expiry > block.timestamp,
-      "_registerEntitlement -- entitlement must expire in the future"
+      "_registerEntitlement-entitlement must expire in the future"
     );
     assets[assetId] = Asset({
       operator: operator,
@@ -605,7 +601,7 @@ contract HookERC721MultiVaultImplV1 is
   {
     bool isActive = hasActiveEntitlement(assetId);
     address operator = assets[assetId].operator;
-    
+
     return (isActive, operator);
   }
 
@@ -635,7 +631,7 @@ contract HookERC721MultiVaultImplV1 is
   {
     require(
       newBeneficialOwner != address(0),
-      "_setBeneficialOwner -- new owner is the zero address"
+      "_setBeneficialOwner-new owner is the zero address"
     );
     assets[assetId].beneficialOwner = newBeneficialOwner;
     _approve(address(0), assetId);
