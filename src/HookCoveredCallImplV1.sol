@@ -221,7 +221,7 @@ contract HookCoveredCallImplV1 is
     address writer = vault.getBeneficialOwner(assetId);
 
     require(
-      msg.sender == writer || msg.sender == vault.getApproved(assetId),
+      msg.sender == writer || msg.sender == vault.getApprovedOperator(assetId),
       "mWV-called by someone other than the owner or operator"
     );
 
@@ -278,7 +278,7 @@ contract HookCoveredCallImplV1 is
     address writer = vault.getBeneficialOwner(assetId);
 
     require(
-      writer == msg.sender || vault.getApproved(assetId) == msg.sender,
+      writer == msg.sender || vault.getApprovedOperator(assetId) == msg.sender,
       "mWEV-only owner or operator may mint"
     );
 

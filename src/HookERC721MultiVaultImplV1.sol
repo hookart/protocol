@@ -491,9 +491,9 @@ contract HookERC721MultiVaultImplV1 is
   }
 
   ///
-  /// @dev See {IHookVault-approve}.
+  /// @dev See {IHookVault-approveOperator}.
   ///
-  function approve(address to, uint32 assetId) public virtual override {
+  function approveOperator(address to, uint32 assetId) public virtual override {
     address beneficialOwner = assets[assetId].beneficialOwner;
 
     require(
@@ -509,8 +509,8 @@ contract HookERC721MultiVaultImplV1 is
     _approve(to, assetId);
   }
 
-  /// @dev See {IHookVault-getApproved}.
-  function getApproved(uint32 assetId)
+  /// @dev See {IHookVault-getApprovedOperator}.
+  function getApprovedOperator(uint32 assetId)
     public
     view
     virtual
