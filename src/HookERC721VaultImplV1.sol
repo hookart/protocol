@@ -152,6 +152,12 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
           assets[ASSET_ID].beneficialOwner
         );
       }
+      emit AssetReceived(
+        from,
+        this.getBeneficialOwner(uint32(ASSET_ID)),
+        msg.sender,
+        ASSET_ID
+      );
     } else {
       // If we're receiving an airdrop or other asset uncovered by escrow to this address, we should ensure
       // that this is allowed by our current settings.
@@ -163,12 +169,6 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
         "onERC721Received-non-escrow asset returned when airdrops are disabled"
       );
     }
-    emit AssetReceived(
-      from,
-      this.getBeneficialOwner(uint32(ASSET_ID)),
-      msg.sender,
-      ASSET_ID
-    );
     return this.onERC721Received.selector;
   }
 
