@@ -415,7 +415,6 @@ contract HookCoveredCallImplV1 is
       _approve(msg.sender, newOptionId);
     }
 
-    // OptionID is null
     assetOptions[vault][assetId] = newOptionId;
 
     emit CallCreated(
@@ -653,18 +652,15 @@ contract HookCoveredCallImplV1 is
   }
 
   /// @dev See {IHookCoveredCall-claimOptionProceeds}
-  function claimOptionProceeds(uint256 optionId) external {
+  function claimOptionProceeds(uint256 optionId) external nonReentrant {
     address optionOwner = ownerOf(optionId);
     require(msg.sender == optionOwner, "cOP-owner only");
-    if (optionClaims[optionId] != 0) {
-      emit CallProceedsDistributed(
-        optionId,
-        optionOwner,
-        optionClaims[optionId]
-      );
-      _safeTransferETHWithFallback(optionOwner, optionClaims[optionId]);
-      delete optionClaims[optionId];
+    uint256 claim = optionClaims[optionId];
+    delete optionClaims[optionId];
+    if (claim != 0) {
       _burn(optionId);
+      emit CallProceedsDistributed(optionId, optionOwner, claim);
+      _safeTransferETHWithFallback(optionOwner, claim);
     }
   }
 
