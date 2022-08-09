@@ -105,7 +105,7 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
   /// This method requires an override implementation because the the arguments must be embedded in the body of the
   /// function
   function onERC721Received(
-    address, // this arg is the address of the operator
+    address operator, // this arg is the address of the operator
     address from,
     uint256 tokenId,
     bytes calldata data
@@ -164,8 +164,8 @@ contract HookERC721VaultImplV1 is HookERC721MultiVaultImplV1 {
       );
     }
     emit AssetReceived(
-      from,
       this.getBeneficialOwner(uint32(ASSET_ID)),
+      operator,
       msg.sender,
       ASSET_ID
     );

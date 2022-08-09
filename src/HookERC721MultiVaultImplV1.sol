@@ -181,7 +181,7 @@ contract HookERC721MultiVaultImplV1 is
   ///
   /// Always returns `IERC721Receiver.onERC721Received.selector`.
   function onERC721Received(
-    address, // this arg is the address of the operator
+    address operator, // this arg is the address of the operator
     address from,
     uint256 tokenId,
     bytes calldata data
@@ -274,8 +274,8 @@ contract HookERC721MultiVaultImplV1 is
     }
 
     emit AssetReceived(
-      from,
       this.getBeneficialOwner(uint32(tokenId)),
+      operator,
       msg.sender,
       uint32(tokenId)
     );
