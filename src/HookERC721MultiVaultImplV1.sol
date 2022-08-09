@@ -181,7 +181,7 @@ contract HookERC721MultiVaultImplV1 is
   ///
   /// Always returns `IERC721Receiver.onERC721Received.selector`.
   function onERC721Received(
-    address, // this arg is the address of the operator
+    address operator, // this arg is the address of the operator
     address from,
     uint256 tokenId,
     bytes calldata data
@@ -262,8 +262,8 @@ contract HookERC721MultiVaultImplV1 is
         _setBeneficialOwner(uint32(tokenId), from);
       }
       emit AssetReceived(
-        from,
         this.getBeneficialOwner(uint32(tokenId)),
+        operator,
         msg.sender,
         uint32(tokenId)
       );
@@ -278,7 +278,6 @@ contract HookERC721MultiVaultImplV1 is
         "onERC721Received-non-escrow asset returned when airdrops are disabled"
       );
     }
-
     return this.onERC721Received.selector;
   }
 
@@ -490,9 +489,9 @@ contract HookERC721MultiVaultImplV1 is
   }
 
   ///
-  /// @dev See {IHookVault-approve}.
+  /// @dev See {IHookVault-approveOperator}.
   ///
-  function approve(address to, uint32 assetId) public virtual override {
+  function approveOperator(address to, uint32 assetId) public virtual override {
     address beneficialOwner = assets[assetId].beneficialOwner;
 
     require(
@@ -508,8 +507,8 @@ contract HookERC721MultiVaultImplV1 is
     _approve(to, assetId);
   }
 
-  /// @dev See {IHookVault-getApproved}.
-  function getApproved(uint32 assetId)
+  /// @dev See {IHookVault-getApprovedOperator}.
+  function getApprovedOperator(uint32 assetId)
     public
     view
     virtual

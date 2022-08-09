@@ -175,7 +175,7 @@ interface IHookVault is IERC165 {
   /// - `tokenId` must exist.
   ///
   /// Emits an {Approval} event.
-  function approve(address to, uint32 assetId) external;
+  function approveOperator(address to, uint32 assetId) external;
 
   /// @dev Returns the account approved for `tokenId` token.
   ///
@@ -183,5 +183,5 @@ interface IHookVault is IERC165 {
   ///
   /// - `assetId` must exist.
   ///
-  function getApproved(uint32 assetId) external view returns (address);
+  function getApprovedOperator(uint32 assetId) external view returns (address);
 }

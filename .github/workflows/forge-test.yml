@@ -16,6 +16,9 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
+          
+      - uses: actions/setup-node@v3
+      - run: npm ci
 
       - name: Run tests
         run: forge test -vvv
