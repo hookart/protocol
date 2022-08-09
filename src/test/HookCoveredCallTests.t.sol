@@ -216,7 +216,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     // place token in the vault
     token.safeTransferFrom(address(writer), address(vault), underlyingTokenId);
-    vault.approve(specifiedOperator, uint32(underlyingTokenId));
+    vault.approveOperator(specifiedOperator, uint32(underlyingTokenId));
     uint32 expiration = uint32(block.timestamp) + 3 days;
 
     Signatures.Signature memory sig = makeSignature(

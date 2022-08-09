@@ -70,15 +70,14 @@ contract HookCoveredCallImplV1 is
 
   /// @notice The metadata for each covered call option stored within the protocol
   /// @param writer The address of the writer that created the call option
-  /// @param owner The address of the current owner of the underlying, updated as bidding occurs
-  /// @param vaultAddress the address of the vault holding the underlying asset
-  /// @param assetId the asset id of the underlying within the vault
-  /// @param strike The strike price to exercise the call option
   /// @param expiration The expiration time of the call option
-  /// @param settled a flag that marks when a settlement action has taken place successfully. Once this flag is set, ETH should not
-  /// be sent from the contract related to this particular option
+  /// @param assetId the asset id of the underlying within the vault
+  /// @param vaultAddress the address of the vault holding the underlying asset
+  /// @param strike The strike price to exercise the call option
   /// @param bid is the current high bid in the settlement auction
   /// @param highBidder is the address that made the current winning bid in the settlement auction
+  /// @param settled a flag that marks when a settlement action has taken place successfully. Once this flag is set, ETH should not
+  /// be sent from the contract related to this particular option
   struct CallOption {
     address writer;
     uint32 expiration;
@@ -221,7 +220,7 @@ contract HookCoveredCallImplV1 is
     address writer = vault.getBeneficialOwner(assetId);
 
     require(
-      msg.sender == writer || msg.sender == vault.getApproved(assetId),
+      msg.sender == writer || msg.sender == vault.getApprovedOperator(assetId),
       "mWV-called by someone other than the owner or operator"
     );
 
@@ -278,7 +277,7 @@ contract HookCoveredCallImplV1 is
     address writer = vault.getBeneficialOwner(assetId);
 
     require(
-      writer == msg.sender || vault.getApproved(assetId) == msg.sender,
+      writer == msg.sender || vault.getApprovedOperator(assetId) == msg.sender,
       "mWEV-only owner or operator may mint"
     );
 
