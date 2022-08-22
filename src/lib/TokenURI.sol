@@ -139,7 +139,7 @@ library TokenURI {
           abi.encodePacked(
             '{"name": "Option Id',
             HookStrings.toString(instrumentId),
-            '", "description": "Option Instrument NFT on Hook: the NFT-native call options protocol", "image": '
+            '", "description": "Option Instrument NFT on Hook: the NFT-native call options protocol. Learn more at https://hook.xyz", "image": '
             '"data:image/svg+xml;base64,',
             Base64.encode(output),
             _generateMetadataERC721(
