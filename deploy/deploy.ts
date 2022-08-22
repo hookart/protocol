@@ -97,13 +97,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [],
     libraries: {
-      Font1: "0x152c26700746B40f5FEA2AF49AA9Ab025C58FF78",
-      Font2: "0xf755b60473A3de5958Cad08548D9435c236706C1",
-      Font3: "0xe7c979bA05c58a0173AAbD63B56Ce6934dcCbF6B",
+      Font1: "0x1Ac06Ef3cda4dC2CB30A866090041D3266c33d45",
+      Font2: "0xfa10218700bFd179DE800a461C98357b39525f38",
+      Font3: "0x4C6eDA9CBb9B31152f3f002CAe5E3eF805Ad19f9",
     },
     log: true,
-    maxPriorityFeePerGas: "300151502",
-    maxFeePerGas: "300151502",
+    maxPriorityFeePerGas: "3000151502",
+    maxFeePerGas: "3000151502",
     autoMine: true,
   });
   const callV1 = await deploy("HookCoveredCallImplV1", {
