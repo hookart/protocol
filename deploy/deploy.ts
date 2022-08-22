@@ -11,7 +11,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // in live network, proxy is disabled and constructor is invoked
   const protocol = await deploy("HookProtocol", {
     from: deployer,
-    args: [deployer, weth],
+    args: [deployer, deployer, deployer, deployer, deployer, deployer, weth],
     log: true,
     autoMine: true,
   });
@@ -68,12 +68,42 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   console.log("Set vault factory onto protocol with hash: ", vfSet.hash);
 
+  // const font1 = await deploy("Font1", {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  //   maxPriorityFeePerGas: "2048937",
+  //   maxFeePerGas: "11489370",
+  //   autoMine: true,
+  // });
+  // const font2 = await deploy("Font2", {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  //   maxPriorityFeePerGas: "2048937",
+  //   maxFeePerGas: "11489370",
+  //   autoMine: true,
+  // });
+  // const font3 = await deploy("Font3", {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  //   maxPriorityFeePerGas: "2048937",
+  //   maxFeePerGas: "11489370",
+  //   autoMine: true,
+  // });
+
   const tokenURI = await deploy("TokenURI", {
     from: deployer,
     args: [],
+    libraries: {
+      Font1: "0x152c26700746B40f5FEA2AF49AA9Ab025C58FF78",
+      Font2: "0xf755b60473A3de5958Cad08548D9435c236706C1",
+      Font3: "0xe7c979bA05c58a0173AAbD63B56Ce6934dcCbF6B",
+    },
     log: true,
-    maxPriorityFeePerGas: "1148937",
-    maxFeePerGas: "11489370",
+    maxPriorityFeePerGas: "300151502",
+    maxFeePerGas: "300151502",
     autoMine: true,
   });
   const callV1 = await deploy("HookCoveredCallImplV1", {
@@ -104,7 +134,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   console.log("Set call factory onto protocol with hash: ", cfSet.hash);
 
-  await protocolImpl.connect(deployer).unpause();
+  // await protocolImpl.connect(deployer).unpause();
   return true;
 };
 export default func;

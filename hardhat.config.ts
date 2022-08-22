@@ -14,6 +14,7 @@ import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from "hardhat/builtin-tasks/ta
 
 // default values here to avoid failures when running hardhat
 const ROPSTEN_RPC = process.env.ROPSTEN_RPC || "1".repeat(32);
+const GOERLI_RPC = process.env.GOERLI_RPC || "1".repeat(32);
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "1".repeat(64);
 const SOLC_DEFAULT = "0.8.10";
 
@@ -60,6 +61,10 @@ const config: HardhatUserConfig = {
       url: ROPSTEN_RPC,
       accounts: [PRIVATE_KEY],
     },
+    goerli: {
+      url: GOERLI_RPC,
+      accounts: [PRIVATE_KEY],
+    },
   },
   solidity: {
     version: foundry.default?.solc || SOLC_DEFAULT,
@@ -78,7 +83,7 @@ const config: HardhatUserConfig = {
     coinmarketcap: process.env.CMC_KEY ?? "",
   },
   namedAccounts: {
-    deployer: 0,
+    deployer: "0xF9F6009a5f2511f0C859927e43fC12745dc4426a",
     weth: process.env.WETH_ADDRESS || "",
     approvedMarket:
       process.env.APROVED_MARKET ||
