@@ -10,8 +10,7 @@ Note: NFTs deposited into the Hook protocol only contain unique artistic images 
 
 ## Documentation
 
-<!-- [White paper](https://hook.xyz/whitepaper)  -->
-<!-- TODO: Add whitepaper when published -->
+[Documentation Site](https://docs.hook.xyz/)
 
 [Protocol Overview](docs/Overview.md)
 
@@ -32,7 +31,7 @@ updated. `yarn add -D @openzeppelin/contracts`
 
 ## Contract Addresses
 
-[ TODO: Update contract addresses with the mainnet deployment ]
+See our docs: https://docs.hook.xyz/docs/smart-contract-addresses
 
 ## Testing
 
