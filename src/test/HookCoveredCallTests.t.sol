@@ -407,7 +407,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
 
     vm.startPrank(operator);
 
-    uint32 expiration = uint32(block.timestamp) + 3 days;
+    uint32 expiration = uint32(1661141567);
 
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
@@ -415,13 +415,13 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       address(token),
       0,
       1, // This would be the first option id.
-      1000,
+      7000000000000000000,
       expiration
     );
     uint256 optionId = calls.mintWithErc721(
       address(token),
       underlyingTokenId,
-      1000,
+      7000000000000000000,
       expiration
     );
 
@@ -435,6 +435,7 @@ contract HookCoveredCallMintTests is HookProtocolTest {
       "operator should be approved for option"
     );
 
+    emit log(calls.tokenURI(optionId));
     assertTrue(
       bytes(calls.tokenURI(optionId)).length > 100,
       "tokenURI should be long"

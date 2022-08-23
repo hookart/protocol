@@ -5,13 +5,45 @@ import { ethers } from "hardhat";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
+  console.log("what is happening");
 
-  const { deployer, weth, approvedMarket } = await getNamedAccounts();
-  // proxy only in non-live network (localhost and hardhat network) enabling HCR (Hot Contract Replacement)
-  // in live network, proxy is disabled and constructor is invoked
+  let {
+    deployer,
+    vaultUpgrader,
+    callsUpgrader,
+    pauserRole,
+    marketConf,
+    collectionConf,
+    allowlister,
+    weth,
+    approvedMarket,
+  } = await getNamedAccounts();
+
+  console.log(deployer);
+
+  console.log("Deploying from", deployer);
+
+  console.log("Deploying with these args:", [
+    allowlister,
+    pauserRole,
+    vaultUpgrader,
+    callsUpgrader,
+    marketConf,
+    collectionConf,
+    weth,
+  ]);
+
   const protocol = await deploy("HookProtocol", {
     from: deployer,
-    args: [deployer, weth],
+    args: [
+      allowlister,
+      pauserRole,
+      vaultUpgrader,
+      callsUpgrader,
+      marketConf,
+      collectionConf,
+      weth,
+    ],
     log: true,
     autoMine: true,
   });
@@ -64,16 +96,47 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     autoMine: true,
   });
 
-  const vfSet = await protocolImpl.setVaultFactory(vaultFactory.address);
+  if (vaultUpgrader === deployer) {
+    const vfSet = await protocolImpl.setVaultFactory(vaultFactory.address);
+    console.log("Set vault factory onto protocol with hash: ", vfSet.hash);
+  }
 
-  console.log("Set vault factory onto protocol with hash: ", vfSet.hash);
+  const font1 = await deploy("Font1", {
+    from: deployer,
+    args: [],
+    log: true,
+    // maxPriorityFeePerGas: "2000000000",
+    // maxFeePerGas: "50000000000",
+    autoMine: true,
+  });
+  const font2 = await deploy("Font2", {
+    from: deployer,
+    args: [],
+    log: true,
+    // maxPriorityFeePerGas: "2000000000",
+    // maxFeePerGas: "50000000000",
+    autoMine: true,
+  });
+  const font3 = await deploy("Font3", {
+    from: deployer,
+    args: [],
+    log: true,
+    // maxPriorityFeePerGas: "2000000000",
+    // maxFeePerGas: "50000000000",
+    autoMine: true,
+  });
 
   const tokenURI = await deploy("TokenURI", {
     from: deployer,
     args: [],
+    libraries: {
+      Font1: font1.address, // "0x1Ac06Ef3cda4dC2CB30A866090041D3266c33d45",
+      Font2: font2.address, //"0xfa10218700bFd179DE800a461C98357b39525f38",
+      Font3: font3.address, //"0x4C6eDA9CBb9B31152f3f002CAe5E3eF805Ad19f9",
+    },
     log: true,
-    maxPriorityFeePerGas: "1148937",
-    maxFeePerGas: "11489370",
+    // maxPriorityFeePerGas: "2000000000",
+    // maxFeePerGas: "50000000000",
     autoMine: true,
   });
   const callV1 = await deploy("HookCoveredCallImplV1", {
@@ -88,23 +151,37 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const callBeacon = await deploy("HookUpgradeableBeacon", {
     from: deployer,
-    args: [callV1.address, protocol.address, ethers.utils.id("VAULT_UPGRADER")],
+    args: [
+      "0x3648080307faC2EE51A01463e47B9ca076DC14A1",
+      "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+      ethers.utils.id("CALL_UPGRADER"),
+    ],
     log: true,
     autoMine: true,
   });
 
   const callFactory = await deploy("HookCoveredCallFactory", {
     from: deployer,
-    args: [protocol.address, callBeacon.address, approvedMarket],
+    args: [
+      "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+      callBeacon.address,
+      approvedMarket,
+    ],
     log: true,
     autoMine: true,
   });
 
-  const cfSet = await protocolImpl.setCoveredCallFactory(callFactory.address);
+  if (deployer === callsUpgrader) {
+    const cfSet = await protocolImpl.setCoveredCallFactory(callFactory.address);
+    console.log("Set call factory onto protocol with hash: ", cfSet.hash);
+  }
 
-  console.log("Set call factory onto protocol with hash: ", cfSet.hash);
+  if (deployer == pauserRole) {
+    // Will need to pause outside of this context
+    // for the process to work with mainnet deploys
+    await protocolImpl.connect(deployer).pause();
+  }
 
-  await protocolImpl.connect(deployer).unpause();
   return true;
 };
 export default func;
