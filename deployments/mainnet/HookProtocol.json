@@ -1,0 +1,934 @@
+{
+  "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "allowlister",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "pauser",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "vaultUpgrader",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "callUpgrader",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "marketConf",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "collectionConf",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "weth",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Paused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Unpaused",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ALLOWLISTER_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CALL_UPGRADER",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "COLLECTION_CONF",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MARKET_CONF",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PAUSER_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "VAULT_UPGRADER",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "coveredCallContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collectionAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "conf",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getCollectionConfig",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getWETHAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collectionAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "config",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bool",
+          "name": "value",
+          "type": "bool"
+        }
+      ],
+      "name": "setCollectionConfig",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "coveredCallFactoryContract",
+          "type": "address"
+        }
+      ],
+      "name": "setCoveredCallFactory",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "vaultFactoryContract",
+          "type": "address"
+        }
+      ],
+      "name": "setVaultFactory",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "throwWhenPaused",
+      "outputs": [],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "vaultContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+  "receipt": {
+    "to": null,
+    "from": "0x1cAA0034b17786E18D94Ca176b1F8ec3F7972908",
+    "contractAddress": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+    "transactionIndex": 92,
+    "gasUsed": "1247307",
+    "logsBloom": "0x00000004000000000800001000000000088800000000000000000000000000000000000000000000000000001000001000000000000000800000000000000000000000000080000000000000000000000000100002000000000000000000000002000000020000400000000000000810000002000000000000000000000000000000200000000000000000100000208000002200000000000000000000000000000000000000420000000000000088000000000000010000001010000000000000000000000002002000000000000002000000800000000160002011000022000000000010000004000400004000002000000400000000000000000001000008",
+    "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f",
+    "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+    "logs": [
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0xfba4f6dd992a27a814ee807eb2f9332d6d01312041726966a540cf4a4a891553",
+          "0x000000000000000000000000c8cd2c5e18e55d1986bf66b72411c6f83d2ad4cf",
+          "0x0000000000000000000000001caa0034b17786e18d94ca176b1f8ec3f7972908"
+        ],
+        "data": "0x",
+        "logIndex": 131,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a",
+          "0x000000000000000000000000d8fa171c70c9fb9e0eb643dc83a93ac6edf4133c",
+          "0x0000000000000000000000001caa0034b17786e18d94ca176b1f8ec3f7972908"
+        ],
+        "data": "0x",
+        "logIndex": 132,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0x945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e",
+          "0x000000000000000000000000ab95dc5c7fa403052abcd9d0573d4dc87c40a22e",
+          "0x0000000000000000000000001caa0034b17786e18d94ca176b1f8ec3f7972908"
+        ],
+        "data": "0x",
+        "logIndex": 133,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0x657f307dfada290937bc821a25e2da10feb07809ba9560b816723e8b47fe379a",
+          "0x000000000000000000000000d244358ec796216166836477b627b2cda9b14cb8",
+          "0x0000000000000000000000001caa0034b17786e18d94ca176b1f8ec3f7972908"
+        ],
+        "data": "0x",
+        "logIndex": 134,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0x8de11a8d956993287a5b6a74c069984045abc1b621d651081c4c77c05c3cb7af",
+          "0x000000000000000000000000eb046b544da37b81b8079149320c1a19f7dbedc4",
+          "0x0000000000000000000000001caa0034b17786e18d94ca176b1f8ec3f7972908"
+        ],
+        "data": "0x",
+        "logIndex": 135,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0xf7e0191f3657a6da7569740b1cdeac8c3425bcbfd257d4fdc6d2241598f4de8b",
+          "0x000000000000000000000000f549bc26b3626defb5a6f3942b17c257b32515e9",
+          "0x0000000000000000000000001caa0034b17786e18d94ca176b1f8ec3f7972908"
+        ],
+        "data": "0x",
+        "logIndex": 136,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0xfba4f6dd992a27a814ee807eb2f9332d6d01312041726966a540cf4a4a891553",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0xfba4f6dd992a27a814ee807eb2f9332d6d01312041726966a540cf4a4a891553"
+        ],
+        "data": "0x",
+        "logIndex": 137,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a"
+        ],
+        "data": "0x",
+        "logIndex": 138,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0x945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e"
+        ],
+        "data": "0x",
+        "logIndex": 139,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0x657f307dfada290937bc821a25e2da10feb07809ba9560b816723e8b47fe379a",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x657f307dfada290937bc821a25e2da10feb07809ba9560b816723e8b47fe379a"
+        ],
+        "data": "0x",
+        "logIndex": 140,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0x8de11a8d956993287a5b6a74c069984045abc1b621d651081c4c77c05c3cb7af",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x8de11a8d956993287a5b6a74c069984045abc1b621d651081c4c77c05c3cb7af"
+        ],
+        "data": "0x",
+        "logIndex": 141,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      },
+      {
+        "transactionIndex": 92,
+        "blockNumber": 15394659,
+        "transactionHash": "0xddba14dfb60c1a87ada9f91cce908dc0e880763a3a33623bcf856cf4852f7745",
+        "address": "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0xf7e0191f3657a6da7569740b1cdeac8c3425bcbfd257d4fdc6d2241598f4de8b",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0xf7e0191f3657a6da7569740b1cdeac8c3425bcbfd257d4fdc6d2241598f4de8b"
+        ],
+        "data": "0x",
+        "logIndex": 142,
+        "blockHash": "0xcb01be7a0b7a4c751477fc00bfe466b7c356bf96c8efeeac94ae66d09640f05f"
+      }
+    ],
+    "blockNumber": 15394659,
+    "cumulativeGasUsed": "6923732",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xC8Cd2c5e18e55D1986bF66B72411C6f83D2Ad4cF",
+    "0xD8fA171C70c9fb9e0EB643DC83A93AC6eDf4133C",
+    "0xAB95dc5c7FA403052aBcD9d0573d4DC87c40A22E",
+    "0xD244358eC796216166836477b627b2CdA9B14cb8",
+    "0xeB046b544da37b81b8079149320C1a19f7dbEDc4",
+    "0xF549bc26b3626dEFB5a6F3942b17c257b32515e9",
+    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "27cdac36318da08ab52a4db662ee1263",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"allowlister\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pauser\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"vaultUpgrader\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callUpgrader\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"marketConf\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"collectionConf\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"weth\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ALLOWLISTER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"CALL_UPGRADER\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"COLLECTION_CONF\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MARKET_CONF\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"PAUSER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"VAULT_UPGRADER\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"coveredCallContract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collectionAddress\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"conf\",\"type\":\"bytes32\"}],\"name\":\"getCollectionConfig\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getWETHAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collectionAddress\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"config\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"value\",\"type\":\"bool\"}],\"name\":\"setCollectionConfig\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"coveredCallFactoryContract\",\"type\":\"address\"}],\"name\":\"setCoveredCallFactory\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"vaultFactoryContract\",\"type\":\"address\"}],\"name\":\"setVaultFactory\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"throwWhenPaused\",\"outputs\":[],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"vaultContract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Other contracts in the protocol refer to this one to get configuration and pausing issues. to reduce attack surface area, this contract cannot be upgraded; however, additional roles can be added. This contract does not implement any specific timelocks or other safety measures. The roles are granted with the principal of least privilege. As the protocol matures, these additional measures can be layered by granting these roles to other contracts. In the extreme, the upgrade and other roles can be burned, which would effectively make the protocol static and non-upgradeable.\",\"kind\":\"dev\",\"methods\":{\"getCollectionConfig(address,bytes32)\":{\"details\":\"See {IHookProtocol-getCollectionConfig}.\"},\"getRoleAdmin(bytes32)\":{\"details\":\"Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.\"},\"grantRole(bytes32,address)\":{\"details\":\"Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.\"},\"hasRole(bytes32,address)\":{\"details\":\"Returns `true` if `account` has been granted `role`.\"},\"paused()\":{\"details\":\"Returns true if the contract is paused, and false otherwise.\"},\"renounceRole(bytes32,address)\":{\"details\":\"Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.\"},\"revokeRole(bytes32,address)\":{\"details\":\"Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.\"},\"setCollectionConfig(address,bytes32,bool)\":{\"details\":\"the conf value can be read with getCollectionConfig\",\"params\":{\"collectionAddress\":\"the address for the collection\",\"config\":\"the configuration field to set\",\"value\":\"the value to set for the configuration\"}},\"setCoveredCallFactory(address)\":{\"details\":\"This address is used by other protocols searching for the registry of protocols.\",\"params\":{\"coveredCallFactoryContract\":\"the address of the deployed covered call contract\"}},\"setVaultFactory(address)\":{\"details\":\"allows all protocol components, including the call factory, to look up the vault factory.\",\"params\":{\"vaultFactoryContract\":\"the deployed vault factory\"}},\"supportsInterface(bytes4)\":{\"details\":\"See {IERC165-supportsInterface}.\"}},\"stateVariables\":{\"getWETHAddress\":{\"details\":\"these are values for popular chains: mainnet: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 kovan: 0xd0a1e359811322d97991e03f863a0c30c2cf029c ropsten: 0xc778417e063141139fce010982780140aa0cd5ab rinkeby: 0xc778417e063141139fce010982780140aa0cd5ab\",\"return\":\"the weth address\",\"returns\":{\"_0\":\"the weth address\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"ALLOWLISTER_ROLE()\":{\"notice\":\"the allowlister is able to enable and disable projects to mint instruments\"},\"CALL_UPGRADER()\":{\"notice\":\"the call upgrader role is able to upgrade the implementation of the covered call options\"},\"COLLECTION_CONF()\":{\"notice\":\"the collection configuration role allows the actor to make changes the collection configs on the protocol contract\"},\"MARKET_CONF()\":{\"notice\":\"the market configuration role allows the actor to make changes to how the market operates\"},\"PAUSER_ROLE()\":{\"notice\":\"the pauser is able to start and pause various components of the protocol\"},\"VAULT_UPGRADER()\":{\"notice\":\"the vault upgrader role is able to upgrade the implementation for all vaults\"},\"coveredCallContract()\":{\"notice\":\"the address of the deployed CoveredCallFactory used by the protocol\"},\"getWETHAddress()\":{\"notice\":\"the standard weth address on this chain\"},\"pause()\":{\"notice\":\"pauses the protocol if the protocol is currently unpaused\"},\"setCollectionConfig(address,bytes32,bool)\":{\"notice\":\"allows an account with the COLLECTION_CONF role to set a boolean config value for a collection\"},\"setCoveredCallFactory(address)\":{\"notice\":\"Allows an admin to set the address of the deployed covered call factory\"},\"setVaultFactory(address)\":{\"notice\":\"Allows an admin to set the address of the deployed vault factory\"},\"throwWhenPaused()\":{\"notice\":\"throws an exception when the protocol is paused\"},\"unpause()\":{\"notice\":\"unpauses the protocol if the protocol is already paused\"},\"vaultContract()\":{\"notice\":\"the address of the deployed VaultFactory used by the protocol\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/HookProtocol.sol\":\"HookProtocol\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":10},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/AccessControl.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.6.0) (access/AccessControl.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"./IAccessControl.sol\\\";\\nimport \\\"../utils/Context.sol\\\";\\nimport \\\"../utils/Strings.sol\\\";\\nimport \\\"../utils/introspection/ERC165.sol\\\";\\n\\n/**\\n * @dev Contract module that allows children to implement role-based access\\n * control mechanisms. This is a lightweight version that doesn't allow enumerating role\\n * members except through off-chain means by accessing the contract event logs. Some\\n * applications may benefit from on-chain enumerability, for those cases see\\n * {AccessControlEnumerable}.\\n *\\n * Roles are referred to by their `bytes32` identifier. These should be exposed\\n * in the external API and be unique. The best way to achieve this is by\\n * using `public constant` hash digests:\\n *\\n * ```\\n * bytes32 public constant MY_ROLE = keccak256(\\\"MY_ROLE\\\");\\n * ```\\n *\\n * Roles can be used to represent a set of permissions. To restrict access to a\\n * function call, use {hasRole}:\\n *\\n * ```\\n * function foo() public {\\n *     require(hasRole(MY_ROLE, msg.sender));\\n *     ...\\n * }\\n * ```\\n *\\n * Roles can be granted and revoked dynamically via the {grantRole} and\\n * {revokeRole} functions. Each role has an associated admin role, and only\\n * accounts that have a role's admin role can call {grantRole} and {revokeRole}.\\n *\\n * By default, the admin role for all roles is `DEFAULT_ADMIN_ROLE`, which means\\n * that only accounts with this role will be able to grant or revoke other\\n * roles. More complex role relationships can be created by using\\n * {_setRoleAdmin}.\\n *\\n * WARNING: The `DEFAULT_ADMIN_ROLE` is also its own admin: it has permission to\\n * grant and revoke this role. Extra precautions should be taken to secure\\n * accounts that have been granted it.\\n */\\nabstract contract AccessControl is Context, IAccessControl, ERC165 {\\n    struct RoleData {\\n        mapping(address => bool) members;\\n        bytes32 adminRole;\\n    }\\n\\n    mapping(bytes32 => RoleData) private _roles;\\n\\n    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;\\n\\n    /**\\n     * @dev Modifier that checks that an account has a specific role. Reverts\\n     * with a standardized message including the required role.\\n     *\\n     * The format of the revert reason is given by the following regular expression:\\n     *\\n     *  /^AccessControl: account (0x[0-9a-f]{40}) is missing role (0x[0-9a-f]{64})$/\\n     *\\n     * _Available since v4.1._\\n     */\\n    modifier onlyRole(bytes32 role) {\\n        _checkRole(role);\\n        _;\\n    }\\n\\n    /**\\n     * @dev See {IERC165-supportsInterface}.\\n     */\\n    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {\\n        return interfaceId == type(IAccessControl).interfaceId || super.supportsInterface(interfaceId);\\n    }\\n\\n    /**\\n     * @dev Returns `true` if `account` has been granted `role`.\\n     */\\n    function hasRole(bytes32 role, address account) public view virtual override returns (bool) {\\n        return _roles[role].members[account];\\n    }\\n\\n    /**\\n     * @dev Revert with a standard message if `_msgSender()` is missing `role`.\\n     * Overriding this function changes the behavior of the {onlyRole} modifier.\\n     *\\n     * Format of the revert message is described in {_checkRole}.\\n     *\\n     * _Available since v4.6._\\n     */\\n    function _checkRole(bytes32 role) internal view virtual {\\n        _checkRole(role, _msgSender());\\n    }\\n\\n    /**\\n     * @dev Revert with a standard message if `account` is missing `role`.\\n     *\\n     * The format of the revert reason is given by the following regular expression:\\n     *\\n     *  /^AccessControl: account (0x[0-9a-f]{40}) is missing role (0x[0-9a-f]{64})$/\\n     */\\n    function _checkRole(bytes32 role, address account) internal view virtual {\\n        if (!hasRole(role, account)) {\\n            revert(\\n                string(\\n                    abi.encodePacked(\\n                        \\\"AccessControl: account \\\",\\n                        Strings.toHexString(uint160(account), 20),\\n                        \\\" is missing role \\\",\\n                        Strings.toHexString(uint256(role), 32)\\n                    )\\n                )\\n            );\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the admin role that controls `role`. See {grantRole} and\\n     * {revokeRole}.\\n     *\\n     * To change a role's admin, use {_setRoleAdmin}.\\n     */\\n    function getRoleAdmin(bytes32 role) public view virtual override returns (bytes32) {\\n        return _roles[role].adminRole;\\n    }\\n\\n    /**\\n     * @dev Grants `role` to `account`.\\n     *\\n     * If `account` had not been already granted `role`, emits a {RoleGranted}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     */\\n    function grantRole(bytes32 role, address account) public virtual override onlyRole(getRoleAdmin(role)) {\\n        _grantRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Revokes `role` from `account`.\\n     *\\n     * If `account` had been granted `role`, emits a {RoleRevoked} event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     */\\n    function revokeRole(bytes32 role, address account) public virtual override onlyRole(getRoleAdmin(role)) {\\n        _revokeRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Revokes `role` from the calling account.\\n     *\\n     * Roles are often managed via {grantRole} and {revokeRole}: this function's\\n     * purpose is to provide a mechanism for accounts to lose their privileges\\n     * if they are compromised (such as when a trusted device is misplaced).\\n     *\\n     * If the calling account had been revoked `role`, emits a {RoleRevoked}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must be `account`.\\n     */\\n    function renounceRole(bytes32 role, address account) public virtual override {\\n        require(account == _msgSender(), \\\"AccessControl: can only renounce roles for self\\\");\\n\\n        _revokeRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Grants `role` to `account`.\\n     *\\n     * If `account` had not been already granted `role`, emits a {RoleGranted}\\n     * event. Note that unlike {grantRole}, this function doesn't perform any\\n     * checks on the calling account.\\n     *\\n     * [WARNING]\\n     * ====\\n     * This function should only be called from the constructor when setting\\n     * up the initial roles for the system.\\n     *\\n     * Using this function in any other way is effectively circumventing the admin\\n     * system imposed by {AccessControl}.\\n     * ====\\n     *\\n     * NOTE: This function is deprecated in favor of {_grantRole}.\\n     */\\n    function _setupRole(bytes32 role, address account) internal virtual {\\n        _grantRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Sets `adminRole` as ``role``'s admin role.\\n     *\\n     * Emits a {RoleAdminChanged} event.\\n     */\\n    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {\\n        bytes32 previousAdminRole = getRoleAdmin(role);\\n        _roles[role].adminRole = adminRole;\\n        emit RoleAdminChanged(role, previousAdminRole, adminRole);\\n    }\\n\\n    /**\\n     * @dev Grants `role` to `account`.\\n     *\\n     * Internal function without access restriction.\\n     */\\n    function _grantRole(bytes32 role, address account) internal virtual {\\n        if (!hasRole(role, account)) {\\n            _roles[role].members[account] = true;\\n            emit RoleGranted(role, account, _msgSender());\\n        }\\n    }\\n\\n    /**\\n     * @dev Revokes `role` from `account`.\\n     *\\n     * Internal function without access restriction.\\n     */\\n    function _revokeRole(bytes32 role, address account) internal virtual {\\n        if (hasRole(role, account)) {\\n            _roles[role].members[account] = false;\\n            emit RoleRevoked(role, account, _msgSender());\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xb4d87ee2ead4bd192b41c128f287d4b7f24b9e0cd740cc9b476881c461286007\",\"license\":\"MIT\"},\"@openzeppelin/contracts/access/IAccessControl.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (access/IAccessControl.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev External interface of AccessControl declared to support ERC165 detection.\\n */\\ninterface IAccessControl {\\n    /**\\n     * @dev Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole`\\n     *\\n     * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite\\n     * {RoleAdminChanged} not being emitted signaling this.\\n     *\\n     * _Available since v3.1._\\n     */\\n    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);\\n\\n    /**\\n     * @dev Emitted when `account` is granted `role`.\\n     *\\n     * `sender` is the account that originated the contract call, an admin role\\n     * bearer except when using {AccessControl-_setupRole}.\\n     */\\n    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);\\n\\n    /**\\n     * @dev Emitted when `account` is revoked `role`.\\n     *\\n     * `sender` is the account that originated the contract call:\\n     *   - if using `revokeRole`, it is the admin role bearer\\n     *   - if using `renounceRole`, it is the role bearer (i.e. `account`)\\n     */\\n    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);\\n\\n    /**\\n     * @dev Returns `true` if `account` has been granted `role`.\\n     */\\n    function hasRole(bytes32 role, address account) external view returns (bool);\\n\\n    /**\\n     * @dev Returns the admin role that controls `role`. See {grantRole} and\\n     * {revokeRole}.\\n     *\\n     * To change a role's admin, use {AccessControl-_setRoleAdmin}.\\n     */\\n    function getRoleAdmin(bytes32 role) external view returns (bytes32);\\n\\n    /**\\n     * @dev Grants `role` to `account`.\\n     *\\n     * If `account` had not been already granted `role`, emits a {RoleGranted}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     */\\n    function grantRole(bytes32 role, address account) external;\\n\\n    /**\\n     * @dev Revokes `role` from `account`.\\n     *\\n     * If `account` had been granted `role`, emits a {RoleRevoked} event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     */\\n    function revokeRole(bytes32 role, address account) external;\\n\\n    /**\\n     * @dev Revokes `role` from the calling account.\\n     *\\n     * Roles are often managed via {grantRole} and {revokeRole}: this function's\\n     * purpose is to provide a mechanism for accounts to lose their privileges\\n     * if they are compromised (such as when a trusted device is misplaced).\\n     *\\n     * If the calling account had been granted `role`, emits a {RoleRevoked}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must be `account`.\\n     */\\n    function renounceRole(bytes32 role, address account) external;\\n}\\n\",\"keccak256\":\"0x59ce320a585d7e1f163cd70390a0ef2ff9cec832e2aa544293a00692465a7a57\",\"license\":\"MIT\"},\"@openzeppelin/contracts/security/Pausable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (security/Pausable.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which allows children to implement an emergency stop\\n * mechanism that can be triggered by an authorized account.\\n *\\n * This module is used through inheritance. It will make available the\\n * modifiers `whenNotPaused` and `whenPaused`, which can be applied to\\n * the functions of your contract. Note that they will not be pausable by\\n * simply including this module, only once the modifiers are put in place.\\n */\\nabstract contract Pausable is Context {\\n    /**\\n     * @dev Emitted when the pause is triggered by `account`.\\n     */\\n    event Paused(address account);\\n\\n    /**\\n     * @dev Emitted when the pause is lifted by `account`.\\n     */\\n    event Unpaused(address account);\\n\\n    bool private _paused;\\n\\n    /**\\n     * @dev Initializes the contract in unpaused state.\\n     */\\n    constructor() {\\n        _paused = false;\\n    }\\n\\n    /**\\n     * @dev Returns true if the contract is paused, and false otherwise.\\n     */\\n    function paused() public view virtual returns (bool) {\\n        return _paused;\\n    }\\n\\n    /**\\n     * @dev Modifier to make a function callable only when the contract is not paused.\\n     *\\n     * Requirements:\\n     *\\n     * - The contract must not be paused.\\n     */\\n    modifier whenNotPaused() {\\n        require(!paused(), \\\"Pausable: paused\\\");\\n        _;\\n    }\\n\\n    /**\\n     * @dev Modifier to make a function callable only when the contract is paused.\\n     *\\n     * Requirements:\\n     *\\n     * - The contract must be paused.\\n     */\\n    modifier whenPaused() {\\n        require(paused(), \\\"Pausable: not paused\\\");\\n        _;\\n    }\\n\\n    /**\\n     * @dev Triggers stopped state.\\n     *\\n     * Requirements:\\n     *\\n     * - The contract must not be paused.\\n     */\\n    function _pause() internal virtual whenNotPaused {\\n        _paused = true;\\n        emit Paused(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Returns to normal state.\\n     *\\n     * Requirements:\\n     *\\n     * - The contract must be paused.\\n     */\\n    function _unpause() internal virtual whenPaused {\\n        _paused = false;\\n        emit Unpaused(_msgSender());\\n    }\\n}\\n\",\"keccak256\":\"0xe68ed7fb8766ed1e888291f881e36b616037f852b37d96877045319ad298ba87\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Address.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.5.0) (utils/Address.sol)\\n\\npragma solidity ^0.8.1;\\n\\n/**\\n * @dev Collection of functions related to the address type\\n */\\nlibrary Address {\\n    /**\\n     * @dev Returns true if `account` is a contract.\\n     *\\n     * [IMPORTANT]\\n     * ====\\n     * It is unsafe to assume that an address for which this function returns\\n     * false is an externally-owned account (EOA) and not a contract.\\n     *\\n     * Among others, `isContract` will return false for the following\\n     * types of addresses:\\n     *\\n     *  - an externally-owned account\\n     *  - a contract in construction\\n     *  - an address where a contract will be created\\n     *  - an address where a contract lived, but was destroyed\\n     * ====\\n     *\\n     * [IMPORTANT]\\n     * ====\\n     * You shouldn't rely on `isContract` to protect against flash loan attacks!\\n     *\\n     * Preventing calls from contracts is highly discouraged. It breaks composability, breaks support for smart wallets\\n     * like Gnosis Safe, and does not provide security since it can be circumvented by calling from a contract\\n     * constructor.\\n     * ====\\n     */\\n    function isContract(address account) internal view returns (bool) {\\n        // This method relies on extcodesize/address.code.length, which returns 0\\n        // for contracts in construction, since the code is only stored at the end\\n        // of the constructor execution.\\n\\n        return account.code.length > 0;\\n    }\\n\\n    /**\\n     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to\\n     * `recipient`, forwarding all available gas and reverting on errors.\\n     *\\n     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost\\n     * of certain opcodes, possibly making contracts go over the 2300 gas limit\\n     * imposed by `transfer`, making them unable to receive funds via\\n     * `transfer`. {sendValue} removes this limitation.\\n     *\\n     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].\\n     *\\n     * IMPORTANT: because control is transferred to `recipient`, care must be\\n     * taken to not create reentrancy vulnerabilities. Consider using\\n     * {ReentrancyGuard} or the\\n     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].\\n     */\\n    function sendValue(address payable recipient, uint256 amount) internal {\\n        require(address(this).balance >= amount, \\\"Address: insufficient balance\\\");\\n\\n        (bool success, ) = recipient.call{value: amount}(\\\"\\\");\\n        require(success, \\\"Address: unable to send value, recipient may have reverted\\\");\\n    }\\n\\n    /**\\n     * @dev Performs a Solidity function call using a low level `call`. A\\n     * plain `call` is an unsafe replacement for a function call: use this\\n     * function instead.\\n     *\\n     * If `target` reverts with a revert reason, it is bubbled up by this\\n     * function (like regular Solidity function calls).\\n     *\\n     * Returns the raw returned data. To convert to the expected return value,\\n     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].\\n     *\\n     * Requirements:\\n     *\\n     * - `target` must be a contract.\\n     * - calling `target` with `data` must not revert.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCall(address target, bytes memory data) internal returns (bytes memory) {\\n        return functionCall(target, data, \\\"Address: low-level call failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with\\n     * `errorMessage` as a fallback revert reason when `target` reverts.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCall(\\n        address target,\\n        bytes memory data,\\n        string memory errorMessage\\n    ) internal returns (bytes memory) {\\n        return functionCallWithValue(target, data, 0, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\\n     * but also transferring `value` wei to `target`.\\n     *\\n     * Requirements:\\n     *\\n     * - the calling contract must have an ETH balance of at least `value`.\\n     * - the called Solidity function must be `payable`.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCallWithValue(\\n        address target,\\n        bytes memory data,\\n        uint256 value\\n    ) internal returns (bytes memory) {\\n        return functionCallWithValue(target, data, value, \\\"Address: low-level call with value failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but\\n     * with `errorMessage` as a fallback revert reason when `target` reverts.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCallWithValue(\\n        address target,\\n        bytes memory data,\\n        uint256 value,\\n        string memory errorMessage\\n    ) internal returns (bytes memory) {\\n        require(address(this).balance >= value, \\\"Address: insufficient balance for call\\\");\\n        require(isContract(target), \\\"Address: call to non-contract\\\");\\n\\n        (bool success, bytes memory returndata) = target.call{value: value}(data);\\n        return verifyCallResult(success, returndata, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\\n     * but performing a static call.\\n     *\\n     * _Available since v3.3._\\n     */\\n    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {\\n        return functionStaticCall(target, data, \\\"Address: low-level static call failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],\\n     * but performing a static call.\\n     *\\n     * _Available since v3.3._\\n     */\\n    function functionStaticCall(\\n        address target,\\n        bytes memory data,\\n        string memory errorMessage\\n    ) internal view returns (bytes memory) {\\n        require(isContract(target), \\\"Address: static call to non-contract\\\");\\n\\n        (bool success, bytes memory returndata) = target.staticcall(data);\\n        return verifyCallResult(success, returndata, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\\n     * but performing a delegate call.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {\\n        return functionDelegateCall(target, data, \\\"Address: low-level delegate call failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],\\n     * but performing a delegate call.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function functionDelegateCall(\\n        address target,\\n        bytes memory data,\\n        string memory errorMessage\\n    ) internal returns (bytes memory) {\\n        require(isContract(target), \\\"Address: delegate call to non-contract\\\");\\n\\n        (bool success, bytes memory returndata) = target.delegatecall(data);\\n        return verifyCallResult(success, returndata, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Tool to verifies that a low level call was successful, and revert if it wasn't, either by bubbling the\\n     * revert reason using the provided one.\\n     *\\n     * _Available since v4.3._\\n     */\\n    function verifyCallResult(\\n        bool success,\\n        bytes memory returndata,\\n        string memory errorMessage\\n    ) internal pure returns (bytes memory) {\\n        if (success) {\\n            return returndata;\\n        } else {\\n            // Look for revert reason and bubble it up if present\\n            if (returndata.length > 0) {\\n                // The easiest way to bubble the revert reason is using memory via assembly\\n\\n                assembly {\\n                    let returndata_size := mload(returndata)\\n                    revert(add(32, returndata), returndata_size)\\n                }\\n            } else {\\n                revert(errorMessage);\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x2ccf9d2313a313d41a791505f2b5abfdc62191b5d4334f7f7a82691c088a1c87\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Strings.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Strings.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev String operations.\\n */\\nlibrary Strings {\\n    bytes16 private constant _HEX_SYMBOLS = \\\"0123456789abcdef\\\";\\n\\n    /**\\n     * @dev Converts a `uint256` to its ASCII `string` decimal representation.\\n     */\\n    function toString(uint256 value) internal pure returns (string memory) {\\n        // Inspired by OraclizeAPI's implementation - MIT licence\\n        // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol\\n\\n        if (value == 0) {\\n            return \\\"0\\\";\\n        }\\n        uint256 temp = value;\\n        uint256 digits;\\n        while (temp != 0) {\\n            digits++;\\n            temp /= 10;\\n        }\\n        bytes memory buffer = new bytes(digits);\\n        while (value != 0) {\\n            digits -= 1;\\n            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));\\n            value /= 10;\\n        }\\n        return string(buffer);\\n    }\\n\\n    /**\\n     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.\\n     */\\n    function toHexString(uint256 value) internal pure returns (string memory) {\\n        if (value == 0) {\\n            return \\\"0x00\\\";\\n        }\\n        uint256 temp = value;\\n        uint256 length = 0;\\n        while (temp != 0) {\\n            length++;\\n            temp >>= 8;\\n        }\\n        return toHexString(value, length);\\n    }\\n\\n    /**\\n     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.\\n     */\\n    function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {\\n        bytes memory buffer = new bytes(2 * length + 2);\\n        buffer[0] = \\\"0\\\";\\n        buffer[1] = \\\"x\\\";\\n        for (uint256 i = 2 * length + 1; i > 1; --i) {\\n            buffer[i] = _HEX_SYMBOLS[value & 0xf];\\n            value >>= 4;\\n        }\\n        require(value == 0, \\\"Strings: hex length insufficient\\\");\\n        return string(buffer);\\n    }\\n}\\n\",\"keccak256\":\"0x32c202bd28995dd20c4347b7c6467a6d3241c74c8ad3edcbb610cd9205916c45\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/introspection/ERC165.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"./IERC165.sol\\\";\\n\\n/**\\n * @dev Implementation of the {IERC165} interface.\\n *\\n * Contracts that want to implement ERC165 should inherit from this contract and override {supportsInterface} to check\\n * for the additional interface id that will be supported. For example:\\n *\\n * ```solidity\\n * function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {\\n *     return interfaceId == type(MyInterface).interfaceId || super.supportsInterface(interfaceId);\\n * }\\n * ```\\n *\\n * Alternatively, {ERC165Storage} provides an easier to use but more expensive implementation.\\n */\\nabstract contract ERC165 is IERC165 {\\n    /**\\n     * @dev See {IERC165-supportsInterface}.\\n     */\\n    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {\\n        return interfaceId == type(IERC165).interfaceId;\\n    }\\n}\\n\",\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC165 standard, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\\n *\\n * Implementers can declare support of contract interfaces, which can then be\\n * queried by others ({ERC165Checker}).\\n *\\n * For an implementation, see {ERC165}.\\n */\\ninterface IERC165 {\\n    /**\\n     * @dev Returns true if this contract implements the interface defined by\\n     * `interfaceId`. See the corresponding\\n     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]\\n     * to learn more about how these ids are created.\\n     *\\n     * This function call must use less than 30 000 gas.\\n     */\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n}\\n\",\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\"},\"src/HookProtocol.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n//\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588          \\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2584\\u2584         \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588    \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2584    \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//         \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//          \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//           \\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//            \\u2580\\u2580  \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//              \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580\\u2580\\u2580\\u2580\\u2580\\u2580      \\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\n//             \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580    \\u2584\\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\n//            \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2588\\u2588\\u2584\\n//          \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2584\\n//          \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//         \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c     \\u2580\\u2580\\u2580\\u2580\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580\\u2580\\u2580      \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n\\npragma solidity ^0.8.10;\\n\\nimport \\\"@openzeppelin/contracts/access/AccessControl.sol\\\";\\nimport \\\"@openzeppelin/contracts/security/Pausable.sol\\\";\\n\\nimport \\\"./interfaces/IHookProtocol.sol\\\";\\n\\nimport \\\"./mixin/PermissionConstants.sol\\\";\\n\\nimport \\\"@openzeppelin/contracts/utils/Address.sol\\\";\\n\\n/// @dev Other contracts in the protocol refer to this one to get configuration and pausing issues.\\n/// to reduce attack surface area, this contract cannot be upgraded; however, additional roles can be\\n/// added.\\n///\\n/// This contract does not implement any specific timelocks or other safety measures. The roles are granted\\n/// with the principal of least privilege. As the protocol matures, these additional measures can be layered\\n/// by granting these roles to other contracts. In the extreme, the upgrade and other roles can be burned,\\n/// which would effectively make the protocol static and non-upgradeable.\\ncontract HookProtocol is\\n  PermissionConstants,\\n  AccessControl,\\n  IHookProtocol,\\n  Pausable\\n{\\n  address public override coveredCallContract;\\n  address public override vaultContract;\\n  address public immutable override getWETHAddress;\\n  mapping(address => mapping(bytes32 => bool)) collectionConfigs;\\n\\n  constructor(\\n    address allowlister,\\n    address pauser,\\n    address vaultUpgrader,\\n    address callUpgrader,\\n    address marketConf,\\n    address collectionConf,\\n    address weth\\n  ) {\\n    require(Address.isContract(weth), \\\"weth must be a contract\\\");\\n    require(\\n      allowlister != address(0),\\n      \\\"allowlister address cannot be set to the zero address\\\"\\n    );\\n    require(\\n      pauser != address(0),\\n      \\\"pauser address cannot be set to the zero address\\\"\\n    );\\n    require(\\n      vaultUpgrader != address(0),\\n      \\\"admin address cannot be set to the zero address\\\"\\n    );\\n    require(\\n      callUpgrader != address(0),\\n      \\\"callUpgrader address cannot be set to the zero address\\\"\\n    );\\n    require(\\n      marketConf != address(0),\\n      \\\"marketConf address cannot be set to the zero address\\\"\\n    );\\n    require(\\n      collectionConf != address(0),\\n      \\\"collectionConf address cannot be set to the zero address\\\"\\n    );\\n    _setupRole(ALLOWLISTER_ROLE, allowlister);\\n    _setupRole(PAUSER_ROLE, pauser);\\n    _setupRole(VAULT_UPGRADER, vaultUpgrader);\\n    _setupRole(CALL_UPGRADER, callUpgrader);\\n    _setupRole(MARKET_CONF, marketConf);\\n    _setupRole(COLLECTION_CONF, collectionConf);\\n\\n    // allow the admin to add and remove other roles\\n    _setRoleAdmin(ALLOWLISTER_ROLE, ALLOWLISTER_ROLE);\\n    _setRoleAdmin(PAUSER_ROLE, PAUSER_ROLE);\\n    _setRoleAdmin(VAULT_UPGRADER, VAULT_UPGRADER);\\n    _setRoleAdmin(CALL_UPGRADER, CALL_UPGRADER);\\n    _setRoleAdmin(MARKET_CONF, MARKET_CONF);\\n    _setRoleAdmin(COLLECTION_CONF, COLLECTION_CONF);\\n    // set weth\\n    getWETHAddress = weth;\\n  }\\n\\n  /// @notice allows an account with the COLLECTION_CONF role to set a boolean config\\n  /// value for a collection\\n  /// @dev the conf value can be read with getCollectionConfig\\n  /// @param collectionAddress the address for the collection\\n  /// @param config the configuration field to set\\n  /// @param value the value to set for the configuration\\n  function setCollectionConfig(\\n    address collectionAddress,\\n    bytes32 config,\\n    bool value\\n  ) external onlyRole(COLLECTION_CONF) {\\n    collectionConfigs[collectionAddress][config] = value;\\n  }\\n\\n  /// @dev See {IHookProtocol-getCollectionConfig}.\\n  function getCollectionConfig(address collectionAddress, bytes32 conf)\\n    external\\n    view\\n    returns (bool)\\n  {\\n    return collectionConfigs[collectionAddress][conf];\\n  }\\n\\n  modifier callUpgraderOnly() {\\n    require(\\n      hasRole(CALL_UPGRADER, msg.sender),\\n      \\\"Caller is not a call upgrader\\\"\\n    );\\n    _;\\n  }\\n\\n  modifier vaultUpgraderOnly() {\\n    require(\\n      hasRole(VAULT_UPGRADER, msg.sender),\\n      \\\"Caller is not a vault upgrader\\\"\\n    );\\n    _;\\n  }\\n\\n  /// @notice throws an exception when the protocol is paused\\n  function throwWhenPaused() external view whenNotPaused {\\n    // depend on the modifier to throw.\\n    return;\\n  }\\n\\n  /// @notice unpauses the protocol if the protocol is already paused\\n  function unpause() external {\\n    require(hasRole(PAUSER_ROLE, msg.sender), \\\"Caller is not an pauser\\\");\\n    require(paused() == true, \\\"Protocol is already paused\\\");\\n    _unpause();\\n  }\\n\\n  /// @notice pauses the protocol if the protocol is currently unpaused\\n  function pause() external {\\n    require(hasRole(PAUSER_ROLE, msg.sender), \\\"Caller is not an pauser`\\\");\\n    require(paused() == false, \\\"Protocol is already paused\\\");\\n    _pause();\\n  }\\n\\n  /// @notice Allows an admin to set the address of the deployed covered call factory\\n  /// @dev This address is used by other protocols searching for the registry of\\n  /// protocols.\\n  /// @param coveredCallFactoryContract the address of the deployed covered call contract\\n  function setCoveredCallFactory(address coveredCallFactoryContract)\\n    external\\n    callUpgraderOnly\\n  {\\n    require(\\n      Address.isContract(coveredCallFactoryContract),\\n      \\\"setCoveredCallFactory: implementation is not a contract\\\"\\n    );\\n    coveredCallContract = coveredCallFactoryContract;\\n  }\\n\\n  /// @notice Allows an admin to set the address of the deployed vault factory\\n  /// @dev allows all protocol components, including the call factory, to look up the\\n  /// vault factory.\\n  /// @param vaultFactoryContract the deployed vault factory\\n  function setVaultFactory(address vaultFactoryContract)\\n    external\\n    vaultUpgraderOnly\\n  {\\n    require(\\n      Address.isContract(vaultFactoryContract),\\n      \\\"setVaultFactory: implementation is not a contract\\\"\\n    );\\n    vaultContract = vaultFactoryContract;\\n  }\\n}\\n\",\"keccak256\":\"0x2341abd24373e6b919acf2de20d4dd2442a94c7170e4e53ce77b4dfd38578ecf\",\"license\":\"MIT\"},\"src/interfaces/IHookProtocol.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n//\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588          \\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2584\\u2584         \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588    \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2584    \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//         \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//          \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//           \\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//            \\u2580\\u2580  \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//              \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580\\u2580\\u2580\\u2580\\u2580\\u2580      \\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\n//             \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580    \\u2584\\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\n//            \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2588\\u2588\\u2584\\n//          \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2584\\n//          \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//         \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c     \\u2580\\u2580\\u2580\\u2580\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580\\u2580\\u2580      \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n\\npragma solidity ^0.8.10;\\n\\nimport \\\"@openzeppelin/contracts/access/IAccessControl.sol\\\";\\n\\n/// @title HookProtocol configuration and access control repository\\n/// @author Jake Nyquist-j@hook.xyz\\n/// @custom:coauthor Regynald Augustin-regy@hook.xyz\\n///\\n/// @dev it is critically important that the particular protocol implementation\\n/// is correct as, if it is not, all assets contained within protocol contracts\\n/// can be easily compromised.\\ninterface IHookProtocol is IAccessControl {\\n  /// @notice the address of the deployed CoveredCallFactory used by the protocol\\n  function coveredCallContract() external view returns (address);\\n\\n  /// @notice the address of the deployed VaultFactory used by the protocol\\n  function vaultContract() external view returns (address);\\n\\n  /// @notice callable function that reverts when the protocol is paused\\n  function throwWhenPaused() external;\\n\\n  /// @notice the standard weth address on this chain\\n  /// @dev these are values for popular chains:\\n  /// mainnet: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\\n  /// kovan: 0xd0a1e359811322d97991e03f863a0c30c2cf029c\\n  /// ropsten: 0xc778417e063141139fce010982780140aa0cd5ab\\n  /// rinkeby: 0xc778417e063141139fce010982780140aa0cd5ab\\n  /// @return the weth address\\n  function getWETHAddress() external view returns (address);\\n\\n  /// @notice get a configuration flag with a specific key for a collection\\n  /// @param collectionAddress the collection for which to lookup a configuration flag\\n  /// @param conf the config identifier for the configuration flag\\n  /// @return the true or false value of the config\\n  function getCollectionConfig(address collectionAddress, bytes32 conf)\\n    external\\n    view\\n    returns (bool);\\n}\\n\",\"keccak256\":\"0xd7c8ed418e0a35958956903000d363a1ddcaebf938c92c5bdd8a6dfedc73c94d\",\"license\":\"MIT\"},\"src/mixin/PermissionConstants.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n//\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588          \\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2584\\u2584         \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588    \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2584    \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//         \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//          \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//           \\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//            \\u2580\\u2580  \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//              \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580\\u2580\\u2580\\u2580\\u2580\\u2580      \\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\n//             \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580    \\u2584\\u2584\\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\n//            \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2588\\u2588\\u2584\\n//          \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2584\\n//          \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580  \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//         \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580   \\u2584\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2590\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c     \\u2580\\u2580\\u2580\\u2580\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2580\\u2580\\u2580\\u2580      \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n//        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u258c                                        \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\n\\npragma solidity ^0.8.10;\\n\\n/// @notice roles on the hook protocol that can be read by other contract\\n/// @dev new roles here should be initialized in the constructor of the protocol\\nabstract contract PermissionConstants {\\n  /// ----- ROLES --------\\n\\n  /// @notice the allowlister is able to enable and disable projects to mint instruments\\n  bytes32 public constant ALLOWLISTER_ROLE = keccak256(\\\"ALLOWLISTER_ROLE\\\");\\n\\n  /// @notice the pauser is able to start and pause various components of the protocol\\n  bytes32 public constant PAUSER_ROLE = keccak256(\\\"PAUSER_ROLE\\\");\\n\\n  /// @notice the vault upgrader role is able to upgrade the implementation for all vaults\\n  bytes32 public constant VAULT_UPGRADER = keccak256(\\\"VAULT_UPGRADER\\\");\\n\\n  /// @notice the call upgrader role is able to upgrade the implementation of the covered call options\\n  bytes32 public constant CALL_UPGRADER = keccak256(\\\"CALL_UPGRADER\\\");\\n\\n  /// @notice the market configuration role allows the actor to make changes to how the market operates\\n  bytes32 public constant MARKET_CONF = keccak256(\\\"MARKET_CONF\\\");\\n\\n  /// @notice the collection configuration role allows the actor to make changes the collection\\n  /// configs on the protocol contract\\n  bytes32 public constant COLLECTION_CONF = keccak256(\\\"COLLECTION_CONF\\\");\\n}\\n\",\"keccak256\":\"0x43cdef3ce172989cbfc56481959eff95e24ca427b18eb4be09d2f507f49690ba\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60a06040523480156200001157600080fd5b506040516200171b3803806200171b833981016040819052620000349162000626565b6001805460ff191690556200005581620004ff602090811b6200081717901c565b620000a75760405162461bcd60e51b815260206004820152601760248201527f77657468206d757374206265206120636f6e747261637400000000000000000060448201526064015b60405180910390fd5b6001600160a01b038716620001255760405162461bcd60e51b815260206004820152603560248201527f616c6c6f776c697374657220616464726573732063616e6e6f7420626520736560448201527f7420746f20746865207a65726f2061646472657373000000000000000000000060648201526084016200009e565b6001600160a01b038616620001965760405162461bcd60e51b815260206004820152603060248201527f70617573657220616464726573732063616e6e6f742062652073657420746f2060448201526f746865207a65726f206164647265737360801b60648201526084016200009e565b6001600160a01b038516620002065760405162461bcd60e51b815260206004820152602f60248201527f61646d696e20616464726573732063616e6e6f742062652073657420746f207460448201526e6865207a65726f206164647265737360881b60648201526084016200009e565b6001600160a01b038416620002845760405162461bcd60e51b815260206004820152603660248201527f63616c6c557067726164657220616464726573732063616e6e6f74206265207360448201527f657420746f20746865207a65726f20616464726573730000000000000000000060648201526084016200009e565b6001600160a01b038316620003025760405162461bcd60e51b815260206004820152603460248201527f6d61726b6574436f6e6620616464726573732063616e6e6f742062652073657460448201527f20746f20746865207a65726f206164647265737300000000000000000000000060648201526084016200009e565b6001600160a01b038216620003805760405162461bcd60e51b815260206004820152603860248201527f636f6c6c656374696f6e436f6e6620616464726573732063616e6e6f7420626560448201527f2073657420746f20746865207a65726f2061646472657373000000000000000060648201526084016200009e565b6200039b600080516020620016bb833981519152886200050e565b620003b6600080516020620016db833981519152876200050e565b620003e27f945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e866200050e565b620003fd6000805160206200169b833981519152856200050e565b620004186000805160206200167b833981519152846200050e565b62000433600080516020620016fb833981519152836200050e565b6200044e600080516020620016bb833981519152806200051e565b62000469600080516020620016db833981519152806200051e565b620004957f945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e806200051e565b620004b06000805160206200169b833981519152806200051e565b620004cb6000805160206200167b833981519152806200051e565b620004e6600080516020620016fb833981519152806200051e565b6001600160a01b031660805250620006bb945050505050565b6001600160a01b03163b151590565b6200051a828262000569565b5050565b600082815260208190526040808220600101805490849055905190918391839186917fbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff9190a4505050565b6000828152602081815260408083206001600160a01b038516845290915290205460ff166200051a576000828152602081815260408083206001600160a01b03851684529091529020805460ff19166001179055620005c53390565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b80516001600160a01b03811681146200062157600080fd5b919050565b600080600080600080600060e0888a0312156200064257600080fd5b6200064d8862000609565b96506200065d6020890162000609565b95506200066d6040890162000609565b94506200067d6060890162000609565b93506200068d6080890162000609565b92506200069d60a0890162000609565b9150620006ad60c0890162000609565b905092959891949750929550565b608051610fa4620006d760003960006102dc0152610fa46000f3fe608060405234801561001057600080fd5b50600436106101285760003560e01c806301ffc9a71461012d5780630d5e67ec14610155578063194f672914610178578063209b6d75146101b15780632274346b146101c6578063248a9ca3146101e65780632f2ff15d146101f957806336568abe1461020c5780633dce03221461021f5780633ea7fbdb146102325780633f4ba83a146102455780635b67d9ab1461024d5780635c975abb14610255578063624c7801146102605780638456cb591461027857806391d1485414610280578063a217fddf14610293578063a34fd3fb1461029b578063acca6838146102b0578063affa8817146102d7578063bb31173a146102fe578063d547741f14610313578063e63ab1e914610326578063f23c19e81461033b575b600080fd5b61014061013b366004610c05565b610362565b60405190151581526020015b60405180910390f35b61016a600080516020610f0f83398151915281565b60405190815260200161014c565b610140610186366004610c4b565b6001600160a01b03919091166000908152600360209081526040808320938352929052205460ff1690565b6101c46101bf366004610c75565b610399565b005b6002546101d9906001600160a01b031681565b60405161014c9190610c90565b61016a6101f4366004610ca4565b61049f565b6101c4610207366004610cbd565b6104b4565b6101c461021a366004610cbd565b6104d5565b6101c461022d366004610ce9565b610553565b6101c4610240366004610c75565b6105a1565b6101c4610696565b6101c4610725565b60015460ff16610140565b6001546101d99061010090046001600160a01b031681565b6101c4610748565b61014061028e366004610cbd565b6107d2565b61016a600081565b61016a600080516020610eef83398151915281565b61016a7ffba4f6dd992a27a814ee807eb2f9332d6d01312041726966a540cf4a4a89155381565b6101d97f000000000000000000000000000000000000000000000000000000000000000081565b61016a600080516020610f4f83398151915281565b6101c4610321366004610cbd565b6107fb565b61016a600080516020610f2f83398151915281565b61016a7f8de11a8d956993287a5b6a74c069984045abc1b621d651081c4c77c05c3cb7af81565b60006001600160e01b03198216637965db0b60e01b148061039357506301ffc9a760e01b6001600160e01b03198316145b92915050565b6103b1600080516020610eef833981519152336107d2565b6104025760405162461bcd60e51b815260206004820152601d60248201527f43616c6c6572206973206e6f7420612063616c6c20757067726164657200000060448201526064015b60405180910390fd5b61040b81610817565b6104775760405162461bcd60e51b815260206004820152603760248201527f736574436f766572656443616c6c466163746f72793a20696d706c656d656e74604482015276185d1a5bdb881a5cc81b9bdd08184818dbdb9d1c9858dd604a1b60648201526084016103f9565b600180546001600160a01b0390921661010002610100600160a81b0319909216919091179055565b60009081526020819052604090206001015490565b6104bd8261049f565b6104c681610826565b6104d08383610833565b505050565b6001600160a01b03811633146105455760405162461bcd60e51b815260206004820152602f60248201527f416363657373436f6e74726f6c3a2063616e206f6e6c792072656e6f756e636560448201526e103937b632b9903337b91039b2b63360891b60648201526084016103f9565b61054f82826108b7565b5050565b600080516020610f4f83398151915261056b81610826565b506001600160a01b0392909216600090815260036020908152604080832093835292905220805460ff1916911515919091179055565b6105b9600080516020610f0f833981519152336107d2565b6106055760405162461bcd60e51b815260206004820152601e60248201527f43616c6c6572206973206e6f742061207661756c74207570677261646572000060448201526064016103f9565b61060e81610817565b6106745760405162461bcd60e51b815260206004820152603160248201527f7365745661756c74466163746f72793a20696d706c656d656e746174696f6e206044820152701a5cc81b9bdd08184818dbdb9d1c9858dd607a1b60648201526084016103f9565b600280546001600160a01b0319166001600160a01b0392909216919091179055565b6106ae600080516020610f2f833981519152336107d2565b6106f45760405162461bcd60e51b815260206004820152601760248201527621b0b63632b91034b9903737ba1030b7103830bab9b2b960491b60448201526064016103f9565b60015460ff16151560011461071b5760405162461bcd60e51b81526004016103f990610d2e565b61072361091c565b565b60015460ff16156107235760405162461bcd60e51b81526004016103f990610d62565b610760600080516020610f2f833981519152336107d2565b6107a75760405162461bcd60e51b8152602060048201526018602482015277021b0b63632b91034b9903737ba1030b7103830bab9b2b9360451b60448201526064016103f9565b60015460ff16156107ca5760405162461bcd60e51b81526004016103f990610d2e565b6107236109a9565b6000918252602082815260408084206001600160a01b0393909316845291905290205460ff1690565b6108048261049f565b61080d81610826565b6104d083836108b7565b6001600160a01b03163b151590565b61083081336109ff565b50565b61083d82826107d2565b61054f576000828152602081815260408083206001600160a01b03851684529091529020805460ff191660011790556108733390565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b6108c182826107d2565b1561054f576000828152602081815260408083206001600160a01b0385168085529252808320805460ff1916905551339285917ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b9190a45050565b60015460ff166109655760405162461bcd60e51b815260206004820152601460248201527314185d5cd8589b194e881b9bdd081c185d5cd95960621b60448201526064016103f9565b6001805460ff191690557f5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa335b60405161099f9190610c90565b60405180910390a1565b60015460ff16156109cc5760405162461bcd60e51b81526004016103f990610d62565b6001805460ff1916811790557f62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a25833610992565b610a0982826107d2565b61054f57610a21816001600160a01b03166014610a63565b610a2c836020610a63565b604051602001610a3d929190610dbc565b60408051601f198184030181529082905262461bcd60e51b82526103f991600401610e2b565b60606000610a72836002610e74565b610a7d906002610e93565b6001600160401b03811115610a9457610a94610eab565b6040519080825280601f01601f191660200182016040528015610abe576020820181803683370190505b509050600360fc1b81600081518110610ad957610ad9610ec1565b60200101906001600160f81b031916908160001a905350600f60fb1b81600181518110610b0857610b08610ec1565b60200101906001600160f81b031916908160001a9053506000610b2c846002610e74565b610b37906001610e93565b90505b6001811115610baf576f181899199a1a9b1b9c1cb0b131b232b360811b85600f1660108110610b6b57610b6b610ec1565b1a60f81b828281518110610b8157610b81610ec1565b60200101906001600160f81b031916908160001a90535060049490941c93610ba881610ed7565b9050610b3a565b508315610bfe5760405162461bcd60e51b815260206004820181905260248201527f537472696e67733a20686578206c656e67746820696e73756666696369656e7460448201526064016103f9565b9392505050565b600060208284031215610c1757600080fd5b81356001600160e01b031981168114610bfe57600080fd5b80356001600160a01b0381168114610c4657600080fd5b919050565b60008060408385031215610c5e57600080fd5b610c6783610c2f565b946020939093013593505050565b600060208284031215610c8757600080fd5b610bfe82610c2f565b6001600160a01b0391909116815260200190565b600060208284031215610cb657600080fd5b5035919050565b60008060408385031215610cd057600080fd5b82359150610ce060208401610c2f565b90509250929050565b600080600060608486031215610cfe57600080fd5b610d0784610c2f565b92506020840135915060408401358015158114610d2357600080fd5b809150509250925092565b6020808252601a9082015279141c9bdd1bd8dbdb081a5cc8185b1c9958591e481c185d5cd95960321b604082015260600190565b60208082526010908201526f14185d5cd8589b194e881c185d5cd95960821b604082015260600190565b60005b83811015610da7578181015183820152602001610d8f565b83811115610db6576000848401525b50505050565b76020b1b1b2b9b9a1b7b73a3937b61d1030b1b1b7bab73a1604d1b815260008351610dee816017850160208801610d8c565b7001034b99036b4b9b9b4b733903937b6329607d1b6017918401918201528351610e1f816028840160208801610d8c565b01602801949350505050565b6020815260008251806020840152610e4a816040850160208701610d8c565b601f01601f19169190910160400192915050565b634e487b7160e01b600052601160045260246000fd5b6000816000190483118215151615610e8e57610e8e610e5e565b500290565b60008219821115610ea657610ea6610e5e565b500190565b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b600052603260045260246000fd5b600081610ee657610ee6610e5e565b50600019019056fe657f307dfada290937bc821a25e2da10feb07809ba9560b816723e8b47fe379a945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862af7e0191f3657a6da7569740b1cdeac8c3425bcbfd257d4fdc6d2241598f4de8ba2646970667358221220545256688ec22bc1144bdcfe983d6a37e6530e7c33924a188f7b5af5111fc7e664736f6c634300080a00338de11a8d956993287a5b6a74c069984045abc1b621d651081c4c77c05c3cb7af657f307dfada290937bc821a25e2da10feb07809ba9560b816723e8b47fe379afba4f6dd992a27a814ee807eb2f9332d6d01312041726966a540cf4a4a89155365d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862af7e0191f3657a6da7569740b1cdeac8c3425bcbfd257d4fdc6d2241598f4de8b",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101285760003560e01c806301ffc9a71461012d5780630d5e67ec14610155578063194f672914610178578063209b6d75146101b15780632274346b146101c6578063248a9ca3146101e65780632f2ff15d146101f957806336568abe1461020c5780633dce03221461021f5780633ea7fbdb146102325780633f4ba83a146102455780635b67d9ab1461024d5780635c975abb14610255578063624c7801146102605780638456cb591461027857806391d1485414610280578063a217fddf14610293578063a34fd3fb1461029b578063acca6838146102b0578063affa8817146102d7578063bb31173a146102fe578063d547741f14610313578063e63ab1e914610326578063f23c19e81461033b575b600080fd5b61014061013b366004610c05565b610362565b60405190151581526020015b60405180910390f35b61016a600080516020610f0f83398151915281565b60405190815260200161014c565b610140610186366004610c4b565b6001600160a01b03919091166000908152600360209081526040808320938352929052205460ff1690565b6101c46101bf366004610c75565b610399565b005b6002546101d9906001600160a01b031681565b60405161014c9190610c90565b61016a6101f4366004610ca4565b61049f565b6101c4610207366004610cbd565b6104b4565b6101c461021a366004610cbd565b6104d5565b6101c461022d366004610ce9565b610553565b6101c4610240366004610c75565b6105a1565b6101c4610696565b6101c4610725565b60015460ff16610140565b6001546101d99061010090046001600160a01b031681565b6101c4610748565b61014061028e366004610cbd565b6107d2565b61016a600081565b61016a600080516020610eef83398151915281565b61016a7ffba4f6dd992a27a814ee807eb2f9332d6d01312041726966a540cf4a4a89155381565b6101d97f000000000000000000000000000000000000000000000000000000000000000081565b61016a600080516020610f4f83398151915281565b6101c4610321366004610cbd565b6107fb565b61016a600080516020610f2f83398151915281565b61016a7f8de11a8d956993287a5b6a74c069984045abc1b621d651081c4c77c05c3cb7af81565b60006001600160e01b03198216637965db0b60e01b148061039357506301ffc9a760e01b6001600160e01b03198316145b92915050565b6103b1600080516020610eef833981519152336107d2565b6104025760405162461bcd60e51b815260206004820152601d60248201527f43616c6c6572206973206e6f7420612063616c6c20757067726164657200000060448201526064015b60405180910390fd5b61040b81610817565b6104775760405162461bcd60e51b815260206004820152603760248201527f736574436f766572656443616c6c466163746f72793a20696d706c656d656e74604482015276185d1a5bdb881a5cc81b9bdd08184818dbdb9d1c9858dd604a1b60648201526084016103f9565b600180546001600160a01b0390921661010002610100600160a81b0319909216919091179055565b60009081526020819052604090206001015490565b6104bd8261049f565b6104c681610826565b6104d08383610833565b505050565b6001600160a01b03811633146105455760405162461bcd60e51b815260206004820152602f60248201527f416363657373436f6e74726f6c3a2063616e206f6e6c792072656e6f756e636560448201526e103937b632b9903337b91039b2b63360891b60648201526084016103f9565b61054f82826108b7565b5050565b600080516020610f4f83398151915261056b81610826565b506001600160a01b0392909216600090815260036020908152604080832093835292905220805460ff1916911515919091179055565b6105b9600080516020610f0f833981519152336107d2565b6106055760405162461bcd60e51b815260206004820152601e60248201527f43616c6c6572206973206e6f742061207661756c74207570677261646572000060448201526064016103f9565b61060e81610817565b6106745760405162461bcd60e51b815260206004820152603160248201527f7365745661756c74466163746f72793a20696d706c656d656e746174696f6e206044820152701a5cc81b9bdd08184818dbdb9d1c9858dd607a1b60648201526084016103f9565b600280546001600160a01b0319166001600160a01b0392909216919091179055565b6106ae600080516020610f2f833981519152336107d2565b6106f45760405162461bcd60e51b815260206004820152601760248201527621b0b63632b91034b9903737ba1030b7103830bab9b2b960491b60448201526064016103f9565b60015460ff16151560011461071b5760405162461bcd60e51b81526004016103f990610d2e565b61072361091c565b565b60015460ff16156107235760405162461bcd60e51b81526004016103f990610d62565b610760600080516020610f2f833981519152336107d2565b6107a75760405162461bcd60e51b8152602060048201526018602482015277021b0b63632b91034b9903737ba1030b7103830bab9b2b9360451b60448201526064016103f9565b60015460ff16156107ca5760405162461bcd60e51b81526004016103f990610d2e565b6107236109a9565b6000918252602082815260408084206001600160a01b0393909316845291905290205460ff1690565b6108048261049f565b61080d81610826565b6104d083836108b7565b6001600160a01b03163b151590565b61083081336109ff565b50565b61083d82826107d2565b61054f576000828152602081815260408083206001600160a01b03851684529091529020805460ff191660011790556108733390565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b6108c182826107d2565b1561054f576000828152602081815260408083206001600160a01b0385168085529252808320805460ff1916905551339285917ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b9190a45050565b60015460ff166109655760405162461bcd60e51b815260206004820152601460248201527314185d5cd8589b194e881b9bdd081c185d5cd95960621b60448201526064016103f9565b6001805460ff191690557f5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa335b60405161099f9190610c90565b60405180910390a1565b60015460ff16156109cc5760405162461bcd60e51b81526004016103f990610d62565b6001805460ff1916811790557f62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a25833610992565b610a0982826107d2565b61054f57610a21816001600160a01b03166014610a63565b610a2c836020610a63565b604051602001610a3d929190610dbc565b60408051601f198184030181529082905262461bcd60e51b82526103f991600401610e2b565b60606000610a72836002610e74565b610a7d906002610e93565b6001600160401b03811115610a9457610a94610eab565b6040519080825280601f01601f191660200182016040528015610abe576020820181803683370190505b509050600360fc1b81600081518110610ad957610ad9610ec1565b60200101906001600160f81b031916908160001a905350600f60fb1b81600181518110610b0857610b08610ec1565b60200101906001600160f81b031916908160001a9053506000610b2c846002610e74565b610b37906001610e93565b90505b6001811115610baf576f181899199a1a9b1b9c1cb0b131b232b360811b85600f1660108110610b6b57610b6b610ec1565b1a60f81b828281518110610b8157610b81610ec1565b60200101906001600160f81b031916908160001a90535060049490941c93610ba881610ed7565b9050610b3a565b508315610bfe5760405162461bcd60e51b815260206004820181905260248201527f537472696e67733a20686578206c656e67746820696e73756666696369656e7460448201526064016103f9565b9392505050565b600060208284031215610c1757600080fd5b81356001600160e01b031981168114610bfe57600080fd5b80356001600160a01b0381168114610c4657600080fd5b919050565b60008060408385031215610c5e57600080fd5b610c6783610c2f565b946020939093013593505050565b600060208284031215610c8757600080fd5b610bfe82610c2f565b6001600160a01b0391909116815260200190565b600060208284031215610cb657600080fd5b5035919050565b60008060408385031215610cd057600080fd5b82359150610ce060208401610c2f565b90509250929050565b600080600060608486031215610cfe57600080fd5b610d0784610c2f565b92506020840135915060408401358015158114610d2357600080fd5b809150509250925092565b6020808252601a9082015279141c9bdd1bd8dbdb081a5cc8185b1c9958591e481c185d5cd95960321b604082015260600190565b60208082526010908201526f14185d5cd8589b194e881c185d5cd95960821b604082015260600190565b60005b83811015610da7578181015183820152602001610d8f565b83811115610db6576000848401525b50505050565b76020b1b1b2b9b9a1b7b73a3937b61d1030b1b1b7bab73a1604d1b815260008351610dee816017850160208801610d8c565b7001034b99036b4b9b9b4b733903937b6329607d1b6017918401918201528351610e1f816028840160208801610d8c565b01602801949350505050565b6020815260008251806020840152610e4a816040850160208701610d8c565b601f01601f19169190910160400192915050565b634e487b7160e01b600052601160045260246000fd5b6000816000190483118215151615610e8e57610e8e610e5e565b500290565b60008219821115610ea657610ea6610e5e565b500190565b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b600052603260045260246000fd5b600081610ee657610ee6610e5e565b50600019019056fe657f307dfada290937bc821a25e2da10feb07809ba9560b816723e8b47fe379a945438d5e976f17e0d00cb2997cf8951c55e12977d86234d6738d1865abe006e65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862af7e0191f3657a6da7569740b1cdeac8c3425bcbfd257d4fdc6d2241598f4de8ba2646970667358221220545256688ec22bc1144bdcfe983d6a37e6530e7c33924a188f7b5af5111fc7e664736f6c634300080a0033",
+  "devdoc": {
+    "details": "Other contracts in the protocol refer to this one to get configuration and pausing issues. to reduce attack surface area, this contract cannot be upgraded; however, additional roles can be added. This contract does not implement any specific timelocks or other safety measures. The roles are granted with the principal of least privilege. As the protocol matures, these additional measures can be layered by granting these roles to other contracts. In the extreme, the upgrade and other roles can be burned, which would effectively make the protocol static and non-upgradeable.",
+    "kind": "dev",
+    "methods": {
+      "getCollectionConfig(address,bytes32)": {
+        "details": "See {IHookProtocol-getCollectionConfig}."
+      },
+      "getRoleAdmin(bytes32)": {
+        "details": "Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}."
+      },
+      "grantRole(bytes32,address)": {
+        "details": "Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role."
+      },
+      "hasRole(bytes32,address)": {
+        "details": "Returns `true` if `account` has been granted `role`."
+      },
+      "paused()": {
+        "details": "Returns true if the contract is paused, and false otherwise."
+      },
+      "renounceRole(bytes32,address)": {
+        "details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`."
+      },
+      "revokeRole(bytes32,address)": {
+        "details": "Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role."
+      },
+      "setCollectionConfig(address,bytes32,bool)": {
+        "details": "the conf value can be read with getCollectionConfig",
+        "params": {
+          "collectionAddress": "the address for the collection",
+          "config": "the configuration field to set",
+          "value": "the value to set for the configuration"
+        }
+      },
+      "setCoveredCallFactory(address)": {
+        "details": "This address is used by other protocols searching for the registry of protocols.",
+        "params": {
+          "coveredCallFactoryContract": "the address of the deployed covered call contract"
+        }
+      },
+      "setVaultFactory(address)": {
+        "details": "allows all protocol components, including the call factory, to look up the vault factory.",
+        "params": {
+          "vaultFactoryContract": "the deployed vault factory"
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "See {IERC165-supportsInterface}."
+      }
+    },
+    "stateVariables": {
+      "getWETHAddress": {
+        "details": "these are values for popular chains: mainnet: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 kovan: 0xd0a1e359811322d97991e03f863a0c30c2cf029c ropsten: 0xc778417e063141139fce010982780140aa0cd5ab rinkeby: 0xc778417e063141139fce010982780140aa0cd5ab",
+        "return": "the weth address",
+        "returns": {
+          "_0": "the weth address"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "ALLOWLISTER_ROLE()": {
+        "notice": "the allowlister is able to enable and disable projects to mint instruments"
+      },
+      "CALL_UPGRADER()": {
+        "notice": "the call upgrader role is able to upgrade the implementation of the covered call options"
+      },
+      "COLLECTION_CONF()": {
+        "notice": "the collection configuration role allows the actor to make changes the collection configs on the protocol contract"
+      },
+      "MARKET_CONF()": {
+        "notice": "the market configuration role allows the actor to make changes to how the market operates"
+      },
+      "PAUSER_ROLE()": {
+        "notice": "the pauser is able to start and pause various components of the protocol"
+      },
+      "VAULT_UPGRADER()": {
+        "notice": "the vault upgrader role is able to upgrade the implementation for all vaults"
+      },
+      "coveredCallContract()": {
+        "notice": "the address of the deployed CoveredCallFactory used by the protocol"
+      },
+      "getWETHAddress()": {
+        "notice": "the standard weth address on this chain"
+      },
+      "pause()": {
+        "notice": "pauses the protocol if the protocol is currently unpaused"
+      },
+      "setCollectionConfig(address,bytes32,bool)": {
+        "notice": "allows an account with the COLLECTION_CONF role to set a boolean config value for a collection"
+      },
+      "setCoveredCallFactory(address)": {
+        "notice": "Allows an admin to set the address of the deployed covered call factory"
+      },
+      "setVaultFactory(address)": {
+        "notice": "Allows an admin to set the address of the deployed vault factory"
+      },
+      "throwWhenPaused()": {
+        "notice": "throws an exception when the protocol is paused"
+      },
+      "unpause()": {
+        "notice": "unpauses the protocol if the protocol is already paused"
+      },
+      "vaultContract()": {
+        "notice": "the address of the deployed VaultFactory used by the protocol"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 24,
+        "contract": "src/HookProtocol.sol:HookProtocol",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_bytes32,t_struct(RoleData)19_storage)"
+      },
+      {
+        "astId": 1047,
+        "contract": "src/HookProtocol.sol:HookProtocol",
+        "label": "_paused",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_bool"
+      },
+      {
+        "astId": 7076,
+        "contract": "src/HookProtocol.sol:HookProtocol",
+        "label": "coveredCallContract",
+        "offset": 1,
+        "slot": "1",
+        "type": "t_address"
+      },
+      {
+        "astId": 7079,
+        "contract": "src/HookProtocol.sol:HookProtocol",
+        "label": "vaultContract",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_address"
+      },
+      {
+        "astId": 7088,
+        "contract": "src/HookProtocol.sol:HookProtocol",
+        "label": "collectionConfigs",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_address,t_mapping(t_bytes32,t_bool))"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_mapping(t_bytes32,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => mapping(bytes32 => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_bytes32,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_struct(RoleData)19_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+        "numberOfBytes": "32",
+        "value": "t_struct(RoleData)19_storage"
+      },
+      "t_struct(RoleData)19_storage": {
+        "encoding": "inplace",
+        "label": "struct AccessControl.RoleData",
+        "members": [
+          {
+            "astId": 16,
+            "contract": "src/HookProtocol.sol:HookProtocol",
+            "label": "members",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_address,t_bool)"
+          },
+          {
+            "astId": 18,
+            "contract": "src/HookProtocol.sol:HookProtocol",
+            "label": "adminRole",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bytes32"
+          }
+        ],
+        "numberOfBytes": "64"
+      }
+    }
+  }
+}
