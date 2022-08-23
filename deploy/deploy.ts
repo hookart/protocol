@@ -6,7 +6,7 @@ import { ethers } from "hardhat";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
-
+  console.log("what is happening");
   // const signer = new LedgerSigner(ethers.provider);
   let {
     deployer,
@@ -104,60 +104,60 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // console.log("Set vault factory onto protocol with hash: ", vfSet.hash);
 
-  const font1 = await deploy("Font1", {
-    from: deployer,
-    args: [],
-    log: true,
-    // maxPriorityFeePerGas: "2000000000",
-    // maxFeePerGas: "50000000000",
-    autoMine: true,
-  });
-  const font2 = await deploy("Font2", {
-    from: deployer,
-    args: [],
-    log: true,
-    // maxPriorityFeePerGas: "2000000000",
-    // maxFeePerGas: "50000000000",
-    autoMine: true,
-  });
-  const font3 = await deploy("Font3", {
-    from: deployer,
-    args: [],
-    log: true,
-    // maxPriorityFeePerGas: "2000000000",
-    // maxFeePerGas: "50000000000",
-    autoMine: true,
-  });
+  // const font1 = await deploy("Font1", {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  //   // maxPriorityFeePerGas: "2000000000",
+  //   // maxFeePerGas: "50000000000",
+  //   autoMine: true,
+  // });
+  // const font2 = await deploy("Font2", {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  //   // maxPriorityFeePerGas: "2000000000",
+  //   // maxFeePerGas: "50000000000",
+  //   autoMine: true,
+  // });
+  // const font3 = await deploy("Font3", {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  //   // maxPriorityFeePerGas: "2000000000",
+  //   // maxFeePerGas: "50000000000",
+  //   autoMine: true,
+  // });
 
-  const tokenURI = await deploy("TokenURI", {
-    from: deployer,
-    args: [],
-    libraries: {
-      Font1: font1.address, // "0x1Ac06Ef3cda4dC2CB30A866090041D3266c33d45",
-      Font2: font2.address, //"0xfa10218700bFd179DE800a461C98357b39525f38",
-      Font3: font3.address, //"0x4C6eDA9CBb9B31152f3f002CAe5E3eF805Ad19f9",
-    },
-    log: true,
-    // maxPriorityFeePerGas: "2000000000",
-    // maxFeePerGas: "50000000000",
-    autoMine: true,
-  });
-  const callV1 = await deploy("HookCoveredCallImplV1", {
-    from: deployer,
-    libraries: {
-      TokenURI: tokenURI.address,
-    },
-    args: [],
-    log: true,
-    autoMine: true,
-  });
+  // const tokenURI = await deploy("TokenURI", {
+  //   from: deployer,
+  //   args: [],
+  //   libraries: {
+  //     Font1: font1.address, // "0x1Ac06Ef3cda4dC2CB30A866090041D3266c33d45",
+  //     Font2: font2.address, //"0xfa10218700bFd179DE800a461C98357b39525f38",
+  //     Font3: font3.address, //"0x4C6eDA9CBb9B31152f3f002CAe5E3eF805Ad19f9",
+  //   },
+  //   log: true,
+  //   // maxPriorityFeePerGas: "2000000000",
+  //   // maxFeePerGas: "50000000000",
+  //   autoMine: true,
+  // });
+  // const callV1 = await deploy("HookCoveredCallImplV1", {
+  //   from: deployer,
+  //   libraries: {
+  //     TokenURI: tokenURI.address,
+  //   },
+  //   args: [],
+  //   log: true,
+  //   autoMine: true,
+  // });
 
   const callBeacon = await deploy("HookUpgradeableBeacon", {
     from: deployer,
     args: [
-      callV1.address,
+      "0x3648080307faC2EE51A01463e47B9ca076DC14A1",
       "0xE11CCED3E6555A1BcbA2E19b9Cf161f040186069",
-      ethers.utils.id("VAULT_UPGRADER"),
+      ethers.utils.id("CALL_UPGRADER"),
     ],
     log: true,
     autoMine: true,
