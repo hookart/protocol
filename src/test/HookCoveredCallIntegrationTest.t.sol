@@ -264,4 +264,46 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.expectRevert("rA-option expired");
     calls.reclaimAsset(optionId, true);
   }
+
+  function testWriterCanMintOptionAfterBurning() public {
+    // mint first call option
+    vm.startPrank(address(writer));
+
+    uint256 baseTime = block.timestamp;
+    uint32 expiration = uint32(baseTime) + 3 days;
+    uint32 afterExpiration = uint32(baseTime) + 3.1 days;
+
+    uint256 optionId = calls.mintWithErc721(
+      address(token),
+      underlyingTokenId,
+      1000,
+      expiration
+    );
+
+    // call option #1 expires
+    vm.warp(afterExpiration);
+    calls.burnExpiredOption(optionId);
+
+    IHookERC721Vault vault = IHookERC721Vault(
+      vaultFactory.findOrCreateVault(address(token), underlyingTokenId)
+    );
+
+    // grant entitlement on vault for token id 0
+    uint32 expiration2 = expiration + 3 days;
+    IHookVault(vault).grantEntitlement(
+      Entitlements.Entitlement(
+        writer,
+        address(calls),
+        address(vault),
+        0,
+        expiration2
+      )
+    );
+
+    // mint second call option
+    vm.expectEmit(true, true, true, true);
+    emit CallCreated(address(writer), address(vault), 0, 3, 1000, expiration2);
+    calls.mintWithEntitledVault(address(vault), 0, 1000, expiration2);
+    vm.stopPrank();
+  }
 }
