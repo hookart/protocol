@@ -59,7 +59,7 @@ import "./mixin/HookInstrumentERC721.sol";
 /// @notice See {IHookCoveredCall}.
 /// @dev In the context of a single call option, the role of the writer is non-transferrable.
 /// @dev This contract is intended to be an implementation referenced by a proxy
-contract HookCoveredCallImplV1 is
+contract HookCoveredCallImplV2 is
   IHookCoveredCall,
   HookInstrumentERC721,
   ReentrancyGuard,

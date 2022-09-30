@@ -9,6 +9,7 @@ import "./tokens/WETH.sol";
 import "../../HookUpgradeableBeacon.sol";
 import "../../HookCoveredCallFactory.sol";
 import "../../HookCoveredCallImplV1.sol";
+import "../../HookCoveredCallImplV2.sol";
 import "../../HookUpgradeableBeacon.sol";
 import "../../HookERC721VaultFactory.sol";
 import "../../HookERC721VaultImplV1.sol";
@@ -44,6 +45,8 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   uint256 internal optionTokenId;
   address internal preApprovedOperator;
   HookERC721VaultFactory vaultFactory;
+  HookUpgradeableBeacon callBeacon;
+  HookCoveredCallImplV1 callImpl;
 
   event CallCreated(
     address writer,
@@ -123,8 +126,8 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     protocol.setVaultFactory(address(vaultFactory));
 
     // Deploy a new Covered Call Factory
-    HookCoveredCallImplV1 callImpl = new HookCoveredCallImplV1();
-    HookUpgradeableBeacon callBeacon = new HookUpgradeableBeacon(
+    callImpl = new HookCoveredCallImplV1();
+    callBeacon = new HookUpgradeableBeacon(
       address(callImpl),
       address(protocol),
       PermissionConstants.CALL_UPGRADER
