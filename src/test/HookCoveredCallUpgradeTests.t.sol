@@ -182,6 +182,7 @@ contract HookCoveredCallUpgradeTests is Test, EIP712, PermissionConstants {
     callBeacon.upgradeTo(address(callImplv2));
   }
 
+  // Mint with erc721; burn expired option; following mint will fail [expected]
   function testControl() public {
     // mint first call option
     vm.startPrank(address(writer));
@@ -221,6 +222,7 @@ contract HookCoveredCallUpgradeTests is Test, EIP712, PermissionConstants {
     vm.stopPrank();
   }
 
+  // Mint with erc721; burn expired option; upgrade to impl2; following mint will fail
   function testExpirement1() public {
     // mint first call option
     vm.startPrank(address(writer));
@@ -266,6 +268,7 @@ contract HookCoveredCallUpgradeTests is Test, EIP712, PermissionConstants {
     vm.stopPrank();
   }
 
+  // Mint with erc721; burn expired option; upgrade to impl2; burn expired option will fail
   function testExpirement2() public {
     // mint first call option
     vm.startPrank(address(writer));
@@ -314,6 +317,7 @@ contract HookCoveredCallUpgradeTests is Test, EIP712, PermissionConstants {
     vm.stopPrank();
   }
 
+  // Upgrade to impl2; Mint with erc721; (manually) burn option; burn expired option will fail
   function testExpirement3() public {
     // Upgrade to call impl 2
     useImplV2();
@@ -344,6 +348,7 @@ contract HookCoveredCallUpgradeTests is Test, EIP712, PermissionConstants {
     vm.stopPrank();
   }
   
+  // Upgrade to impl2; Mint with erc721; burn expired option; mint with entitled vault
   function testExpirement4() public {
     // Upgrade to call impl 2
     useImplV2();
