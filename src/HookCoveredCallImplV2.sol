@@ -633,7 +633,7 @@ contract HookCoveredCallImplV2 is
     nonReentrant
     whenNotPaused
   {
-    CallOption memory call = optionParams[optionId];
+    CallOption storage call = optionParams[optionId];
 
     require(block.timestamp > call.expiration, "bEO-option expired");
 
