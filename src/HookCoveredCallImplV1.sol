@@ -323,8 +323,10 @@ contract HookCoveredCallImplV1 is
     if (
       address(vault) ==
       Create2.computeAddress(
-        BeaconSalts.multiVaultSalt(tokenAddress),
-        BeaconSalts.ByteCodeHash,
+        keccak256(abi.encode(tokenAddress)),
+        bytes32(
+          0x32eed61294d752876bd36410789dd1c831ff00c8959b62e11c9391ff9e4decbf
+        ),
         address(_erc721VaultFactory)
       )
     ) {
