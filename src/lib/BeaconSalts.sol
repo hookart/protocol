@@ -40,7 +40,7 @@ library BeaconSalts {
   // keep functions internal to prevent the need for library linking
   // and to reduce gas costs
   bytes32 internal constant ByteCodeHash =
-    bytes32(0x32eed61294d752876bd36410789dd1c831ff00c8959b62e11c9391ff9e4decbf);
+    bytes32(0x9efc74de3a03a3f44d619e7f315880536876e16273d5fdee7b22fd4c1620f1d5);
 
   function soloVaultSalt(address nftAddress, uint256 tokenId)
     internal
