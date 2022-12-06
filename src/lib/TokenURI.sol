@@ -52,7 +52,7 @@ library TokenURI {
     return
       string(
         abi.encodePacked(
-          '", "expiration": ',
+          '"expiration": ',
           HookStrings.toString(instrumentExpiration),
           ', "underlying_address": "',
           HookStrings.toAsciiString(underlyingTokenAddress),
@@ -74,18 +74,26 @@ library TokenURI {
     uint256 instrumentExpiration,
     uint256 instrumentStrike,
     uint256 transfers
-  ) public pure returns (string memory) {
+  ) public view returns (string memory) {
     string memory json = Base64.encode(
       bytes(
         string(
           abi.encodePacked(
             '{"name": "Option ID ',
             HookStrings.toString(instrumentId),
-            '", "description": "Option Instrument NFT on Hook: the NFT-native call options protocol. Learn more at https://hook.xyz", "image": "https://hookoptionnft.s3.com/',
-            HookStrings.toAsciiString(underlyingAddress),
-            "/",
+            '",',
+            _generateMetadataERC721(
+              underlyingAddress,
+              underlyingTokenId,
+              instrumentStrike,
+              instrumentExpiration,
+              transfers
+            ),
+            ' "description": "Option Instrument NFT on Hook: the NFT-native call options protocol. Learn more at https://hook.xyz", "image": " https://option-images-hook.s3.amazonaws.com/nft/dev-',
+            HookStrings.toAsciiString(address(this)),
+            "-",
             HookStrings.toString(instrumentId),
-            '" }'
+            '.png" }'
           )
         )
       )
