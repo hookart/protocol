@@ -37,8 +37,6 @@ pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/utils/Base64.sol";
 
 import "./HookStrings.sol";
-import "./Fonts.sol";
-import "./BokkyPooBahsDateTimeLibrary.sol";
 
 /// @dev This contract implements some ERC721 / for hook instruments.
 library TokenURI {
@@ -89,9 +87,9 @@ library TokenURI {
               instrumentExpiration,
               transfers
             ),
-            ' "description": "Option Instrument NFT on Hook: the NFT-native call options protocol. Learn more at https://hook.xyz", "image": " https://option-images-hook.s3.amazonaws.com/nft/dev-',
+            ', "description": "Option Instrument NFT on Hook: the NFT-native call options protocol. Learn more at https://hook.xyz", "image": "https://option-images-hook.s3.amazonaws.com/nft/dev_0x',
             HookStrings.toAsciiString(address(this)),
-            "-",
+            "_",
             HookStrings.toString(instrumentId),
             '.png" }'
           )
