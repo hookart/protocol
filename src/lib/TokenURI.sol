@@ -87,7 +87,7 @@ library TokenURI {
               instrumentExpiration,
               transfers
             ),
-            ', "description": "Option Instrument NFT on Hook: the NFT-native call options protocol. Learn more at https://hook.xyz", "image": "https://option-images-hook.s3.amazonaws.com/nft/dev_0x',
+            ', "description": "Option Instrument NFT on Hook: the NFT-native call options protocol. Learn more at https://hook.xyz", "image": "https://option-images-hook.s3.amazonaws.com/nft/live_0x',
             HookStrings.toAsciiString(address(this)),
             "_",
             HookStrings.toString(instrumentId),
