@@ -1222,6 +1222,11 @@
     "tweetnacl" "^1.0.3"
     "tweetnacl-util" "^0.15.1"
 
+"@narya-ai/contracts@0.4.0":
+  "integrity" "sha512-kYiwS2bNcxVZwCr0vxS5C3Z5fIwNC+/rUIxias9eiorJdzL/yLk3yUkrwpQ+BvbP+o8TLEl4/Xaghrxijy1/IQ=="
+  "resolved" "https://registry.npmjs.org/@narya-ai/contracts/-/contracts-0.4.0.tgz"
+  "version" "0.4.0"
+
 "@noble/hashes@~1.0.0", "@noble/hashes@1.0.0":
   "integrity" "sha512-DZVbtY62kc3kkBtMHqwCOfXrT/hnoORy5BJ4+HU1IR59X0KWAOqsfzQPcUl/lQLlG7qXbe/fZ3r/emxtAl+sqg=="
   "resolved" "https://registry.npmjs.org/@noble/hashes/-/hashes-1.0.0.tgz"
@@ -1275,6 +1280,13 @@
   "integrity" "sha512-8vi4d50NNya/bQqCmaVzvHNmwHvS0OBKb7HNtuNwEE3scXWrP31fKQoGxNMT+KbzmrNZzatE3QK5p2gFONI/hg=="
   "resolved" "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-4.6.0.tgz"
   "version" "4.6.0"
+
+"@pwnednomore/contracts@^0.3.6":
+  "integrity" "sha512-/au8UGS8J93+tJqLufz6pSUTxG7B32XAZnsE4vPGET3qHVkpPgYxlJKMOGU8KDf5tA7npBrWdWFt/vkrSpx9gA=="
+  "resolved" "https://registry.npmjs.org/@pwnednomore/contracts/-/contracts-0.3.6.tgz"
+  "version" "0.3.6"
+  dependencies:
+    "@narya-ai/contracts" "0.4.0"
 
 "@resolver-engine/core@^0.3.3":
   "integrity" "sha512-eB8nEbKDJJBi5p5SrvrvILn4a0h42bKtbCTri3ZxCGt6UvoQyp7HnGOfki944bUjBSHKK3RvgfViHn+kqdXtnQ=="
