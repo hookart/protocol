@@ -39,7 +39,7 @@ contract HookCoveredCallBidTests is PTest, HookProtocolTest {
     calls.mintWithErc721(address(token), underlyingTokenId2, 1000, expiration);
 
     vm.warp(block.timestamp + 2.1 days);
-    stopHoax(operator);
+    // stopHoax(operator);
 
     bidder = getAgent();
     hoax(bidder, 1 ether);
@@ -47,22 +47,22 @@ contract HookCoveredCallBidTests is PTest, HookProtocolTest {
   }
 
   // verify that the original bidder gets their money returned regardless of what happens (once outbid)
-  function invariantBidderTest() external view {
+  function invariantBidderTest() public virtual {
     address outbidder = address(3);
     // start with the current bid in case some other outbidding happened in between
     uint256 bid = calls.currentBid(optionTokenId);
     hoax(outbidder, bid + 1 ether);
     calls.bid{value: bid + 1 ether}(optionTokenId);
 
-    assertTrue(
+    require(
       calls.currentBid(optionTokenId) == bid + 1 ether,
       "bid should be increased by 1 eth"
     );
-    assertTrue(
+    require(
       calls.currentBidder(optionTokenId) == outbidder,
       "outbidder should be winning"
     );
-    assertTrue(
+    require(
       address(bidder).balance == 1 ether,
       "original bidder should have money still"
     );
