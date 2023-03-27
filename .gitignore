@@ -11,3 +11,6 @@ typechain
 cache
 artifacts
 cache-hardhat/
+
+#Narya files
+reports/

@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@ethersproject/hardware-wallets": "^5.7.0",
-    "@pwnednomore/contracts": "^0.3.6",
     "hardhat-deploy": "github:jake-nyquist/hardhat-deploy#close-ledger-connection",
     "toml": "^3.0.0"
   },
