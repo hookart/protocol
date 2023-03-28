@@ -1,9 +1,9 @@
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.10;
 
-import "../utils/base.t.sol";
-import {PTest} from "@pwnednomore/contracts/PTest.sol";
+import "./base.t.sol";
 
-contract HookCoveredCallBidTests is PTest, HookProtocolTest {
+contract HookCoveredCallBidTests is HookProtocolTest {
   address bidder;
 
   function setUp() public {
