@@ -43,11 +43,10 @@ import "@openzeppelin/contracts/utils/Create2.sol";
 import "./lib/Entitlements.sol";
 import "./lib/BeaconSalts.sol";
 
-import "./interfaces/IHookERC721VaultFactory.sol";
+import "./interfaces/IHookOptionExercisableVaultValidator.sol";
 import "./interfaces/IHookVault.sol";
 import "./interfaces/IHookCoveredCall.sol";
 import "./interfaces/IHookProtocol.sol";
-import "./interfaces/IHookERC721Vault.sol";
 import "./interfaces/IWETH.sol";
 
 import "./mixin/PermissionConstants.sol";
@@ -58,7 +57,7 @@ import "./mixin/HookInstrumentERC721.sol";
 /// @custom:coauthor Regynald Augustin-regy@hook.xyz
 /// @dev This contract is intended to be an implementation referenced by a proxy
 contract HookAmericanOptionImplV1 is
-  IHookCoveredCall,
+  // IHookCoveredCall,
   HookInstrumentERC721,
   ReentrancyGuard,
   Initializable,
@@ -95,7 +94,7 @@ contract HookAmericanOptionImplV1 is
   IHookProtocol private _protocol;
 
   /// @dev storage of all existing options contracts.
-  mapping(uint256 => Options) public optionParams;
+  mapping(uint256 => Option) public optionParams;
 
   address public collateralAssetAddress;
     
@@ -171,8 +170,7 @@ contract HookAmericanOptionImplV1 is
     require(
       _allowedVaultImplementation(
         vaultAddress,
-        allowedUnderlyingAddress,
-        assetId
+        collateralAssetAddress
       ),
       "mWV-can only mint with protocol vaults"
     );
@@ -227,8 +225,7 @@ contract HookAmericanOptionImplV1 is
     require(
       _allowedVaultImplementation(
         vaultAddress,
-        allowedUnderlyingAddress,
-        assetId
+        collateralAssetAddress
       ),
       "mWEV-only protocol vaults allowed"
     );
@@ -250,16 +247,15 @@ contract HookAmericanOptionImplV1 is
   /// @dev the vault is completely unchecked here, so the caller must ensure the vault is created,
   /// has a valid entitlement, and has the asset inside it
   /// @param writer the writer of the call option, usually the current owner of the underlying asset
-  /// @param vault the address of the IHookVault which contains the underlying asset
+  /// @param vault the address of the IHookVault which contains the underlying assetd
   /// @param assetId the id of the underlying asset
-  /// @param strikePrice the strike price for this current option, in ETH
   /// @param expirationTime the time after which the option will be considered expired
   function _mintOptionWithVault(
     address writer,
     IHookVault vault,
     uint32 assetId,
     bytes32 param,
-    uint32 expirationTime,
+    uint32 expirationTime
   ) private returns (uint256) {
     // NOTE: The settlement auction always occurs one day before expiration
     require(
@@ -281,7 +277,7 @@ contract HookAmericanOptionImplV1 is
     uint256 newOptionId = _optionIds.current();
 
     // save the option metadata
-    optionParams[newOptionId] = Options({
+    optionParams[newOptionId] = Option({
       writer: writer,
       expiration: expirationTime,
       considerationAssetVaultAddress: address(vault),
@@ -301,14 +297,14 @@ contract HookAmericanOptionImplV1 is
 
     assetOptions[vault][assetId] = newOptionId;
 
-    emit PutCreated(
-      writer,
-      address(vault),
-      assetId,
-      newOptionId,
-      strikePrice,
-      expirationTime
-    );
+    // emit PutCreated(
+    //   writer,
+    //   address(vault),
+    //   assetId,
+    //   newOptionId,
+    //   strikePrice,
+    //   expirationTime
+    // );
 
     return newOptionId;
   }
@@ -316,35 +312,36 @@ contract HookAmericanOptionImplV1 is
   /// @dev method to verify that a particular vault was created by the protocol's vault factory
   /// @param vaultAddress location where the vault is deployed
   /// @param underlyingAddress address of underlying asset
-  /// @param assetId id of the asset within the vault
   function _allowedVaultImplementation(
     address vaultAddress,
-    address underlyingAddress,
+    address underlyingAddress
   ) internal view returns (bool) {
     // First check if the multiVault is the one to save a bit of gas
     // in the case the user is optimizing for gas savings (by using MultiVault)
-    if (
-      vaultAddress ==
-      Create2.computeAddress(
-        BeaconSalts.erc20VaultSalt(underlyingAddress),
-        BeaconSalts.ByteCodeHash,
-        address(_erc20VaultFactory)
-      )
-    ) {
-      return true;
-    }
+//     if (
+// //todo: create an erc20 vault
+//       // vaultAddress ==
+//       // Create2.computeAddress(
+//       //   BeaconSalts.erc20VaultSalt(underlyingAddress),
+//       //   BeaconSalts.ByteCodeHash,
+//       //   address(_erc20VaultFactory)
+//       // )
+//     ) {
+//       return true;
+//     }
 
-    return false;
+//     return false;
+return true;
   }
 
 
   // ----- END OF OPTION FUNCTIONS ---------//
 
-  function exercisePut(uint256 optionId, address exerciseAsset, uint256 tokenId)
+  function exercisePut(uint256 optionId, address exerciseAssetVaultAddress, uint32 assetId)
     external
     nonReentrant
   {
-    Options storage put = optionParams[optionId];
+    Option storage put = optionParams[optionId];
     require(put.expiration > block.timestamp, "e-option must not be expired");
     require(!put.settled, "e-the put cannot already be excercised");
 
@@ -359,8 +356,9 @@ contract HookAmericanOptionImplV1 is
     // require(put.exerciseAssetIdHigh <= tokenId, "e-asset id must be in range");
     
     // Send the option writer the underlying asset
-    IERC721(put.exerciseAssetAddress).safeTransferFrom(optionOwner, put.writer, tokenId);
-    IHookVault(put.vaultAddress).setBeneficialOwner(put.assetId, optionOwner);
+    IHookVault(exerciseAssetVaultAddress).setBeneficialOwner(assetId, put.writer);
+    // TODO: should the entitlements be cleared somehow? Should we just be distributing the assets
+    IHookVault(put.considerationAssetVaultAddress).setBeneficialOwner(put.considerationAssetVaultId, optionOwner);
 
     // burn the option NFT
     _burn(optionId);
@@ -368,26 +366,28 @@ contract HookAmericanOptionImplV1 is
     // set settled to prevent an additional attempt to exercise the option
     optionParams[optionId].settled = true;
 
-    emit PutSettled(optionId);
+  // TODO: settled event
+    // emit PutSettled(optionId);
   }
 
   /// @dev See {IHookCoveredCall-burnExpiredOption}.
   function burnExpiredOption(
     uint256 optionId
   ) external nonReentrant whenNotPaused {
-    Options storage option = optionParams[optionId];
+    Option storage option = optionParams[optionId];
 
-    require(block.timestamp > put.expiration, "bEO-option expired");
+    require(block.timestamp > option.expiration, "bEO-option not expired");
 
-    require(!put.settled, "bEO-option settled");
+    require(!option.settled, "bEO-option settled");
 
     // burn the option NFT
     _burn(optionId);
 
     // settle the option
-    put.settled = true;
+    option.settled = true;
 
-    emit ExpiredPutBurned(optionId);
+    //todo: expired put burn event
+    // emit ExpiredPutBurned(optionId);
   }
 
   //// ---- Administrative Fns.
@@ -433,7 +433,7 @@ contract HookAmericanOptionImplV1 is
   function getVaultAddress(
     uint256 optionId
   ) public view override returns (address) {
-    return optionParams[optionId].vaultAddress;
+    return optionParams[optionId].considerationAssetVaultAddress;
   }
 
   /// @dev see {IHookCoveredCall-getOptionIdForAsset}
@@ -446,15 +446,9 @@ contract HookAmericanOptionImplV1 is
 
   /// @dev see {IHookCoveredCall-getAssetId}.
   function getAssetId(uint256 optionId) public view override returns (uint32) {
-    return optionParams[optionId].assetId;
+    return optionParams[optionId].considerationAssetVaultId;
   }
 
-  /// @dev see {IHookCoveredCall-getStrikePrice}.
-  function getStrikePrice(
-    uint256 optionId
-  ) public view override returns (uint256) {
-    return optionParams[optionId].strike;
-  }
 
   /// @dev see {IHookCoveredCall-getExpiration}.
   function getExpiration(
@@ -462,4 +456,12 @@ contract HookAmericanOptionImplV1 is
   ) public view override returns (uint256) {
     return optionParams[optionId].expiration;
   }
+
+  function getStrikePrice(uint256 optionId)
+    external
+    view
+    override
+    returns (uint256) {
+      return 0;
+    }
 }
