@@ -59,7 +59,7 @@ abstract contract HookInstrumentERC721 is ERC721Burnable {
     address, // from
     address, // to
     uint256 tokenId
-  ) internal override {
+  ) override internal {
     // increment the counter for the token
     _transfers[tokenId].increment();
   }
