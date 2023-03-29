@@ -351,14 +351,13 @@ return true;
 /// TODO: use validator to ensure that the excercise vault is good
 /// TODO: validate that excercise vault is a protocol vault
 /// TODO: validate that the underlying asset in the vault is valid.
-    // require(put.exerciseAssetAddress == exerciseAsset, "e-asset must match");
-    // require(put.exerciseAssetIdLow >= tokenId, "e-asset id must be in range");
-    // require(put.exerciseAssetIdHigh <= tokenId, "e-asset id must be in range");
     
     // Send the option writer the underlying asset
     IHookVault(exerciseAssetVaultAddress).setBeneficialOwner(assetId, put.writer);
-    // TODO: should the entitlements be cleared somehow? Should we just be distributing the assets
+    IHookVault(exerciseAssetVaultAddress).clearEntitlementAndDistribute(assetId, put.writer);
+
     IHookVault(put.considerationAssetVaultAddress).setBeneficialOwner(put.considerationAssetVaultId, optionOwner);
+    IHookVault(put.considerationAssetVaultAddress).clearEntitlementAndDistribute(put.considerationAssetVaultId, optionOwner);
 
     // burn the option NFT
     _burn(optionId);
