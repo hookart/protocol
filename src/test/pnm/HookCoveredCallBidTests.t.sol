@@ -41,6 +41,7 @@ contract HookCoveredCallBidTests is HookProtocolTest {
     vm.warp(block.timestamp + 2.1 days);
     // stopHoax(operator);
 
+    vm.stopPrank();
     bidder = getAgent();
     hoax(bidder, 1 ether);
     calls.bid{value: 1 ether}(optionTokenId);
