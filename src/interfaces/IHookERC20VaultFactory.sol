@@ -34,25 +34,22 @@
 
 pragma solidity ^0.8.10;
 
-import "../HookBeaconProxy.sol";
+import "./IHookERC20Vault.sol";
 
-library BeaconSalts {
-    // keep functions internal to prevent the need for library linking
-    // and to reduce gas costs
-    // Specify the actually-deployed beacons on mainnet
-    // bytes32 internal constant ByteCodeHash =
-    //   bytes32(0x9efc74de3a03a3f44d619e7f315880536876e16273d5fdee7b22fd4c1620f1d5);
-    bytes32 internal constant ByteCodeHash = keccak256(type(HookBeaconProxy).creationCode);
+/// @title HookERC20Factory-factory for instances of the hook vault
+/// @author Jake Nyquist-j@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
+///
+/// @notice The Factory creates a specific vault for ERC20s.
+interface IHookERC20VaultFactory {
+    event ERC20VaultCreated(address tokenAddress, address vaultAddress);
 
-    function soloVaultSalt(address nftAddress, uint256 tokenId) internal pure returns (bytes32) {
-        return keccak256(abi.encode(nftAddress, tokenId));
-    }
+    /// @notice gets the address of a vault for a particular ERC-20 token
+    /// @param tokenAddress the contract address for the ERC-20
+    /// @return the address of a {IERC20Vault} if one exists that supports the particular ERC-20, or the null address otherwise
+    function getVault(address tokenAddress) external view returns (IHookERC20Vault);
 
-    function multiVaultSalt(address nftAddress) internal pure returns (bytes32) {
-        return keccak256(abi.encode(nftAddress));
-    }
-
-    function erc20VaultSalt(address erc20Address) internal pure returns (bytes32) {
-        return keccak256(abi.encode(erc20Address));
-    }
+    /// @notice returns or creates the vault to hold a specific token
+    /// @param tokenAddress the contract address for the ERC-20
+    function findOrCreateVault(address tokenAddress) external returns (IHookERC20Vault);
 }

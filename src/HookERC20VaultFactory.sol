@@ -34,25 +34,71 @@
 
 pragma solidity ^0.8.10;
 
-import "../HookBeaconProxy.sol";
+import "@openzeppelin/contracts/utils/Create2.sol";
 
-library BeaconSalts {
-    // keep functions internal to prevent the need for library linking
-    // and to reduce gas costs
-    // Specify the actually-deployed beacons on mainnet
-    // bytes32 internal constant ByteCodeHash =
-    //   bytes32(0x9efc74de3a03a3f44d619e7f315880536876e16273d5fdee7b22fd4c1620f1d5);
-    bytes32 internal constant ByteCodeHash = keccak256(type(HookBeaconProxy).creationCode);
+import "./HookBeaconProxy.sol";
 
-    function soloVaultSalt(address nftAddress, uint256 tokenId) internal pure returns (bytes32) {
-        return keccak256(abi.encode(nftAddress, tokenId));
+import "./interfaces/IHookERC20VaultFactory.sol";
+import "./interfaces/IHookERC20Vault.sol";
+import "./interfaces/IHookProtocol.sol";
+import "./interfaces/IInitializeableBeacon.sol";
+
+import "./mixin/PermissionConstants.sol";
+
+import "./lib/BeaconSalts.sol";
+
+/// @title Hook Vault Factory
+/// @author Jake Nyquist-j@hook.xyz
+/// @dev See {IHookERC20VaultFactory}.
+/// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
+/// created by this factory can be upgraded at one time via the beacon pattern.
+contract HookER20VaultFactory is IHookERC20VaultFactory, PermissionConstants {
+    /// @notice Registry of all of the active multi-vaults within the protocol
+    mapping(address => IHookERC20Vault) public override getVault;
+
+    address private immutable _hookProtocol;
+    address private immutable _beacon;
+
+    constructor(address hookProtocolAddress, address beaconAddress) {
+        require(Address.isContract(hookProtocolAddress), "hook protocol must be a contract");
+        require(Address.isContract(beaconAddress), "beacon address must be a contract");
+        _hookProtocol = hookProtocolAddress;
+        _beacon = beaconAddress;
     }
 
-    function multiVaultSalt(address nftAddress) internal pure returns (bytes32) {
-        return keccak256(abi.encode(nftAddress));
+    /// @notice See {IHookERC29VaultFactory-makeVault}.
+    function makeVault(address tokenAddress) public returns (IHookERC20Vault) {
+        require(
+            IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, msg.sender)
+                || IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, address(0)),
+            "makeVault-Only accounts with the ALLOWLISTER role can make new vaults"
+        );
+
+        require(getVault[tokenAddress] == IHookERC20Vault(address(0)), "makeVault-vault cannot already exist");
+
+        IInitializeableBeacon bp = IInitializeableBeacon(
+            Create2.deploy(0, BeaconSalts.erc20VaultSalt(tokenAddress), type(HookBeaconProxy).creationCode)
+        );
+
+        bp.initializeBeacon(
+            _beacon,
+            /// This is the ABI encoded initializer on the IHookERC20Vault.sol
+            abi.encodeWithSignature("initialize(address,address)", tokenAddress, _hookProtocol)
+        );
+
+        IHookERC20Vault vault = IHookERC20Vault(address(bp));
+        getVault[tokenAddress] = vault;
+        emit ERC20VaultCreated(tokenAddress, address(bp));
+
+        return vault;
     }
 
-    function erc20VaultSalt(address erc20Address) internal pure returns (bytes32) {
-        return keccak256(abi.encode(erc20Address));
+    /// @notice See {IHookERC20VaultFactory-findOrCreateVault}.
+    function findOrCreateVault(address tokenAddress) external returns (IHookERC20Vault) {
+        if (getVault[tokenAddress] != IHookERC20Vault(address(0))) {
+            return getVault[tokenAddress];
+        }
+
+        return makeVault(tokenAddress);
     }
 }
