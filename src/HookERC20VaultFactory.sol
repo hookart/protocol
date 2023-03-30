@@ -34,36 +34,102 @@
 
 pragma solidity ^0.8.10;
 
-import "../interfaces/IHookOptionExercisableVaultValidator.sol";
-import "../interfaces/IHookERC721Vault.sol";
-import "../lib/VaultAuthenticator.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/utils/Create2.sol";
 
-contract VaultContainsCollectionValidator is IHookOptionExercisableVaultValidator {
+import "./HookBeaconProxy.sol";
 
-address immutable private _vaultFactory; 
-address immutable private _underlyingTokenAddress;
+import "./interfaces/IHookERC20VaultFactory.sol";
+import "./interfaces/IHookERC20Vault.sol";
+import "./interfaces/IHookProtocol.sol";
+import "./interfaces/IInitializeableBeacon.sol";
 
-constructor(address erc721VaultFactory, address underlyingAddress) {
-    _vaultFactory = erc721VaultFactory;
-    _underlyingTokenAddress = underlyingAddress;
-}
+import "./mixin/PermissionConstants.sol";
 
-function validate(
-    address vaultAddress,
-    uint32 assetId,
-    bytes calldata
-  ) external override returns (bool) {
-    require(ERC165Checker.supportsInterface(vaultAddress, type(IHookERC721Vault).interfaceId), "must be a ERC721 vault");
-    // extract the address from the params
-    require(VaultAuthenticator.isHookERC721Vault(_vaultFactory, _underlyingTokenAddress, vaultAddress, assetId), "must be an authentic hook protocol vol");
+import "./lib/BeaconSalts.sol";
 
-    require(IHookERC721Vault(vaultAddress).getHoldsAsset(assetId), "asset must be deposited within the vault");
+/// @title Hook Vault Factory
+/// @author Jake Nyquist-j@hook.xyz
+/// @dev See {IHookERC20VaultFactory}.
+/// @dev The factory itself is non-upgradeable; however, each vault is upgradeable (i.e. all vaults)
+/// created by this factory can be upgraded at one time via the beacon pattern.
+contract HookER20VaultFactory is
+  IHookERC20VaultFactory,
+  PermissionConstants
+{
 
-    // this check is not required because the isHookERC721Vault check validates that the vault was deployed
-    // for a specific underlying address.
-    // require(IHookERC721Vault(vaultAddress).assetAddress(assetId) == underlyingAddress, "asset must match");
-    return true;
+  /// @notice Registry of all of the active multi-vaults within the protocol
+  mapping(address => IHookERC20Vault) public override getVault;
+
+  address private immutable _hookProtocol;
+  address private immutable _beacon;
+
+  constructor(
+    address hookProtocolAddress,
+    address beaconAddress
+  ) {
+    require(
+      Address.isContract(hookProtocolAddress),
+      "hook protocol must be a contract"
+    );
+    require(
+      Address.isContract(beaconAddress),
+      "beacon address must be a contract"
+    );
+    _hookProtocol = hookProtocolAddress;
+    _beacon = beaconAddress;
+
   }
 
+  /// @notice See {IHookERC29VaultFactory-makeVault}.
+  function makeVault(address tokenAddress)
+    public
+    returns (IHookERC20Vault)
+  {
+    require(
+      IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, msg.sender) ||
+        IHookProtocol(_hookProtocol).hasRole(ALLOWLISTER_ROLE, address(0)),
+      "makeVault-Only accounts with the ALLOWLISTER role can make new vaults"
+    );
+
+    require(
+      getVault[tokenAddress] == IHookERC20Vault(address(0)),
+      "makeVault-vault cannot already exist"
+    );
+
+    IInitializeableBeacon bp = IInitializeableBeacon(
+      Create2.deploy(
+        0,
+        BeaconSalts.erc20VaultSalt(tokenAddress),
+        type(HookBeaconProxy).creationCode
+      )
+    );
+
+    bp.initializeBeacon(
+      _beacon,
+      /// This is the ABI encoded initializer on the IHookERC20Vault.sol
+      abi.encodeWithSignature(
+        "initialize(address,address)",
+        tokenAddress,
+        _hookProtocol
+      )
+    );
+
+    IHookERC20Vault vault = IHookERC20Vault(address(bp));
+    getVault[tokenAddress] = vault;
+    emit ERC20VaultCreated(tokenAddress, address(bp));
+
+    return vault;
+  }
+
+  /// @notice See {IHookERC20VaultFactory-findOrCreateVault}.
+  function findOrCreateVault(address tokenAddress)
+    external
+    returns (IHookERC20Vault)
+  {
+    if (getVault[tokenAddress] != IHookERC20Vault(address(0))) {
+      return getVault[tokenAddress];
+    }
+
+    return makeVault(tokenAddress);
+  }
 }

@@ -41,6 +41,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 
 import "./lib/Entitlements.sol";
+import "./lib/VaultAuthenticator.sol";
 import "./lib/BeaconSalts.sol";
 
 import "./interfaces/IHookOptionExercisableVaultValidator.sol";
@@ -70,7 +71,6 @@ contract HookAmericanOptionImplV1 is
   /// @param expiration The expiration time of the put option
   /// @param assetId the asset id of the cash within the vault. This cash is the strike price
   /// @param vaultAddress the address of the vault holding the cash securing the put
-  /// @param exercisableAssetAddress the address of the asset that can be used to exercise the put
   /// @param exercisableAssetIdStart the first token id that can be used to exercise the put (inclusive)
   /// @param exercisableAssetIdEnd the last token id that can be used to exercise the put (inclusive)
   /// @param settled a flag that marks when a settlement action has taken place successfully. Once this flag is set, ETH should not
@@ -80,7 +80,7 @@ contract HookAmericanOptionImplV1 is
     uint32 expiration;
     address considerationAssetVaultAddress;
     uint32 considerationAssetVaultId;
-    bytes32 exercisableAssetVaultParameter;
+    bytes exercisableAssetVaultParameter;
     bool settled;
   }
 
@@ -90,6 +90,10 @@ contract HookAmericanOptionImplV1 is
   /// the associated option instrument NFT.
   Counters.Counter private _optionIds;
 
+  /// @dev the address of the factory in the Hook protocol that can be used to generate ERC721 vaults
+  address private _erc721VaultFactory;
+  address private _erc20VaultFactory;
+
   /// @dev the address of the deployed hook protocol contract, which has permissions and access controls
   IHookProtocol private _protocol;
 
@@ -97,8 +101,6 @@ contract HookAmericanOptionImplV1 is
   mapping(uint256 => Option) public optionParams;
 
   address public collateralAssetAddress;
-    
-  address public exercisableAssetAddress;
 
   /// @dev storage of current active put option secured by a specific asset
   /// mapping(vaultAddress => mapping(assetId => Options))
@@ -134,15 +136,19 @@ contract HookAmericanOptionImplV1 is
   function initialize(
     address protocol,
     address _collateralAssetAddress,
-    address _exercisableAssetAddress,
     address validator,
-    address preApprovedMarketplace
+    address preApprovedMarketplace,
+    address erc20VaultFactory,
+    address erc721VaultFactory
   ) public initializer {
     _protocol = IHookProtocol(protocol);
     _preApprovedMarketplace = preApprovedMarketplace;
+
     vaultValidator = IHookOptionExercisableVaultValidator(validator); 
     collateralAssetAddress = _collateralAssetAddress;
-    exercisableAssetAddress = _exercisableAssetAddress;
+
+    _erc20VaultFactory = erc20VaultFactory;
+    _erc721VaultFactory = erc721VaultFactory;
 
     /// Initialize basic configuration.
     /// Even though these are defaults, we cannot set them in the constructor because
@@ -157,7 +163,7 @@ contract HookAmericanOptionImplV1 is
   function mintWithVault(
     address vaultAddress,
     uint32 assetId,
-    bytes32 vaultValidatorParams,
+    bytes calldata vaultValidatorParams,
     uint32 expirationTime,
     Signatures.Signature calldata signature
   ) external nonReentrant whenNotPaused returns (uint256) {
@@ -170,7 +176,8 @@ contract HookAmericanOptionImplV1 is
     require(
       _allowedVaultImplementation(
         vaultAddress,
-        collateralAssetAddress
+        collateralAssetAddress,
+        assetId
       ),
       "mWV-can only mint with protocol vaults"
     );
@@ -194,13 +201,13 @@ contract HookAmericanOptionImplV1 is
     );
 
     return
-      _mintOptionWithVault(writer, vault, assetId, vaultValidatorParams, expirationTime);
+      _mintOptionWithVault(writer, vault, assetId, expirationTime, vaultValidatorParams);
   }
 
   function mintWithEntitledVault(
     address vaultAddress,
     uint32 assetId,
-    bytes32 vaultValidatorParams,
+    bytes calldata vaultValidatorParams,
     uint32 expirationTime
   ) external nonReentrant whenNotPaused returns (uint256) {
     IHookVault vault = IHookVault(vaultAddress);
@@ -225,7 +232,8 @@ contract HookAmericanOptionImplV1 is
     require(
       _allowedVaultImplementation(
         vaultAddress,
-        collateralAssetAddress
+        collateralAssetAddress,
+        assetId
       ),
       "mWEV-only protocol vaults allowed"
     );
@@ -240,7 +248,7 @@ contract HookAmericanOptionImplV1 is
     );
 
     return
-      _mintOptionWithVault(writer, vault, assetId, vaultValidatorParams, expirationTime);
+      _mintOptionWithVault(writer, vault, assetId, expirationTime, vaultValidatorParams);
   }
 
   /// @notice internal use function to record the option and mint it
@@ -254,8 +262,8 @@ contract HookAmericanOptionImplV1 is
     address writer,
     IHookVault vault,
     uint32 assetId,
-    bytes32 param,
-    uint32 expirationTime
+    uint32 expirationTime,
+    bytes calldata param
   ) private returns (uint256) {
     // NOTE: The settlement auction always occurs one day before expiration
     require(
@@ -314,24 +322,10 @@ contract HookAmericanOptionImplV1 is
   /// @param underlyingAddress address of underlying asset
   function _allowedVaultImplementation(
     address vaultAddress,
-    address underlyingAddress
+    address underlyingAddress,
+    uint32 assetId 
   ) internal view returns (bool) {
-    // First check if the multiVault is the one to save a bit of gas
-    // in the case the user is optimizing for gas savings (by using MultiVault)
-//     if (
-// //todo: create an erc20 vault
-//       // vaultAddress ==
-//       // Create2.computeAddress(
-//       //   BeaconSalts.erc20VaultSalt(underlyingAddress),
-//       //   BeaconSalts.ByteCodeHash,
-//       //   address(_erc20VaultFactory)
-//       // )
-//     ) {
-//       return true;
-//     }
-
-//     return false;
-return true;
+    return VaultAuthenticator.isHookERC20Vault(_erc20VaultFactory, underlyingAddress, vaultAddress) || VaultAuthenticator.isHookERC721Vault(_erc721VaultFactory, underlyingAddress, vaultAddress, assetId);
   }
 
 
@@ -348,9 +342,7 @@ return true;
     address optionOwner = ownerOf(optionId);
     require (msg.sender == optionOwner, "e-only the option owner can exercise");
 
-/// TODO: use validator to ensure that the excercise vault is good
-/// TODO: validate that excercise vault is a protocol vault
-/// TODO: validate that the underlying asset in the vault is valid.
+    require(vaultValidator.validate(exerciseAssetVaultAddress, assetId, put.exercisableAssetVaultParameter), "exerciseAsset invalid");
     
     // Send the option writer the underlying asset
     IHookVault(exerciseAssetVaultAddress).setBeneficialOwner(assetId, put.writer);
@@ -363,7 +355,7 @@ return true;
     _burn(optionId);
 
     // set settled to prevent an additional attempt to exercise the option
-    optionParams[optionId].settled = true;
+    optionParams[optionId].settled = true; 
 
   // TODO: settled event
     // emit PutSettled(optionId);

@@ -34,36 +34,30 @@
 
 pragma solidity ^0.8.10;
 
-import "../interfaces/IHookOptionExercisableVaultValidator.sol";
-import "../interfaces/IHookERC721Vault.sol";
-import "../lib/VaultAuthenticator.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "./IHookERC20Vault.sol";
 
-contract VaultContainsCollectionValidator is IHookOptionExercisableVaultValidator {
+/// @title HookERC20Factory-factory for instances of the hook vault
+/// @author Jake Nyquist-j@hook.xyz
+/// @custom:coauthor Regynald Augustin-regy@hook.xyz
+///
+/// @notice The Factory creates a specific vault for ERC20s.
+interface IHookERC20VaultFactory {
+  event ERC20VaultCreated(
+    address tokenAddress,
+    address vaultAddress
+  );
 
-address immutable private _vaultFactory; 
-address immutable private _underlyingTokenAddress;
+  /// @notice gets the address of a vault for a particular ERC-20 token
+  /// @param tokenAddress the contract address for the ERC-20
+  /// @return the address of a {IERC20Vault} if one exists that supports the particular ERC-20, or the null address otherwise
+  function getVault(address tokenAddress)
+    external
+    view
+    returns (IHookERC20Vault);
 
-constructor(address erc721VaultFactory, address underlyingAddress) {
-    _vaultFactory = erc721VaultFactory;
-    _underlyingTokenAddress = underlyingAddress;
-}
-
-function validate(
-    address vaultAddress,
-    uint32 assetId,
-    bytes calldata
-  ) external override returns (bool) {
-    require(ERC165Checker.supportsInterface(vaultAddress, type(IHookERC721Vault).interfaceId), "must be a ERC721 vault");
-    // extract the address from the params
-    require(VaultAuthenticator.isHookERC721Vault(_vaultFactory, _underlyingTokenAddress, vaultAddress, assetId), "must be an authentic hook protocol vol");
-
-    require(IHookERC721Vault(vaultAddress).getHoldsAsset(assetId), "asset must be deposited within the vault");
-
-    // this check is not required because the isHookERC721Vault check validates that the vault was deployed
-    // for a specific underlying address.
-    // require(IHookERC721Vault(vaultAddress).assetAddress(assetId) == underlyingAddress, "asset must match");
-    return true;
-  }
-
+  /// @notice returns or creates the vault to hold a specific token
+  /// @param tokenAddress the contract address for the ERC-20
+  function findOrCreateVault(address tokenAddress)
+    external
+    returns (IHookERC20Vault);
 }
