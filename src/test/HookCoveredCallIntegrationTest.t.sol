@@ -38,6 +38,17 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
     vm.startPrank(address(writer));
     uint32 expiration = uint32(block.timestamp) + 3 days;
 
+    emit log_named_address("writer", address(writer));
+    Exec.Operation[] memory operations = new Exec.Operation[](1);
+    operations[0] = Exec.Operation(address(calls), abi.encodeWithSignature(
+      "mintWithErc721(address,uint256,uint128,uint32)",
+      address(token),
+      underlyingTokenId,
+      1000,
+      expiration
+      )
+    );
+
     vm.expectEmit(true, true, true, false);
     emit CallCreated(
       address(writer),
@@ -47,13 +58,8 @@ contract HookCoveredCallIntegrationTest is HookProtocolTest {
       1000,
       expiration
     );
-    uint256 optionId = calls.mintWithErc721(
-      address(token),
-      underlyingTokenId,
-      1000,
-      expiration
-    );
-
+    bytes memory result = exec.batch(operations);
+    uint256 optionId = uint256(bytes32(result));
     assertTrue(
       calls.ownerOf(optionId) == address(writer),
       "owner should own the option"

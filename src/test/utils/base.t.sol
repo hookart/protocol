@@ -18,6 +18,7 @@ import "../../HookProtocol.sol";
 
 import "../../lib/Entitlements.sol";
 import "../../lib/Signatures.sol";
+import "../../lib/Exec.sol";
 import "../../mixin/EIP712.sol";
 import "../../mixin/PermissionConstants.sol";
 
@@ -44,6 +45,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   uint256 internal optionTokenId;
   address internal preApprovedOperator;
   HookERC721VaultFactory vaultFactory;
+  Exec exec;
 
   event CallCreated(
     address writer,
@@ -82,6 +84,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   }
 
   function setUpFullProtocol() public {
+    exec = new Exec();
     weth = new WETH();
     protocol = new HookProtocol(
       admin,
@@ -141,6 +144,9 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     // make a call insturment for our token
     calls = IHookCoveredCall(callFactory.makeCallInstrument(address(token)));
     callInternal = HookCoveredCallImplV1(address(calls));
+
+    // set exec for call instrument
+    callInternal.setExec(address(exec));
   }
 
   function setUpMintOption() public {

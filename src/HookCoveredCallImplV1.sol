@@ -42,6 +42,7 @@ import "@openzeppelin/contracts/utils/Create2.sol";
 
 import "./lib/Entitlements.sol";
 import "./lib/BeaconSalts.sol";
+import "./lib/Exec.sol";
 
 import "./interfaces/IHookERC721VaultFactory.sol";
 import "./interfaces/IHookVault.sol";
@@ -52,6 +53,8 @@ import "./interfaces/IWETH.sol";
 
 import "./mixin/PermissionConstants.sol";
 import "./mixin/HookInstrumentERC721.sol";
+import "forge-std/Test.sol";
+
 
 /// @title HookCoveredCallImplV1 an implementation of covered calls on Hook
 /// @author Jake Nyquist-j@hook.xyz
@@ -64,7 +67,9 @@ contract HookCoveredCallImplV1 is
   HookInstrumentERC721,
   ReentrancyGuard,
   Initializable,
-  PermissionConstants
+  PermissionConstants,
+  BatchUtil,
+  Test
 {
   using Counters for Counters.Counter;
 
@@ -139,6 +144,8 @@ contract HookCoveredCallImplV1 is
   /// financial situation for the holder of the options.
   bool public marketPaused;
 
+  address public execAddr;
+
   /// @dev Emitted when the market is paused or unpaused
   /// @param paused true if paused false otherwise
   event MarketPauseUpdated(bool paused);
@@ -192,6 +199,9 @@ contract HookCoveredCallImplV1 is
   }
 
   /// ---- Option Writer Functions ---- //
+  function setExec(address _execAddr) public {
+    execAddr = _execAddr;
+  }
 
   /// @dev See {IHookCoveredCall-mintWithVault}.
   function mintWithVault(
@@ -292,6 +302,13 @@ contract HookCoveredCallImplV1 is
     uint128 strikePrice,
     uint32 expirationTime
   ) external nonReentrant whenNotPaused returns (uint256) {
+    address msgSender = msg.sender;
+    emit log_named_address("msg.sender", msgSender);
+    if (msg.sender == execAddr) {
+        msgSender = unpackTrailingParamMsgSender();
+        emit log_named_address("msgSender", msgSender);
+    }
+
     address tokenOwner = IERC721(tokenAddress).ownerOf(tokenId);
     require(
       allowedUnderlyingAddress == tokenAddress,
@@ -299,9 +316,9 @@ contract HookCoveredCallImplV1 is
     );
 
     require(
-      msg.sender == tokenOwner ||
-        IERC721(tokenAddress).isApprovedForAll(tokenOwner, msg.sender) ||
-        IERC721(tokenAddress).getApproved(tokenId) == msg.sender,
+      msgSender == tokenOwner ||
+        IERC721(tokenAddress).isApprovedForAll(tokenOwner, msgSender) ||
+        IERC721(tokenAddress).getApproved(tokenId) == msgSender,
       "mWE7-caller not owner or operator"
     );
 
