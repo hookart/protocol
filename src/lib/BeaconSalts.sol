@@ -37,23 +37,18 @@ pragma solidity ^0.8.10;
 import "../HookBeaconProxy.sol";
 
 library BeaconSalts {
-  // keep functions internal to prevent the need for library linking
-  // and to reduce gas costs
-  // Specify the actually-deployed beacons on mainnet
-  // bytes32 internal constant ByteCodeHash =
-  //   bytes32(0x9efc74de3a03a3f44d619e7f315880536876e16273d5fdee7b22fd4c1620f1d5);
-  bytes32 internal constant ByteCodeHash =
-    keccak256(type(HookBeaconProxy).creationCode);
+    // keep functions internal to prevent the need for library linking
+    // and to reduce gas costs
+    // Specify the actually-deployed beacons on mainnet
+    // bytes32 internal constant ByteCodeHash =
+    //   bytes32(0x9efc74de3a03a3f44d619e7f315880536876e16273d5fdee7b22fd4c1620f1d5);
+    bytes32 internal constant ByteCodeHash = keccak256(type(HookBeaconProxy).creationCode);
 
-  function soloVaultSalt(address nftAddress, uint256 tokenId)
-    internal
-    pure
-    returns (bytes32)
-  {
-    return keccak256(abi.encode(nftAddress, tokenId));
-  }
+    function soloVaultSalt(address nftAddress, uint256 tokenId) internal pure returns (bytes32) {
+        return keccak256(abi.encode(nftAddress, tokenId));
+    }
 
-  function multiVaultSalt(address nftAddress) internal pure returns (bytes32) {
-    return keccak256(abi.encode(nftAddress));
-  }
+    function multiVaultSalt(address nftAddress) internal pure returns (bytes32) {
+        return keccak256(abi.encode(nftAddress));
+    }
 }

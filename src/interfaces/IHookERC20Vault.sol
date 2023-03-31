@@ -44,6 +44,6 @@ import "./IHookVault.sol";
 /// specifically designed to hold and receive ERC20 Tokens.
 ///
 interface IHookERC20Vault is IHookVault {
-  /// @notice returns the balance of the underlying ERC20 token
-  function assetBalance(uint32 assetId) external view returns (uint256);
+    /// @notice returns the balance of the underlying ERC20 token
+    function assetBalance(uint32 assetId) external view returns (uint256);
 }
