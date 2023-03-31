@@ -4,8 +4,14 @@ import { BigNumber, Contract } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { solidity } from "ethereum-waffle";
-import { signEntitlement } from "./helpers";
-import { getAddress } from "ethers/lib/utils";
+import {
+  OptionType,
+  OrderDirection,
+  genVolOrderTypedData,
+  signEntitlement,
+  signVolOrder,
+} from "./helpers";
+import { _TypedDataEncoder, getAddress } from "ethers/lib/utils";
 
 use(solidity);
 
@@ -135,7 +141,9 @@ describe("UpgradeableBeacon", function () {
     ).to.be.false;
     await expect(
       beacon.connect(actor).upgradeTo(impl2.address)
-    ).to.be.revertedWith("HookUpgradeableBeacon: caller does not have the required upgrade permissions");
+    ).to.be.revertedWith(
+      "HookUpgradeableBeacon: caller does not have the required upgrade permissions"
+    );
     expect(await beacon.implementation()).to.eq(impl1.address);
   });
 
@@ -155,7 +163,9 @@ describe("UpgradeableBeacon", function () {
     const [, actor] = await ethers.getSigners();
     await expect(
       beacon.connect(admin).upgradeTo(actor.address)
-    ).to.be.revertedWith("HookUpgradeableBeacon: implementation is not a contract");
+    ).to.be.revertedWith(
+      "HookUpgradeableBeacon: implementation is not a contract"
+    );
   });
 });
 
@@ -3348,6 +3358,506 @@ describe("Call Instrument Tests", function () {
       await expect(calls.burnExpiredOption(optionTokenId)).to.be.revertedWith(
         "bEO-option has bids"
       );
+    });
+  });
+});
+
+describe("VolBidPool", function () {
+  // Constants
+  const SECS_IN_A_DAY = 60 * 60 * 24;
+
+  // Contracts
+  let vaultFactory: Contract,
+    protocol: Contract,
+    token: Contract,
+    calls: Contract,
+    bidPool: Contract,
+    weth: Contract;
+
+  // Signers
+  let admin: SignerWithAddress,
+    writer: SignerWithAddress,
+    operator: SignerWithAddress,
+    buyer: SignerWithAddress,
+    firstBidder: SignerWithAddress,
+    secondBidder: SignerWithAddress;
+
+  beforeEach(async function () {
+    // Create signers
+    [admin, writer, operator, buyer, firstBidder, secondBidder] =
+      await ethers.getSigners();
+
+    // Deploy weth
+    const wethFactory = await ethers.getContractFactory("WETH");
+    weth = await wethFactory.deploy();
+
+    // Deploy test NFT
+    const testNftFactory = await ethers.getContractFactory("TestERC721");
+    token = await testNftFactory.deploy();
+
+    // // Deploy protocol
+    const protocolFactory = await ethers.getContractFactory("HookProtocol");
+    protocol = await protocolFactory.deploy(
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      weth.address
+    );
+
+    // Deploy multi vault
+    const vaultFactoryFactory = await ethers.getContractFactory(
+      "HookERC721VaultFactory"
+    );
+    const vaultImplFactory = await ethers.getContractFactory(
+      "HookERC721VaultImplV1"
+    );
+    const vaultBeaconFactory = await ethers.getContractFactory(
+      "HookUpgradeableBeacon"
+    );
+    const multiVaultImplFactory = await ethers.getContractFactory(
+      "HookERC721MultiVaultImplV1"
+    );
+    const multiVaultBeaconFactory = await ethers.getContractFactory(
+      "HookUpgradeableBeacon"
+    );
+
+    const vaultImpl = await vaultImplFactory.deploy();
+    const multiVaultImpl = await multiVaultImplFactory.deploy();
+
+    const vaultBeacon = await vaultBeaconFactory.deploy(
+      vaultImpl.address,
+      protocol.address,
+      ethers.utils.id("VAULT_UPGRADER")
+    );
+
+    const multiVaultBeacon = await multiVaultBeaconFactory.deploy(
+      multiVaultImpl.address,
+      protocol.address,
+      ethers.utils.id("VAULT_UPGRADER")
+    );
+
+    vaultFactory = await vaultFactoryFactory.deploy(
+      protocol.address,
+      vaultBeacon.address,
+      multiVaultBeacon.address
+    );
+
+    protocol.setVaultFactory(vaultFactory.address);
+
+    // Deploy call instrument
+    const callFactoryFactory = await ethers.getContractFactory(
+      "HookCoveredCallFactory"
+    );
+    const tokenURILib = await ethers.getContractFactory("TokenURI");
+    const tokenURI = await tokenURILib.deploy();
+    const callImplFactory = await ethers.getContractFactory(
+      "HookCoveredCallImplV1",
+      { libraries: { TokenURI: tokenURI.address } }
+    );
+    const callBeaconFactory = await ethers.getContractFactory(
+      "HookUpgradeableBeacon"
+    );
+
+    const blackScholesLib = await ethers.getContractFactory("BlackScholes");
+    const blackScholes = await blackScholesLib.deploy();
+    const bidPoolFactory = await ethers.getContractFactory("HookBidPool", {
+      libraries: { BlackScholes: blackScholes.address },
+    });
+
+    const callImpl = await callImplFactory.deploy();
+    const callBeacon = await callBeaconFactory.deploy(
+      callImpl.address,
+      protocol.address,
+      ethers.utils.id("VAULT_UPGRADER")
+    );
+    const callFactory = await callFactoryFactory.deploy(
+      protocol.address,
+      callBeacon.address,
+      callBeacon.address // use this address for pre-approved marketplace to ensure its a contract
+    );
+
+    protocol.setCoveredCallFactory(callFactory.address);
+
+    // Create another call instrument contract instance
+    await callFactory.makeCallInstrument(token.address);
+    const callInstrumentAddress = await callFactory.getCallInstrument(
+      token.address
+    );
+
+    // Attach to existing address
+    calls = await ethers.getContractAt(
+      "HookCoveredCallImplV1",
+      callInstrumentAddress
+    );
+
+    // Mint 2 tokens
+    await token.connect(writer).mint(writer.address, 0);
+    await token.connect(writer).mint(writer.address, 1);
+    await token.connect(writer).mint(writer.address, 2);
+
+    // Set approval for call instrument
+    await token.connect(writer).setApprovalForAll(calls.address, true);
+
+    bidPool = await bidPoolFactory.deploy(
+      weth.address,
+      admin.address,
+      admin.address,
+      admin.address,
+      100,
+      admin.address,
+      protocol.address
+    );
+
+    bidPool.setPoolPaused(false);
+  });
+
+  describe("orderFill", async function () {
+    it("should be valid", async function () {
+      const blockNumber = await ethers.provider.getBlockNumber();
+      const block = await ethers.provider.getBlock(blockNumber);
+      const blockTimestamp = block.timestamp;
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithErc721(token.address, 0, 1000, expiration);
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      const optionTokenId = callCreatedEvent.args.optionId;
+
+      const volOrder = {
+        direction: OrderDirection.BUY,
+        maker: buyer.address,
+        orderExpiry: Math.floor(blockTimestamp + 40).toString(),
+        nonce: "1405",
+        size: "1",
+        optionType: OptionType.CALL,
+        maxStrikePriceMultiple: "0",
+        minOptionDuration: (SECS_IN_A_DAY * 0.5).toString(),
+        maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
+        maxPriceSignalAge: "0",
+        optionMarketAddress: calls.address,
+        impliedVolBips: "5000",
+        nftProperties: [],
+        skewDecimal: "0",
+        riskFreeRateBips: "500",
+      };
+
+      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+
+      const { types, domain, value } = genVolOrderTypedData(
+        volOrder,
+        protocol.address
+      );
+
+      const orderHash = _TypedDataEncoder.hash(domain, types, value);
+
+      const orderValiditySignature = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.solidityKeccak256(
+            ["bytes32", "uint256"],
+            [orderHash, expiration]
+          )
+        )
+      );
+
+      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
+
+      const orderValidityClaim = {
+        orderHash: orderHash,
+        goodTilTimestamp: expiration,
+        v,
+        r,
+        s,
+      };
+
+      const {
+        v: v2,
+        r: r2,
+        s: s2,
+      } = ethers.utils.splitSignature(
+        await admin.signMessage(
+          ethers.utils.arrayify(
+            ethers.utils.solidityKeccak256(
+              ["uint256", "uint256", "uint256"],
+              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
+            )
+          )
+        )
+      );
+
+      const assetPriceClaim = {
+        assetPriceInWei: "900",
+        priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
+        goodTilTimestamp: expiration,
+        v: v2,
+        r: r2,
+        s: s2,
+      };
+
+      calls.connect(writer).setApprovalForAll(bidPool.address, true);
+      weth.connect(buyer).deposit({ value: 1000 });
+      weth.connect(buyer).approve(bidPool.address, 1000);
+      bidPool
+        .connect(writer)
+        .sellOption(
+          volOrder,
+          signedOrder,
+          assetPriceClaim,
+          orderValidityClaim,
+          BigNumber.from("14"),
+          calls.address,
+          BigNumber.from(optionTokenId)
+        );
+    });
+
+    it("works with property-validator encoded orders", async function () {
+      const blockNumber = await ethers.provider.getBlockNumber();
+      const block = await ethers.provider.getBlock(blockNumber);
+      const blockTimestamp = block.timestamp;
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithErc721(token.address, 0, 1000, expiration);
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      const optionTokenId = callCreatedEvent.args.optionId;
+
+      const validatorFactory = await ethers.getContractFactory(
+        "PropertyValidator1"
+      );
+
+      const validator = await validatorFactory.deploy();
+
+      const volOrder = {
+        direction: OrderDirection.BUY,
+        maker: buyer.address,
+        orderExpiry: Math.floor(blockTimestamp + 40).toString(),
+        nonce: "1405",
+        size: "1",
+        optionType: OptionType.CALL,
+        maxStrikePriceMultiple: "0",
+        minOptionDuration: (SECS_IN_A_DAY * 0.5).toString(),
+        maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
+        maxPriceSignalAge: "0",
+        optionMarketAddress: calls.address,
+        impliedVolBips: "5000",
+        nftProperties: [
+          {
+            propertyValidator: validator.address,
+            propertyData: ethers.utils.defaultAbiCoder.encode(
+              [
+                "uint256",
+                "uint8",
+                "uint256",
+                "uint8",
+                "bool",
+                "uint256",
+                "uint256",
+              ],
+              [0, 0, 0, 0, false, 0, 0]
+            ),
+          },
+        ],
+        skewDecimal: "0",
+        riskFreeRateBips: "500",
+      };
+
+      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+
+      const { types, domain, value } = genVolOrderTypedData(
+        volOrder,
+        protocol.address
+      );
+
+      const orderHash = _TypedDataEncoder.hash(domain, types, value);
+
+      const orderValiditySignature = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.solidityKeccak256(
+            ["bytes32", "uint256"],
+            [orderHash, expiration]
+          )
+        )
+      );
+
+      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
+
+      const orderValidityClaim = {
+        orderHash: orderHash,
+        goodTilTimestamp: expiration,
+        v,
+        r,
+        s,
+      };
+
+      const {
+        v: v2,
+        r: r2,
+        s: s2,
+      } = ethers.utils.splitSignature(
+        await admin.signMessage(
+          ethers.utils.arrayify(
+            ethers.utils.solidityKeccak256(
+              ["uint256", "uint256", "uint256"],
+              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
+            )
+          )
+        )
+      );
+
+      const assetPriceClaim = {
+        assetPriceInWei: "900",
+        priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
+        goodTilTimestamp: expiration,
+        v: v2,
+        r: r2,
+        s: s2,
+      };
+
+      calls.connect(writer).setApprovalForAll(bidPool.address, true);
+      weth.connect(buyer).deposit({ value: 1000 });
+      weth.connect(buyer).approve(bidPool.address, 1000);
+      bidPool
+        .connect(writer)
+        .sellOption(
+          volOrder,
+          signedOrder,
+          assetPriceClaim,
+          orderValidityClaim,
+          BigNumber.from("14"),
+          calls.address,
+          BigNumber.from(optionTokenId)
+        );
+    });
+
+    it("works with property-validator empty validator", async function () {
+      const blockNumber = await ethers.provider.getBlockNumber();
+      const block = await ethers.provider.getBlock(blockNumber);
+      const blockTimestamp = block.timestamp;
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+
+      // Mint call option
+      const createCall = await calls
+        .connect(writer)
+        .mintWithErc721(token.address, 0, 1000, expiration);
+      const cc = await createCall.wait();
+
+      const callCreatedEvent = cc.events.find(
+        (event: any) => event?.event === "CallCreated"
+      );
+
+      const optionTokenId = callCreatedEvent.args.optionId;
+
+      const validatorFactory = await ethers.getContractFactory(
+        "PropertyValidator1"
+      );
+
+      const validator = await validatorFactory.deploy();
+
+      const volOrder = {
+        direction: OrderDirection.BUY,
+        maker: buyer.address,
+        orderExpiry: Math.floor(blockTimestamp + 40).toString(),
+        nonce: "1405",
+        size: "1",
+        optionType: OptionType.CALL,
+        maxStrikePriceMultiple: "0",
+        minOptionDuration: (SECS_IN_A_DAY * 0.5).toString(),
+        maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
+        maxPriceSignalAge: "0",
+        optionMarketAddress: calls.address,
+        impliedVolBips: "5000",
+        nftProperties: [
+          {
+            propertyValidator: "0x0000000000000000000000000000000000000000",
+            propertyData: [],
+          },
+        ],
+        skewDecimal: "0",
+        riskFreeRateBips: "500",
+      };
+
+      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+
+      const { types, domain, value } = genVolOrderTypedData(
+        volOrder,
+        protocol.address
+      );
+
+      const orderHash = _TypedDataEncoder.hash(domain, types, value);
+
+      const orderValiditySignature = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.solidityKeccak256(
+            ["bytes32", "uint256"],
+            [orderHash, expiration]
+          )
+        )
+      );
+
+      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
+
+      const orderValidityClaim = {
+        orderHash: orderHash,
+        goodTilTimestamp: expiration,
+        v,
+        r,
+        s,
+      };
+
+      const {
+        v: v2,
+        r: r2,
+        s: s2,
+      } = ethers.utils.splitSignature(
+        await admin.signMessage(
+          ethers.utils.arrayify(
+            ethers.utils.solidityKeccak256(
+              ["uint256", "uint256", "uint256"],
+              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
+            )
+          )
+        )
+      );
+
+      const assetPriceClaim = {
+        assetPriceInWei: "900",
+        priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
+        goodTilTimestamp: expiration,
+        v: v2,
+        r: r2,
+        s: s2,
+      };
+
+      calls.connect(writer).setApprovalForAll(bidPool.address, true);
+      weth.connect(buyer).deposit({ value: 1000 });
+      weth.connect(buyer).approve(bidPool.address, 1000);
+      bidPool
+        .connect(writer)
+        .sellOption(
+          volOrder,
+          signedOrder,
+          assetPriceClaim,
+          orderValidityClaim,
+          BigNumber.from("14"),
+          calls.address,
+          BigNumber.from(optionTokenId)
+        );
     });
   });
 });
