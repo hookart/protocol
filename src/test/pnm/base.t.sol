@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "forge-std/Test.sol";
-
-import "./tokens/TestERC721.sol";
-import "./tokens/WETH.sol";
+import "../utils/tokens/TestERC721.sol";
+import "../utils/tokens/WETH.sol";
 import "../../HookUpgradeableBeacon.sol";
 import "../../HookCoveredCallFactory.sol";
 import "../../HookCoveredCallImplV1.sol";
@@ -23,9 +21,11 @@ import "../../mixin/PermissionConstants.sol";
 import "../../interfaces/IHookProtocol.sol";
 import "../../interfaces/IHookCoveredCall.sol";
 
+import {PTest, console} from "@narya-ai/contracts/PTest.sol";
+
 /// @notice Utils to setup the protocol to build various test cases
 /// @author Regynald Augustin-regy@hook.xyz
-contract HookProtocolTest is Test, EIP712, PermissionConstants {
+contract HookProtocolTest is PTest, EIP712, PermissionConstants {
   address internal admin;
   address internal buyer;
   uint256 internal writerpkey;
@@ -43,6 +43,9 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
   uint256 internal optionTokenId;
   address internal preApprovedOperator;
   HookERC721VaultFactory vaultFactory;
+
+  HookERC721VaultImplV1 vaultImpl;
+  HookERC721MultiVaultImplV1 multiVaultImpl;
 
   event CallCreated(
     address writer,
@@ -97,7 +100,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
     setAddressForEipDomain(protocolAddress);
 
     // Deploy new vault factory
-    HookERC721VaultImplV1 vaultImpl = new HookERC721VaultImplV1();
+    vaultImpl = new HookERC721VaultImplV1();
 
     HookUpgradeableBeacon vaultBeacon = new HookUpgradeableBeacon(
       address(vaultImpl),
@@ -105,7 +108,7 @@ contract HookProtocolTest is Test, EIP712, PermissionConstants {
       PermissionConstants.VAULT_UPGRADER
     );
 
-    HookERC721MultiVaultImplV1 multiVaultImpl = new HookERC721MultiVaultImplV1();
+    multiVaultImpl = new HookERC721MultiVaultImplV1();
 
     HookUpgradeableBeacon multiVaultBeacon = new HookUpgradeableBeacon(
       address(multiVaultImpl),

@@ -135,7 +135,7 @@ describe("UpgradeableBeacon", function () {
     ).to.be.false;
     await expect(
       beacon.connect(actor).upgradeTo(impl2.address)
-    ).to.be.revertedWith("w");
+    ).to.be.revertedWith("HookUpgradeableBeacon: caller does not have the required upgrade permissions");
     expect(await beacon.implementation()).to.eq(impl1.address);
   });
 
@@ -155,7 +155,7 @@ describe("UpgradeableBeacon", function () {
     const [, actor] = await ethers.getSigners();
     await expect(
       beacon.connect(admin).upgradeTo(actor.address)
-    ).to.be.revertedWith("UpgradeableBeacon: implementation is not a contract");
+    ).to.be.revertedWith("HookUpgradeableBeacon: implementation is not a contract");
   });
 });
 
@@ -1189,7 +1189,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "ERC721: transfer caller is not owner nor approve"
+          "ERC721: transfer caller is not owner nor approved"
         );
       });
 
@@ -1980,7 +1980,7 @@ describe("Vault", function () {
               "0x0000000000000000000000000000000000000000"
             )
         ).to.be.revertedWith(
-          "ERC721: transfer caller is not owner nor approve"
+          "ERC721: transfer caller is not owner nor approved"
         );
       });
 

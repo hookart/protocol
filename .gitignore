@@ -11,3 +11,7 @@ typechain
 cache
 artifacts
 cache-hardhat/
+
+#Narya files
+reports/
+pnm-cov.json
