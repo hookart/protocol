@@ -15,7 +15,7 @@ contract HookVaultStorageTest is HookProtocolTest {
     setUpFullProtocol();
 
     (vaultProxy, ) = createVaultandAsset();
-    initTokenId = getTokenId();
+    initTokenId = tokenStartIndex;
   }
 
   function createVaultandAsset() internal returns (address, uint32) {
@@ -31,6 +31,7 @@ contract HookVaultStorageTest is HookProtocolTest {
   }
 
   function getTokenId() internal returns (uint256 tokenId) {
+    // VmEx cheatcodes cannot be used in setUp()
     uint256 tokenIdSlot = vmEx.getVarSlotIndex(address(vaultImpl), "_tokenId");
     tokenId = vmEx.readUintBySlot(vaultProxy, tokenIdSlot);
   }
