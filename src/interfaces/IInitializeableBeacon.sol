@@ -41,5 +41,5 @@ pragma solidity ^0.8.10;
 /// @dev the Hook Beacons conform to this interface, and can be called
 /// with this initializer in order to start a beacon
 interface IInitializeableBeacon {
-  function initializeBeacon(address beacon, bytes memory data) external;
+    function initializeBeacon(address beacon, bytes memory data) external;
 }

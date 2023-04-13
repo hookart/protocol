@@ -5,151 +5,101 @@ import "../tokens/TestERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 contract FlashLoanSuccess is IERC721FlashLoanReceiver {
-  constructor() {}
+    constructor() {}
 
-  function executeOperation(
-    address nftContract,
-    uint256 tokenId,
-    address,
-    address vault,
-    bytes calldata
-  ) external returns (bool) {
-    IERC721(nftContract).approve(vault, tokenId);
-    return IERC721(nftContract).ownerOf(tokenId) == address(this);
-  }
+    function executeOperation(address nftContract, uint256 tokenId, address, address vault, bytes calldata)
+        external
+        returns (bool)
+    {
+        IERC721(nftContract).approve(vault, tokenId);
+        return IERC721(nftContract).ownerOf(tokenId) == address(this);
+    }
 
-  function onERC721Received(
-    address,
-    address,
-    uint256,
-    bytes calldata
-  ) public pure override returns (bytes4) {
-    return IERC721Receiver.onERC721Received.selector;
-  }
+    function onERC721Received(address, address, uint256, bytes calldata) public pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }
 
 contract FlashLoanDoesNotApprove is IERC721FlashLoanReceiver {
-  constructor() {}
+    constructor() {}
 
-  function executeOperation(
-    address nftContract,
-    uint256 tokenId,
-    address,
-    address,
-    bytes calldata
-  ) external view returns (bool) {
-    // skip this:
-    // IERC721(nftContract).approve(vault, tokenId);
-    return IERC721(nftContract).ownerOf(tokenId) == address(this);
-  }
+    function executeOperation(address nftContract, uint256 tokenId, address, address, bytes calldata)
+        external
+        view
+        returns (bool)
+    {
+        // skip this:
+        // IERC721(nftContract).approve(vault, tokenId);
+        return IERC721(nftContract).ownerOf(tokenId) == address(this);
+    }
 
-  function onERC721Received(
-    address,
-    address,
-    uint256,
-    bytes calldata
-  ) public pure override returns (bytes4) {
-    return IERC721Receiver.onERC721Received.selector;
-  }
+    function onERC721Received(address, address, uint256, bytes calldata) public pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }
 
 contract FlashLoanReturnsFalse is IERC721FlashLoanReceiver {
-  constructor() {}
+    constructor() {}
 
-  function executeOperation(
-    address nftContract,
-    uint256 tokenId,
-    address,
-    address vault,
-    bytes calldata
-  ) external returns (bool) {
-    IERC721(nftContract).approve(vault, tokenId);
-    return false;
-  }
+    function executeOperation(address nftContract, uint256 tokenId, address, address vault, bytes calldata)
+        external
+        returns (bool)
+    {
+        IERC721(nftContract).approve(vault, tokenId);
+        return false;
+    }
 
-  function onERC721Received(
-    address,
-    address,
-    uint256,
-    bytes calldata
-  ) public pure override returns (bytes4) {
-    return IERC721Receiver.onERC721Received.selector;
-  }
+    function onERC721Received(address, address, uint256, bytes calldata) public pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }
 
 contract FlashLoanApproveForAll is IERC721FlashLoanReceiver {
-  constructor() {}
+    constructor() {}
 
-  function executeOperation(
-    address nftContract,
-    uint256 tokenId,
-    address,
-    address vault,
-    bytes calldata
-  ) external returns (bool) {
-    IERC721(nftContract).setApprovalForAll(vault, true);
-    return IERC721(nftContract).ownerOf(tokenId) == address(this);
-  }
+    function executeOperation(address nftContract, uint256 tokenId, address, address vault, bytes calldata)
+        external
+        returns (bool)
+    {
+        IERC721(nftContract).setApprovalForAll(vault, true);
+        return IERC721(nftContract).ownerOf(tokenId) == address(this);
+    }
 
-  function onERC721Received(
-    address,
-    address,
-    uint256,
-    bytes calldata
-  ) public pure override returns (bytes4) {
-    return IERC721Receiver.onERC721Received.selector;
-  }
+    function onERC721Received(address, address, uint256, bytes calldata) public pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }
 
 contract FlashLoanBurnsAsset is IERC721FlashLoanReceiver {
-  constructor() {}
+    constructor() {}
 
-  function executeOperation(
-    address nftContract,
-    uint256 tokenId,
-    address,
-    address vault,
-    bytes calldata
-  ) external returns (bool) {
-    IERC721(nftContract).setApprovalForAll(vault, true);
-    TestERC721(nftContract).burn(tokenId);
-    return true;
-  }
+    function executeOperation(address nftContract, uint256 tokenId, address, address vault, bytes calldata)
+        external
+        returns (bool)
+    {
+        IERC721(nftContract).setApprovalForAll(vault, true);
+        TestERC721(nftContract).burn(tokenId);
+        return true;
+    }
 
-  function onERC721Received(
-    address,
-    address,
-    uint256,
-    bytes calldata
-  ) public pure override returns (bytes4) {
-    return IERC721Receiver.onERC721Received.selector;
-  }
+    function onERC721Received(address, address, uint256, bytes calldata) public pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }
 
 contract FlashLoanVerifyCalldata is IERC721FlashLoanReceiver {
-  constructor() {}
+    constructor() {}
 
-  function executeOperation(
-    address nftContract,
-    uint256,
-    address,
-    address vault,
-    bytes calldata params
-  ) external returns (bool) {
-    require(
-      keccak256(params) == keccak256("hello world"),
-      "should check helloworld"
-    );
-    IERC721(nftContract).setApprovalForAll(vault, true);
-    return true;
-  }
+    function executeOperation(address nftContract, uint256, address, address vault, bytes calldata params)
+        external
+        returns (bool)
+    {
+        require(keccak256(params) == keccak256("hello world"), "should check helloworld");
+        IERC721(nftContract).setApprovalForAll(vault, true);
+        return true;
+    }
 
-  function onERC721Received(
-    address,
-    address,
-    uint256,
-    bytes calldata
-  ) public pure override returns (bytes4) {
-    return IERC721Receiver.onERC721Received.selector;
-  }
+    function onERC721Received(address, address, uint256, bytes calldata) public pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }

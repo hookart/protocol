@@ -50,24 +50,20 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 ///         contract, and then call the flashLoan method.
 ///     (3) At the end of the flashLoan, we ensure the asset is still owned by the vault.
 interface IHookERC721Vault is IHookVault, IERC721Receiver {
-  /// @notice emitted after an asset is flash loaned by its beneficial owner.
-  /// @dev only one asset can be flash loaned at a time, and that asset is
-  /// denoted by the tokenId emitted.
-  event AssetFlashLoaned(address owner, uint256 tokenId, address flashLoanImpl);
+    /// @notice emitted after an asset is flash loaned by its beneficial owner.
+    /// @dev only one asset can be flash loaned at a time, and that asset is
+    /// denoted by the tokenId emitted.
+    event AssetFlashLoaned(address owner, uint256 tokenId, address flashLoanImpl);
 
-  /// @notice the tokenID of the underlying ERC721 token;
-  function assetTokenId(uint32 assetId) external view returns (uint256);
+    /// @notice the tokenID of the underlying ERC721 token;
+    function assetTokenId(uint32 assetId) external view returns (uint256);
 
-  /// @notice flashLoans the vaulted asset to another contract for use and return to the vault. Only the owner
-  /// may perform the flashloan
-  /// @dev the flashloan receiver can perform arbitrary logic, but must approve the vault as an operator
-  /// before returning.
-  /// @param receiverAddress the contract which implements the {IERC721FlashLoanReceiver} interface to utilize the
-  /// asset while it is loaned out
-  /// @param params calldata params to forward to the receiver
-  function flashLoan(
-    uint32 assetId,
-    address receiverAddress,
-    bytes calldata params
-  ) external;
+    /// @notice flashLoans the vaulted asset to another contract for use and return to the vault. Only the owner
+    /// may perform the flashloan
+    /// @dev the flashloan receiver can perform arbitrary logic, but must approve the vault as an operator
+    /// before returning.
+    /// @param receiverAddress the contract which implements the {IERC721FlashLoanReceiver} interface to utilize the
+    /// asset while it is loaned out
+    /// @param params calldata params to forward to the receiver
+    function flashLoan(uint32 assetId, address receiverAddress, bytes calldata params) external;
 }
