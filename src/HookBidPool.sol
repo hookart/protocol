@@ -508,7 +508,6 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         _validateOptionProperties(order, optionInstrumentAddress, optionId);
         /// even if the order technically allows it, make sure this pool cannot be used for trading
         /// expired options.
-        require(expiry > block.timestamp, "Option is expired");
         require(block.timestamp + order.minOptionDuration < expiry, "Option is too close to expiry");
         require(
             order.maxOptionDuration == 0 || block.timestamp + order.maxOptionDuration > expiry,
