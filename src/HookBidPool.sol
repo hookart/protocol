@@ -179,9 +179,13 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     mapping(bytes32 => bool) orderCancellations;
 
     /// CONSTANTS ///
+    uint256 constant UNIT = 10 ** 18;
 
     // 1% = 0.01, 100 bips = 1%, 10000 bps = 100% == 1
-    uint256 constant BPS_TO_DECIMAL = 10e14;
+    uint256 constant BPS = 10000;
+
+    // 1e14;
+    uint256 constant BPS_TO_DECIMAL = UNIT / BPS;
 
     /// https://github.com/delegatecash/delegation-registry
     IDelegationRegistry constant DELEGATE_CASH_REGISTRY =
@@ -227,7 +231,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         feeBips = _feeBips;
         feeRecipient = _feeRecipient;
         protocol = IHookProtocol(_protocol);
-        setAddressForEipDomain(_protocol);
+        setAddressForEipDomain(address(this));
 
         /// set the contract to be initially paused after deploy.
         /// it should not be unpaused until the relevant roles have been
@@ -291,6 +295,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         uint256 optionId
     ) external nonReentrant whenNotPaused {
         // input validity checks
+        require(order.optionMarketAddress == optionInstrumentAddress, "order not fillable with this option");
         bytes32 eip712hash = _getEIP712Hash(PoolOrders.getPoolOrderStructHash(order));
         (uint256 expiry, uint256 strikePrice) = _performSellOptionOrderChecks(
             order, eip712hash, orderSignature, assetPrice, orderValidityOracleClaim, optionInstrumentAddress, optionId
@@ -328,23 +333,24 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// EXTERNAL ACCESS-CONTROLLED FUNCTIONS ///
 
     function setProtocol(address _protocol) external onlyRole(PROTOCOL_ROLE) {
-        setAddressForEipDomain(_protocol);
         protocol = IHookProtocol(_protocol);
         emit ProtocolAddressSet(_protocol);
     }
 
     function setPriceOracleSigner(address _priceOracleSigner) external onlyRole(ORACLE_ROLE) {
+        require(_priceOracleSigner != address(0), "Price oracle signer cannot be zero address");
         priceOracleSigner = _priceOracleSigner;
         emit PriceOracleSignerUpdated(_priceOracleSigner);
     }
 
     function setOrderValidityOracleSigner(address _orderValidityOracleSigner) external onlyRole(ORACLE_ROLE) {
+        require(_orderValidityOracleSigner != address(0), "Order validity oracle signer cannot be zero address");
         orderValidityOracleSigner = _orderValidityOracleSigner;
         emit OrderValidityOracleSignerUpdated(_orderValidityOracleSigner);
     }
 
     function setFeeBips(uint64 _feeBips) external onlyRole(FEES_ROLE) {
-        require(_feeBips <= 10000, "Fee bips over 10000");
+        require(_feeBips <= BPS, "Fee bips over 10000");
         feeBips = _feeBips;
         emit FeesUpdated(_feeBips);
     }
@@ -498,7 +504,6 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         require(!orderCancellations[eip712hash], "Order is cancelled");
         require(orderFills[eip712hash] < order.size, "Order is filled");
 
-        require(order.orderExpiry > block.timestamp, "Order is expired");
         require(order.direction == PoolOrders.OrderDirection.BUY, "Order is not a buy order");
 
         IHookOption hookOption = IHookOption(optionInstrumentAddress);
@@ -519,7 +524,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         /// if one has been specified by the maker
         require(
             order.maxStrikePriceMultiple == 0
-                || (strikePrice - assetPrice.assetPriceInWei) * 10e18 / assetPrice.assetPriceInWei
+                || (strikePrice - assetPrice.assetPriceInWei) * UNIT / assetPrice.assetPriceInWei
                     < order.maxStrikePriceMultiple,
             "option is too far out of the money"
         );
@@ -532,7 +537,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         uint256 strikePrice,
         uint256 saleProceeds
     ) internal view returns (uint256 ask, uint256 bid) {
-        ask = (saleProceeds * (10000 + feeBips)) / 10000;
+        ask = (saleProceeds * (BPS + feeBips)) / BPS;
         uint256 decimalVol = _computeVolDecimalWithSkewDecimal(strikePrice, assetPrice.assetPriceInWei, order);
         int256 rateDecimal = int256(order.riskFreeRateBips * BPS_TO_DECIMAL);
         (uint256 callBid, uint256 putBid) = BlackScholes.optionPrices(

@@ -153,7 +153,7 @@ library PoolOrders {
         );
     }
 
-    function getPoolOrderStructHash(Order memory poolOrder) internal view returns (bytes32) {
+    function getPoolOrderStructHash(Order memory poolOrder) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(_hashPt1(poolOrder), _hashPt2(poolOrder)));
     }
 }
