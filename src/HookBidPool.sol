@@ -225,6 +225,10 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         address _feeRecipient,
         address _protocol
     ) {
+        require(_priceOracleSigner != address(0), "Price oracle signer cannot be zero address");
+        require(_orderValidityOracleSigner != address(0), "Order validity oracle signer cannot be zero address");
+        require(_initialAdmin != address(0), "Initial admin cannot be zero address");
+        require(_feeRecipient != address(0), "Fee recipient cannot be zero address");
         weth = _weth;
         priceOracleSigner = _priceOracleSigner;
         orderValidityOracleSigner = _orderValidityOracleSigner;
@@ -247,7 +251,6 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         _grantRole(PROTOCOL_ROLE, _initialAdmin);
         _grantRole(FEES_ROLE, _initialAdmin);
         _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
-        _revokeRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         /// emit events to make it easier for off chain indexers to
         /// track contract state from inception
@@ -299,18 +302,15 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
 
         require(bid >= ask, "order not high enough for the ask");
 
-        IERC721(order.optionMarketAddress).safeTransferFrom(msg.sender, order.maker, optionId);
+        address market = order.optionMarketAddress;
+        IERC721(market).safeTransferFrom(msg.sender, order.maker, optionId);
         IERC20(weth).safeTransferFrom(order.maker, msg.sender, saleProceeds);
         IERC20(weth).safeTransferFrom(order.maker, feeRecipient, ask - saleProceeds);
 
         // update order fills
         orderFills[eip712hash] += 1;
-        
-        // this address must be factored out to resolve a stack too deep error
-        address market = order.optionMarketAddress;
-        emit OrderFilled(
-            order.maker, msg.sender, eip712hash, saleProceeds, ask - saleProceeds, market, optionId
-            );
+
+        emit OrderFilled(order.maker, msg.sender, eip712hash, saleProceeds, ask - saleProceeds, market, optionId);
     }
 
     /// @notice Function to allow a maker to cancel all examples of an order that they've already signed.
@@ -552,10 +552,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         }
     }
 
-    function _validateOptionProperties(PoolOrders.Order memory order, uint256 optionId)
-        internal
-        view
-    {
+    function _validateOptionProperties(PoolOrders.Order memory order, uint256 optionId) internal view {
         // If no properties are specified, the order is valid for any instrument.
         if (order.nftProperties.length == 0) {
             return;
@@ -571,8 +568,9 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
 
                 // Call the property validator and throw a descriptive error
                 // if the call reverts.
-                try property.propertyValidator.validateProperty(order.optionMarketAddress, optionId, property.propertyData) {}
-                catch {
+                try property.propertyValidator.validateProperty(
+                    order.optionMarketAddress, optionId, property.propertyData
+                ) {} catch {
                     revert("Property validation failed for the provided optionId");
                 }
             }

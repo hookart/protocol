@@ -405,12 +405,7 @@ contract BidPoolTest is HookProtocolTest {
         uint256 initialBalanceSeller = weth.balanceOf(address(seller));
         uint256 initialBalanceFeeRecipient = weth.balanceOf(address(feeRecipient));
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         uint256 finalBalanceBidder = weth.balanceOf(bidder);
@@ -440,12 +435,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("order not high enough for the ask");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -463,12 +453,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Order is expired");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.0000001 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.0000001 ether, optionId
         );
     }
 
@@ -501,12 +486,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Order is not a buy order");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -523,12 +503,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Option is too close to or past expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -545,12 +520,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Option is too far from expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -567,12 +537,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Option is too far from expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -589,12 +554,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("order not high enough for the ask");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         order.skewDecimal = 25000 * BPS_TO_DECIMAL; // will increase vol to 20%
@@ -604,12 +564,7 @@ contract BidPoolTest is HookProtocolTest {
         uint256 initialBalanceSeller = weth.balanceOf(address(seller));
         uint256 initialBalanceFeeRecipient = weth.balanceOf(address(feeRecipient));
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
         uint256 finalBalanceBidder = weth.balanceOf(bidder);
         uint256 finalBalanceSeller = weth.balanceOf(seller);
@@ -638,12 +593,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("order not high enough for the ask");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         vm.stopPrank();
@@ -653,12 +603,7 @@ contract BidPoolTest is HookProtocolTest {
         // should work with no fees
         vm.prank(seller);
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -675,12 +620,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Option is too close to or past expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -697,12 +637,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Option is too far from expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -719,12 +654,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Price signal is too old");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -741,21 +671,11 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("option is too far out of the money");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.1 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.1 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.35 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.35 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -776,12 +696,7 @@ contract BidPoolTest is HookProtocolTest {
         vm.prank(seller);
         vm.expectRevert("Order is cancelled");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.3 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.3 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -800,31 +715,16 @@ contract BidPoolTest is HookProtocolTest {
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.3 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.3 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.29 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId1
+            order, signature, _makeAssetPriceClaim(0.29 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId1
         );
 
         vm.expectRevert("Order is filled");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.3 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId1
+            order, signature, _makeAssetPriceClaim(0.3 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId1
         );
     }
 
@@ -850,12 +750,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Order signature is invalid");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -880,12 +775,7 @@ contract BidPoolTest is HookProtocolTest {
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, priceSignerPkey);
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -910,12 +800,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Claim is not signed by the orderValidityOracle");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeInvalidOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeInvalidOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -940,12 +825,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Claim is not signed by the priceOracle");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeInvalidAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeInvalidAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -962,9 +842,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.warp(block.timestamp + 1 days);
         vm.expectRevert("Claim is expired");
-        bidPool.sellOption(
-            order, signature, _makeAssetPriceClaim(0.2 ether), claim, 0.01 ether,  optionId
-        );
+        bidPool.sellOption(order, signature, _makeAssetPriceClaim(0.2 ether), claim, 0.01 ether, optionId);
     }
 
     function testPropertyValidatorReverts() public {
@@ -982,12 +860,7 @@ contract BidPoolTest is HookProtocolTest {
 
         vm.expectRevert("Property validation failed for the provided optionId");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -1007,12 +880,7 @@ contract BidPoolTest is HookProtocolTest {
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         assertEq(calls.ownerOf(optionId), address(bidder), "Option should be transferred to the bidder");
@@ -1034,15 +902,14 @@ contract BidPoolTest is HookProtocolTest {
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         assertEq(calls.ownerOf(optionId), address(bidder), "Option should be transferred to the bidder");
     }
 
+
+    function testEnsureConstructorDoesNotHaveAdminRole() public {
+        assertFalse(bidPool.hasRole(bidPool.DEFAULT_ADMIN_ROLE(), address(this)), "deployer should not have admin role");
+    }
 }
