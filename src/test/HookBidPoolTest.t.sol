@@ -49,8 +49,6 @@ contract BidPoolTest is HookProtocolTest {
         setUpAddresses();
         setUpFullProtocol();
 
-        eip712 = new EIP712Imp(address(protocol));
-
         priceSignerPkey = 0xA11CE;
         orderSignerPkey = 0xB11CE;
         bidderPkey = 0xB0B;
@@ -62,6 +60,7 @@ contract BidPoolTest is HookProtocolTest {
         seller = address(0x45);
 
         bidPool = new HookBidPool(address(weth), admin, priceSigner, orderSigner, 500, feeRecipient, address(protocol));
+        eip712 = new EIP712Imp(address(bidPool));
         vm.prank(address(admin));
         bidPool.setPoolPaused(false);
         // add address to the allowlist for minting
@@ -340,7 +339,7 @@ contract BidPoolTest is HookProtocolTest {
             maxOptionDuration: 80 days,
             maxPriceSignalAge: 0,
             optionMarketAddress: address(calls),
-            impliedVolBips: 5000,
+            impliedVolBips: 10000,
             nftProperties: properties,
             skewDecimal: 0,
             riskFreeRateBips: 500
@@ -382,7 +381,7 @@ contract BidPoolTest is HookProtocolTest {
     function testAcceptBid() public {
         vm.warp(block.timestamp + 20 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 30 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
         assertTrue(calls.ownerOf(optionId) == address(seller), "owner should own the option");
 
@@ -443,10 +442,11 @@ contract BidPoolTest is HookProtocolTest {
     function testOrderExpired() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 90 days;
+        uint32 expiration = uint32(block.timestamp) + 40 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
+        order.impliedVolBips = 10000;
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.warp(block.timestamp + 3 weeks); // 1 week after order expiry
@@ -457,7 +457,7 @@ contract BidPoolTest is HookProtocolTest {
             signature,
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
-            0.01 ether,
+            0.0000001 ether,
             address(calls),
             optionId
         );
@@ -574,12 +574,12 @@ contract BidPoolTest is HookProtocolTest {
     function testAcceptSkewedBidDefaultBidTooLow() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 30 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        order.impliedVolBips = 1500; // set a low vol (15%) for order
+        order.impliedVolBips = 3000; // set a low vol (15%) for order
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("order not high enough for the ask");
@@ -625,12 +625,12 @@ contract BidPoolTest is HookProtocolTest {
     function testBidTooLowWithFees() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 79 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        order.impliedVolBips = 1820; // set a very low vol for the order
+        order.impliedVolBips = 4625; // set a very low vol for the order
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("order not high enough for the ask");
@@ -737,7 +737,7 @@ contract BidPoolTest is HookProtocolTest {
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.4 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
-        order.maxStrikePriceMultiple = 5 * 10e17;
+        order.maxStrikePriceMultiple = 5e17;
 
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
@@ -881,7 +881,7 @@ contract BidPoolTest is HookProtocolTest {
             abi.encode(true)
         );
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 30 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
@@ -1007,7 +1007,7 @@ contract BidPoolTest is HookProtocolTest {
     function testPropertyValidatorSuccess() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 30 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
@@ -1035,7 +1035,7 @@ contract BidPoolTest is HookProtocolTest {
     function testPropertyValidatorSuccessNullValidator() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 20 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();

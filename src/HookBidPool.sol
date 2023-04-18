@@ -504,6 +504,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         require(!orderCancellations[eip712hash], "Order is cancelled");
         require(orderFills[eip712hash] < order.size, "Order is filled");
 
+        require(order.orderExpiry > block.timestamp, "Order is expired");
         require(order.direction == PoolOrders.OrderDirection.BUY, "Order is not a buy order");
 
         IHookOption hookOption = IHookOption(optionInstrumentAddress);
@@ -513,7 +514,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         _validateOptionProperties(order, optionInstrumentAddress, optionId);
         /// even if the order technically allows it, make sure this pool cannot be used for trading
         /// expired options.
-        require(expiry > block.timestamp, "Option is expired");
+        /// This check also ensures that the option is not expired because minOptionDuration is positive
         require(block.timestamp + order.minOptionDuration < expiry, "Option is too close to expiry");
         require(
             order.maxOptionDuration == 0 || block.timestamp + order.maxOptionDuration > expiry,
