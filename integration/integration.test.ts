@@ -3569,27 +3569,19 @@ describe("VolBidPool", function () {
         )
       );
 
-      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
+      const sig0 = orderValiditySignature;
 
       const orderValidityClaim = {
         orderHash: orderHash,
         goodTilTimestamp: expiration,
-        v,
-        r,
-        s,
+        signature: sig0,
       };
 
-      const {
-        v: v2,
-        r: r2,
-        s: s2,
-      } = ethers.utils.splitSignature(
-        await admin.signMessage(
-          ethers.utils.arrayify(
-            ethers.utils.defaultAbiCoder.encode(
-              ["uint256", "uint256", "uint256"],
-              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
-            )
+      const sig1 = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.defaultAbiCoder.encode(
+            ["uint256", "uint256", "uint256"],
+            ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
           )
         )
       );
@@ -3598,9 +3590,7 @@ describe("VolBidPool", function () {
         assetPriceInWei: "900",
         priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
         goodTilTimestamp: expiration,
-        v: v2,
-        r: r2,
-        s: s2,
+        signature: sig1,
       };
 
       calls.connect(writer).setApprovalForAll(bidPool.address, true);
@@ -3694,27 +3684,17 @@ describe("VolBidPool", function () {
         )
       );
 
-      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
-
       const orderValidityClaim = {
         orderHash: orderHash,
         goodTilTimestamp: expiration,
-        v,
-        r,
-        s,
+        signature: orderValiditySignature,
       };
 
-      const {
-        v: v2,
-        r: r2,
-        s: s2,
-      } = ethers.utils.splitSignature(
-        await admin.signMessage(
-          ethers.utils.arrayify(
-            ethers.utils.defaultAbiCoder.encode(
-              ["uint256", "uint256", "uint256"],
-              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
-            )
+      const assetSignature = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.defaultAbiCoder.encode(
+            ["uint256", "uint256", "uint256"],
+            ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
           )
         )
       );
@@ -3723,9 +3703,7 @@ describe("VolBidPool", function () {
         assetPriceInWei: "900",
         priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
         goodTilTimestamp: expiration,
-        v: v2,
-        r: r2,
-        s: s2,
+        signature: assetSignature,
       };
 
       calls.connect(writer).setApprovalForAll(bidPool.address, true);
@@ -3808,38 +3786,25 @@ describe("VolBidPool", function () {
         )
       );
 
-      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
-
       const orderValidityClaim = {
         orderHash: orderHash,
         goodTilTimestamp: expiration,
-        v,
-        r,
-        s,
+        signature: orderValiditySignature,
       };
 
-      const {
-        v: v2,
-        r: r2,
-        s: s2,
-      } = ethers.utils.splitSignature(
-        await admin.signMessage(
-          ethers.utils.arrayify(
-            ethers.utils.defaultAbiCoder.encode(
-              ["uint256", "uint256", "uint256"],
-              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
-            )
+      const assetSignature = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.defaultAbiCoder.encode(
+            ["uint256", "uint256", "uint256"],
+            ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
           )
         )
       );
-
       const assetPriceClaim = {
         assetPriceInWei: "900",
         priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
         goodTilTimestamp: expiration,
-        v: v2,
-        r: r2,
-        s: s2,
+        signature: assetSignature,
       };
 
       calls.connect(writer).setApprovalForAll(bidPool.address, true);
