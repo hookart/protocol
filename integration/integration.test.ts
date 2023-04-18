@@ -3519,7 +3519,7 @@ describe("VolBidPool", function () {
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
-      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 70);
 
       // Mint call option
       const createCall = await calls
@@ -3545,24 +3545,24 @@ describe("VolBidPool", function () {
         maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
         maxPriceSignalAge: "0",
         optionMarketAddress: calls.address,
-        impliedVolBips: "5000",
+        impliedVolBips: "10000",
         nftProperties: [],
         skewDecimal: "0",
         riskFreeRateBips: "500",
       };
 
-      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+      const signedOrder = await signVolOrder(volOrder, buyer, bidPool.address);
 
       const { types, domain, value } = genVolOrderTypedData(
         volOrder,
-        protocol.address
+        bidPool.address
       );
 
       const orderHash = _TypedDataEncoder.hash(domain, types, value);
 
       const orderValiditySignature = await admin.signMessage(
         ethers.utils.arrayify(
-          ethers.utils.solidityKeccak256(
+          ethers.utils.defaultAbiCoder.encode(
             ["bytes32", "uint256"],
             [orderHash, expiration]
           )
@@ -3586,7 +3586,7 @@ describe("VolBidPool", function () {
       } = ethers.utils.splitSignature(
         await admin.signMessage(
           ethers.utils.arrayify(
-            ethers.utils.solidityKeccak256(
+            ethers.utils.defaultAbiCoder.encode(
               ["uint256", "uint256", "uint256"],
               ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
             )
@@ -3623,7 +3623,7 @@ describe("VolBidPool", function () {
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
-      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 70);
 
       // Mint call option
       const createCall = await calls
@@ -3655,7 +3655,7 @@ describe("VolBidPool", function () {
         maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
         maxPriceSignalAge: "0",
         optionMarketAddress: calls.address,
-        impliedVolBips: "5000",
+        impliedVolBips: "10000",
         nftProperties: [
           {
             propertyValidator: validator.address,
@@ -3677,18 +3677,18 @@ describe("VolBidPool", function () {
         riskFreeRateBips: "500",
       };
 
-      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+      const signedOrder = await signVolOrder(volOrder, buyer, bidPool.address);
 
       const { types, domain, value } = genVolOrderTypedData(
         volOrder,
-        protocol.address
+        bidPool.address
       );
 
       const orderHash = _TypedDataEncoder.hash(domain, types, value);
 
       const orderValiditySignature = await admin.signMessage(
         ethers.utils.arrayify(
-          ethers.utils.solidityKeccak256(
+          ethers.utils.defaultAbiCoder.encode(
             ["bytes32", "uint256"],
             [orderHash, expiration]
           )
@@ -3712,7 +3712,7 @@ describe("VolBidPool", function () {
       } = ethers.utils.splitSignature(
         await admin.signMessage(
           ethers.utils.arrayify(
-            ethers.utils.solidityKeccak256(
+            ethers.utils.defaultAbiCoder.encode(
               ["uint256", "uint256", "uint256"],
               ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
             )
@@ -3749,7 +3749,7 @@ describe("VolBidPool", function () {
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
-      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 70);
 
       // Mint call option
       const createCall = await calls
@@ -3781,7 +3781,7 @@ describe("VolBidPool", function () {
         maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
         maxPriceSignalAge: "0",
         optionMarketAddress: calls.address,
-        impliedVolBips: "5000",
+        impliedVolBips: "10000",
         nftProperties: [
           {
             propertyValidator: "0x0000000000000000000000000000000000000000",
@@ -3792,18 +3792,18 @@ describe("VolBidPool", function () {
         riskFreeRateBips: "500",
       };
 
-      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+      const signedOrder = await signVolOrder(volOrder, buyer, bidPool.address);
 
       const { types, domain, value } = genVolOrderTypedData(
         volOrder,
-        protocol.address
+        bidPool.address
       );
 
       const orderHash = _TypedDataEncoder.hash(domain, types, value);
 
       const orderValiditySignature = await admin.signMessage(
         ethers.utils.arrayify(
-          ethers.utils.solidityKeccak256(
+          ethers.utils.defaultAbiCoder.encode(
             ["bytes32", "uint256"],
             [orderHash, expiration]
           )
@@ -3827,7 +3827,7 @@ describe("VolBidPool", function () {
       } = ethers.utils.splitSignature(
         await admin.signMessage(
           ethers.utils.arrayify(
-            ethers.utils.solidityKeccak256(
+            ethers.utils.defaultAbiCoder.encode(
               ["uint256", "uint256", "uint256"],
               ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
             )

@@ -19,6 +19,18 @@ contract EIP712Imp is EIP712 {
     }
 }
 
+contract FakeInstrument {
+    function getStrikePrice(uint256 id) public pure returns (uint256) {
+        return 1;
+    }
+
+    function getExpiration(uint256 id) public view returns (uint256) {
+        return block.timestamp + 79 days;
+    }
+
+    function safeTransferFrom(address from, address to, uint256 id) public {}
+}
+
 contract BidPoolTest is HookProtocolTest {
     HookBidPool bidPool;
 
@@ -287,8 +299,8 @@ contract BidPoolTest is HookProtocolTest {
             priceSignerPkey,
             keccak256(
                 abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n32",
-                    keccak256(abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp))
+                    "\x19Ethereum Signed Message:\n96",
+                    abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp)
                 )
             )
         );
@@ -313,8 +325,8 @@ contract BidPoolTest is HookProtocolTest {
             bidderPkey,
             keccak256(
                 abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n32",
-                    keccak256(abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp))
+                    "\x19Ethereum Signed Message:\n96",
+                    abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp)
                 )
             )
         );
@@ -349,7 +361,7 @@ contract BidPoolTest is HookProtocolTest {
     function _makeOrderClaim(bytes32 orderHash) internal returns (HookBidPool.OrderValidityOracleClaim memory) {
         bytes memory claimEncoded = abi.encode(orderHash, block.timestamp + 30);
 
-        bytes32 claimHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(claimEncoded)));
+        bytes32 claimHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n64", (claimEncoded)));
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(orderSignerPkey, claimHash);
 
@@ -513,7 +525,7 @@ contract BidPoolTest is HookProtocolTest {
         PoolOrders.Order memory order = _makeDefaultOrder();
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
-        vm.expectRevert("Option is too close to expiry");
+        vm.expectRevert("Option is too close to or past expiry");
         bidPool.sellOption(
             order,
             signature,
@@ -672,7 +684,7 @@ contract BidPoolTest is HookProtocolTest {
 
         (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
-        vm.expectRevert("Option is too close to expiry");
+        vm.expectRevert("Option is too close to or past expiry");
         bidPool.sellOption(
             order,
             signature,
@@ -1058,5 +1070,25 @@ contract BidPoolTest is HookProtocolTest {
         );
 
         assertEq(calls.ownerOf(optionId), address(bidder), "Option should be transferred to the bidder");
+    }
+
+    function testZach__StealWithFakeInstrument() public {
+        vm.warp(block.timestamp + 20 days);
+        PoolOrders.Order memory order = _makeDefaultOrder();
+        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+
+        address fakeInstrument = address(new FakeInstrument());
+
+        console.log("Victim Starting Balance: ", weth.balanceOf(address(bidder)));
+        console.log("Attacker Starting Balance: ", weth.balanceOf(address(seller)));
+
+        vm.prank(address(seller));
+        vm.expectRevert();
+        bidPool.sellOption(
+            order, signature, _makeAssetPriceClaim(50 ether), _makeOrderClaim(orderHash), 47.5 ether, fakeInstrument, 0
+        );
+
+        console.log("Victim Ending Balance: ", weth.balanceOf(address(bidder)));
+        console.log("Attacker Ending Balance: ", weth.balanceOf(address(seller)));
     }
 }

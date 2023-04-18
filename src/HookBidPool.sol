@@ -243,13 +243,11 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         /// The role admin is also set to the role itself, such that
         /// the deployer cannot unilaterally reassign the roles.
         _grantRole(ORACLE_ROLE, _initialAdmin);
-        _setRoleAdmin(ORACLE_ROLE, ORACLE_ROLE);
         _grantRole(PAUSER_ROLE, _initialAdmin);
-        _setRoleAdmin(PAUSER_ROLE, PAUSER_ROLE);
         _grantRole(PROTOCOL_ROLE, _initialAdmin);
-        _setRoleAdmin(PROTOCOL_ROLE, PROTOCOL_ROLE);
         _grantRole(FEES_ROLE, _initialAdmin);
-        _setRoleAdmin(FEES_ROLE, FEES_ROLE);
+        _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
+        _revokeRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         /// emit events to make it easier for off chain indexers to
         /// track contract state from inception
@@ -399,8 +397,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     {
         bytes memory claimEncoded = abi.encode(orderHash, claim.goodTilTimestamp);
 
-        bytes32 claimHash = keccak256(claimEncoded);
-        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", claimHash));
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n64", claimEncoded));
 
         address signer = ecrecover(prefixedHash, claim.v, claim.r, claim.s);
 
@@ -421,8 +418,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         bytes memory claimEncoded =
             abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp);
 
-        bytes32 claimHash = keccak256(claimEncoded);
-        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", claimHash));
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n96", claimEncoded));
 
         address signer = ecrecover(prefixedHash, claim.v, claim.r, claim.s);
 
@@ -515,7 +511,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         /// even if the order technically allows it, make sure this pool cannot be used for trading
         /// expired options.
         /// This check also ensures that the option is not expired because minOptionDuration is positive
-        require(block.timestamp + order.minOptionDuration < expiry, "Option is too close to expiry");
+        require(block.timestamp + order.minOptionDuration < expiry, "Option is too close to or past expiry");
         require(
             order.maxOptionDuration == 0 || block.timestamp + order.maxOptionDuration > expiry,
             "Option is too far from expiry"
