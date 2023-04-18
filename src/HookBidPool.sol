@@ -268,7 +268,6 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// @param assetPrice the price of the underlying asset, signed off-chain by the oracle
     /// @param orderValidityOracleClaim the claim that the order is still valid, signed off-chain by the oracle
     /// @param saleProceeds the proceeds from the sale desired by the filler/caller, denominated in the quote asset
-    /// @param optionInstrumentAddress the address of the Hook option instrument contract
     /// @param optionId the id of the option token
     ///
     /// @dev the optionInstrumentAddress must be trusted by the orderer (maker) when signing to be related
@@ -289,27 +288,28 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         AssetPriceClaim calldata assetPrice,
         OrderValidityOracleClaim calldata orderValidityOracleClaim,
         uint256 saleProceeds,
-        address optionInstrumentAddress,
         uint256 optionId
     ) external nonReentrant whenNotPaused {
         // input validity checks
-        require(order.optionMarketAddress == optionInstrumentAddress, "order not fillable with this option");
         bytes32 eip712hash = _getEIP712Hash(PoolOrders.getPoolOrderStructHash(order));
         (uint256 expiry, uint256 strikePrice) = _performSellOptionOrderChecks(
-            order, eip712hash, orderSignature, assetPrice, orderValidityOracleClaim, optionInstrumentAddress, optionId
+            order, eip712hash, orderSignature, assetPrice, orderValidityOracleClaim, optionId
         );
         (uint256 ask, uint256 bid) = _computeOptionAskAndBid(order, assetPrice, expiry, strikePrice, saleProceeds);
 
         require(bid >= ask, "order not high enough for the ask");
 
-        IERC721(optionInstrumentAddress).safeTransferFrom(msg.sender, order.maker, optionId);
+        IERC721(order.optionMarketAddress).safeTransferFrom(msg.sender, order.maker, optionId);
         IERC20(weth).safeTransferFrom(order.maker, msg.sender, saleProceeds);
         IERC20(weth).safeTransferFrom(order.maker, feeRecipient, ask - saleProceeds);
 
         // update order fills
         orderFills[eip712hash] += 1;
+        
+        // this address must be factored out to resolve a stack too deep error
+        address market = order.optionMarketAddress;
         emit OrderFilled(
-            order.maker, msg.sender, eip712hash, saleProceeds, ask - saleProceeds, optionInstrumentAddress, optionId
+            order.maker, msg.sender, eip712hash, saleProceeds, ask - saleProceeds, market, optionId
             );
     }
 
@@ -478,7 +478,6 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         Signatures.Signature calldata orderSignature,
         AssetPriceClaim calldata assetPrice,
         OrderValidityOracleClaim calldata orderValidityOracleClaim,
-        address optionInstrumentAddress,
         uint256 optionId
     ) internal returns (uint256 expiry, uint256 strikePrice) {
         /// validate the signature from the order validity oracle
@@ -503,11 +502,11 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         require(order.orderExpiry > block.timestamp, "Order is expired");
         require(order.direction == PoolOrders.OrderDirection.BUY, "Order is not a buy order");
 
-        IHookOption hookOption = IHookOption(optionInstrumentAddress);
+        IHookOption hookOption = IHookOption(order.optionMarketAddress);
         strikePrice = hookOption.getStrikePrice(optionId);
         expiry = hookOption.getExpiration(optionId);
 
-        _validateOptionProperties(order, optionInstrumentAddress, optionId);
+        _validateOptionProperties(order, optionId);
         /// even if the order technically allows it, make sure this pool cannot be used for trading
         /// expired options.
         /// This check also ensures that the option is not expired because minOptionDuration is positive
@@ -553,7 +552,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         }
     }
 
-    function _validateOptionProperties(PoolOrders.Order memory order, address optionInstrument, uint256 optionId)
+    function _validateOptionProperties(PoolOrders.Order memory order, uint256 optionId)
         internal
         view
     {
@@ -572,7 +571,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
 
                 // Call the property validator and throw a descriptive error
                 // if the call reverts.
-                try property.propertyValidator.validateProperty(optionInstrument, optionId, property.propertyData) {}
+                try property.propertyValidator.validateProperty(order.optionMarketAddress, optionId, property.propertyData) {}
                 catch {
                     revert("Property validation failed for the provided optionId");
                 }

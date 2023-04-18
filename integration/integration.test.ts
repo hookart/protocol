@@ -3614,7 +3614,6 @@ describe("VolBidPool", function () {
           assetPriceClaim,
           orderValidityClaim,
           BigNumber.from("14"),
-          calls.address,
           BigNumber.from(optionTokenId)
         );
     });
@@ -3740,7 +3739,6 @@ describe("VolBidPool", function () {
           assetPriceClaim,
           orderValidityClaim,
           BigNumber.from("14"),
-          calls.address,
           BigNumber.from(optionTokenId)
         );
     });
@@ -3855,7 +3853,6 @@ describe("VolBidPool", function () {
           assetPriceClaim,
           orderValidityClaim,
           BigNumber.from("14"),
-          calls.address,
           BigNumber.from(optionTokenId)
         );
     });

@@ -410,7 +410,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
 
@@ -446,7 +445,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -470,7 +468,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.0000001 ether,
-            address(calls),
             optionId
         );
     }
@@ -509,7 +506,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -532,7 +528,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -555,7 +550,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -578,7 +572,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -601,7 +594,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
 
@@ -617,7 +609,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
         uint256 finalBalanceBidder = weth.balanceOf(bidder);
@@ -652,7 +643,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
 
@@ -668,7 +658,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -691,7 +680,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -714,7 +702,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -737,7 +724,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -760,7 +746,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.1 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
 
@@ -770,7 +755,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.35 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -797,7 +781,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.3 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -822,7 +805,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.3 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
 
@@ -832,7 +814,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.29 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId1
         );
 
@@ -843,7 +824,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.3 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId1
         );
     }
@@ -875,7 +855,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -906,7 +885,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -937,7 +915,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeInvalidOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -968,7 +945,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeInvalidAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -987,7 +963,7 @@ contract BidPoolTest is HookProtocolTest {
         vm.warp(block.timestamp + 1 days);
         vm.expectRevert("Claim is expired");
         bidPool.sellOption(
-            order, signature, _makeAssetPriceClaim(0.2 ether), claim, 0.01 ether, address(calls), optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), claim, 0.01 ether,  optionId
         );
     }
 
@@ -1011,7 +987,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
     }
@@ -1037,7 +1012,6 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
 
@@ -1065,30 +1039,10 @@ contract BidPoolTest is HookProtocolTest {
             _makeAssetPriceClaim(0.2 ether),
             _makeOrderClaim(orderHash),
             0.01 ether,
-            address(calls),
             optionId
         );
 
         assertEq(calls.ownerOf(optionId), address(bidder), "Option should be transferred to the bidder");
     }
 
-    function testZach__StealWithFakeInstrument() public {
-        vm.warp(block.timestamp + 20 days);
-        PoolOrders.Order memory order = _makeDefaultOrder();
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
-
-        address fakeInstrument = address(new FakeInstrument());
-
-        console.log("Victim Starting Balance: ", weth.balanceOf(address(bidder)));
-        console.log("Attacker Starting Balance: ", weth.balanceOf(address(seller)));
-
-        vm.prank(address(seller));
-        vm.expectRevert();
-        bidPool.sellOption(
-            order, signature, _makeAssetPriceClaim(50 ether), _makeOrderClaim(orderHash), 47.5 ether, fakeInstrument, 0
-        );
-
-        console.log("Victim Ending Balance: ", weth.balanceOf(address(bidder)));
-        console.log("Attacker Ending Balance: ", weth.balanceOf(address(seller)));
-    }
 }
