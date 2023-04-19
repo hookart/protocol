@@ -172,12 +172,6 @@ export async function signVolOrder(
   hookProtocol: string // Hook Protocol
 ) {
   const { domain, types, value } = genVolOrderTypedData(order, hookProtocol);
-  const signature = await signTypedData(
-    domain,
-    types,
-    value,
-    signer,
-    order.maker
-  );
-  return signature;
+  const rawSignature = await signer._signTypedData(domain, types, value);
+  return rawSignature;
 }

@@ -40,6 +40,8 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import "./lib/PoolOrders.sol";
 import "./lib/Signatures.sol";
@@ -83,9 +85,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         uint256 priceObservedTimestamp;
         /// @notice the last timestamp where this claim is still valid
         uint256 goodTilTimestamp;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
+        bytes signature;
     }
 
     /// @notice Ensure that the order was not canceled as of some off-chain verified lookback
@@ -95,9 +95,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         bytes32 orderHash;
         /// @notice the timestamp of the last block (inclusive) where this claim is considered valid
         uint256 goodTilTimestamp;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
+        bytes signature;
     }
 
     /// @notice event emitted when the paused state of the contract changes\
@@ -286,7 +284,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// If they do this, the protocol won't earn extra fees -- that savings is passed on to the buyer.
     function sellOption(
         PoolOrders.Order calldata order,
-        Signatures.Signature calldata orderSignature,
+        bytes calldata orderSignature,
         AssetPriceClaim calldata assetPrice,
         OrderValidityOracleClaim calldata orderValidityOracleClaim,
         uint256 saleProceeds,
@@ -394,13 +392,12 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         internal
         view
     {
-        bytes memory claimEncoded = abi.encode(orderHash, claim.goodTilTimestamp);
+        bytes32 prefixedHash = ECDSA.toEthSignedMessageHash(abi.encode(orderHash, claim.goodTilTimestamp));
 
-        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n64", claimEncoded));
-
-        address signer = ecrecover(prefixedHash, claim.v, claim.r, claim.s);
-
-        require(signer == orderValidityOracleSigner, "Claim is not signed by the orderValidityOracle");
+        require(
+            SignatureChecker.isValidSignatureNow(orderValidityOracleSigner, prefixedHash, claim.signature),
+            "Claim is not signed by the orderValidityOracle"
+        );
         require(claim.goodTilTimestamp > block.timestamp, "Claim is expired");
     }
 
@@ -414,14 +411,14 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     ///
     /// @param claim the claim to be verified
     function _validateAssetPriceClaim(AssetPriceClaim calldata claim) internal view {
-        bytes memory claimEncoded =
-            abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp);
+        bytes32 prefixedHash = ECDSA.toEthSignedMessageHash(
+            abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp)
+        );
 
-        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n96", claimEncoded));
-
-        address signer = ecrecover(prefixedHash, claim.v, claim.r, claim.s);
-
-        require(signer == priceOracleSigner, "Claim is not signed by the priceOracle");
+        require(
+            SignatureChecker.isValidSignatureNow(priceOracleSigner, prefixedHash, claim.signature),
+            "Claim is not signed by the priceOracle"
+        );
         require(claim.goodTilTimestamp > block.timestamp, "Claim is expired");
     }
 
@@ -433,16 +430,16 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// @param maker the maker of the order, who should have signed the order
     /// @param orderSignature the signature of the order
     /// @dev it is essential that the correct order maker is passed in at this step
-    function _validateOrderSignature(bytes32 hash, address maker, Signatures.Signature calldata orderSignature)
-        internal
-        view
-    {
-        address signer = ecrecover(hash, orderSignature.v, orderSignature.r, orderSignature.s);
-        require(signer != address(0), "Order signature is invalid"); // sanity check - maker should not be 0
-        if (signer == maker) {
+    function _validateOrderSignature(bytes32 hash, address maker, bytes calldata orderSignature) internal view {
+        if (SignatureChecker.isValidSignatureNow(maker, hash, orderSignature)) {
             // if the order maker signed the order, than accept the signer's signature
             return;
         }
+
+        // Lookup the signer to determine who signed the message if it was not the maker.
+        (address signer, ECDSA.RecoverError err) = ECDSA.tryRecover(hash, orderSignature);
+        require(err == ECDSA.RecoverError.NoError, "Order signature is invalid");
+
         // If the maker has delegated control of this contract to a different signer,
         // then accept this signed order as a valid signature.
         require(
@@ -474,7 +471,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     function _performSellOptionOrderChecks(
         PoolOrders.Order calldata order,
         bytes32 eip712hash,
-        Signatures.Signature calldata orderSignature,
+        bytes calldata orderSignature,
         AssetPriceClaim calldata assetPrice,
         OrderValidityOracleClaim calldata orderValidityOracleClaim,
         uint256 optionId
