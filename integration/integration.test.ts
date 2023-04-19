@@ -3519,7 +3519,7 @@ describe("VolBidPool", function () {
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
-      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 70);
 
       // Mint call option
       const createCall = await calls
@@ -3545,51 +3545,43 @@ describe("VolBidPool", function () {
         maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
         maxPriceSignalAge: "0",
         optionMarketAddress: calls.address,
-        impliedVolBips: "5000",
+        impliedVolBips: "10000",
         nftProperties: [],
         skewDecimal: "0",
         riskFreeRateBips: "500",
       };
 
-      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+      const signedOrder = await signVolOrder(volOrder, buyer, bidPool.address);
 
       const { types, domain, value } = genVolOrderTypedData(
         volOrder,
-        protocol.address
+        bidPool.address
       );
 
       const orderHash = _TypedDataEncoder.hash(domain, types, value);
 
       const orderValiditySignature = await admin.signMessage(
         ethers.utils.arrayify(
-          ethers.utils.solidityKeccak256(
+          ethers.utils.defaultAbiCoder.encode(
             ["bytes32", "uint256"],
             [orderHash, expiration]
           )
         )
       );
 
-      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
+      const sig0 = orderValiditySignature;
 
       const orderValidityClaim = {
         orderHash: orderHash,
         goodTilTimestamp: expiration,
-        v,
-        r,
-        s,
+        signature: sig0,
       };
 
-      const {
-        v: v2,
-        r: r2,
-        s: s2,
-      } = ethers.utils.splitSignature(
-        await admin.signMessage(
-          ethers.utils.arrayify(
-            ethers.utils.solidityKeccak256(
-              ["uint256", "uint256", "uint256"],
-              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
-            )
+      const sig1 = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.defaultAbiCoder.encode(
+            ["uint256", "uint256", "uint256"],
+            ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
           )
         )
       );
@@ -3598,9 +3590,7 @@ describe("VolBidPool", function () {
         assetPriceInWei: "900",
         priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
         goodTilTimestamp: expiration,
-        v: v2,
-        r: r2,
-        s: s2,
+        signature: sig1,
       };
 
       calls.connect(writer).setApprovalForAll(bidPool.address, true);
@@ -3614,7 +3604,6 @@ describe("VolBidPool", function () {
           assetPriceClaim,
           orderValidityClaim,
           BigNumber.from("14"),
-          calls.address,
           BigNumber.from(optionTokenId)
         );
     });
@@ -3623,7 +3612,7 @@ describe("VolBidPool", function () {
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
-      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 70);
 
       // Mint call option
       const createCall = await calls
@@ -3655,7 +3644,7 @@ describe("VolBidPool", function () {
         maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
         maxPriceSignalAge: "0",
         optionMarketAddress: calls.address,
-        impliedVolBips: "5000",
+        impliedVolBips: "10000",
         nftProperties: [
           {
             propertyValidator: validator.address,
@@ -3677,45 +3666,35 @@ describe("VolBidPool", function () {
         riskFreeRateBips: "500",
       };
 
-      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+      const signedOrder = await signVolOrder(volOrder, buyer, bidPool.address);
 
       const { types, domain, value } = genVolOrderTypedData(
         volOrder,
-        protocol.address
+        bidPool.address
       );
 
       const orderHash = _TypedDataEncoder.hash(domain, types, value);
 
       const orderValiditySignature = await admin.signMessage(
         ethers.utils.arrayify(
-          ethers.utils.solidityKeccak256(
+          ethers.utils.defaultAbiCoder.encode(
             ["bytes32", "uint256"],
             [orderHash, expiration]
           )
         )
       );
 
-      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
-
       const orderValidityClaim = {
         orderHash: orderHash,
         goodTilTimestamp: expiration,
-        v,
-        r,
-        s,
+        signature: orderValiditySignature,
       };
 
-      const {
-        v: v2,
-        r: r2,
-        s: s2,
-      } = ethers.utils.splitSignature(
-        await admin.signMessage(
-          ethers.utils.arrayify(
-            ethers.utils.solidityKeccak256(
-              ["uint256", "uint256", "uint256"],
-              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
-            )
+      const assetSignature = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.defaultAbiCoder.encode(
+            ["uint256", "uint256", "uint256"],
+            ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
           )
         )
       );
@@ -3724,9 +3703,7 @@ describe("VolBidPool", function () {
         assetPriceInWei: "900",
         priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
         goodTilTimestamp: expiration,
-        v: v2,
-        r: r2,
-        s: s2,
+        signature: assetSignature,
       };
 
       calls.connect(writer).setApprovalForAll(bidPool.address, true);
@@ -3740,7 +3717,6 @@ describe("VolBidPool", function () {
           assetPriceClaim,
           orderValidityClaim,
           BigNumber.from("14"),
-          calls.address,
           BigNumber.from(optionTokenId)
         );
     });
@@ -3749,7 +3725,7 @@ describe("VolBidPool", function () {
       const blockNumber = await ethers.provider.getBlockNumber();
       const block = await ethers.provider.getBlock(blockNumber);
       const blockTimestamp = block.timestamp;
-      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 5);
+      const expiration = Math.floor(blockTimestamp + SECS_IN_A_DAY * 70);
 
       // Mint call option
       const createCall = await calls
@@ -3781,7 +3757,7 @@ describe("VolBidPool", function () {
         maxOptionDuration: (SECS_IN_A_DAY * 80).toString(),
         maxPriceSignalAge: "0",
         optionMarketAddress: calls.address,
-        impliedVolBips: "5000",
+        impliedVolBips: "10000",
         nftProperties: [
           {
             propertyValidator: "0x0000000000000000000000000000000000000000",
@@ -3792,56 +3768,43 @@ describe("VolBidPool", function () {
         riskFreeRateBips: "500",
       };
 
-      const signedOrder = await signVolOrder(volOrder, buyer, protocol.address);
+      const signedOrder = await signVolOrder(volOrder, buyer, bidPool.address);
 
       const { types, domain, value } = genVolOrderTypedData(
         volOrder,
-        protocol.address
+        bidPool.address
       );
 
       const orderHash = _TypedDataEncoder.hash(domain, types, value);
 
       const orderValiditySignature = await admin.signMessage(
         ethers.utils.arrayify(
-          ethers.utils.solidityKeccak256(
+          ethers.utils.defaultAbiCoder.encode(
             ["bytes32", "uint256"],
             [orderHash, expiration]
           )
         )
       );
 
-      const { v, r, s } = ethers.utils.splitSignature(orderValiditySignature);
-
       const orderValidityClaim = {
         orderHash: orderHash,
         goodTilTimestamp: expiration,
-        v,
-        r,
-        s,
+        signature: orderValiditySignature,
       };
 
-      const {
-        v: v2,
-        r: r2,
-        s: s2,
-      } = ethers.utils.splitSignature(
-        await admin.signMessage(
-          ethers.utils.arrayify(
-            ethers.utils.solidityKeccak256(
-              ["uint256", "uint256", "uint256"],
-              ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
-            )
+      const assetSignature = await admin.signMessage(
+        ethers.utils.arrayify(
+          ethers.utils.defaultAbiCoder.encode(
+            ["uint256", "uint256", "uint256"],
+            ["900", Math.floor(blockTimestamp - 10).toString(), expiration]
           )
         )
       );
-
       const assetPriceClaim = {
         assetPriceInWei: "900",
         priceObservedTimestamp: Math.floor(blockTimestamp - 10).toString(),
         goodTilTimestamp: expiration,
-        v: v2,
-        r: r2,
-        s: s2,
+        signature: assetSignature,
       };
 
       calls.connect(writer).setApprovalForAll(bidPool.address, true);
@@ -3855,7 +3818,6 @@ describe("VolBidPool", function () {
           assetPriceClaim,
           orderValidityClaim,
           BigNumber.from("14"),
-          calls.address,
           BigNumber.from(optionTokenId)
         );
     });

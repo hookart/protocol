@@ -39,12 +39,14 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import "./lib/PoolOrders.sol";
 import "./lib/Signatures.sol";
 import "./lib/lyra/BlackScholes.sol";
 
-import "./mixin/EIP712.sol";
 
 import "./interfaces/IHookProtocol.sol";
 import "./interfaces/IHookOption.sol";
@@ -83,9 +85,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         uint256 priceObservedTimestamp;
         /// @notice the last timestamp where this claim is still valid
         uint256 goodTilTimestamp;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
+        bytes signature;
     }
 
     /// @notice Ensure that the order was not canceled as of some off-chain verified lookback
@@ -95,9 +95,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         bytes32 orderHash;
         /// @notice the timestamp of the last block (inclusive) where this claim is considered valid
         uint256 goodTilTimestamp;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
+        bytes signature;
     }
 
     /// @notice event emitted when the paused state of the contract changes\
@@ -179,9 +177,13 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     mapping(bytes32 => bool) orderCancellations;
 
     /// CONSTANTS ///
+    uint256 constant UNIT = 10 ** 18;
 
     // 1% = 0.01, 100 bips = 1%, 10000 bps = 100% == 1
-    uint256 constant BPS_TO_DECIMAL = 10e14;
+    uint256 constant BPS = 10000;
+
+    // 1e14;
+    uint256 constant BPS_TO_DECIMAL = UNIT / BPS;
 
     /// https://github.com/delegatecash/delegation-registry
     IDelegationRegistry constant DELEGATE_CASH_REGISTRY =
@@ -220,14 +222,17 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         uint64 _feeBips,
         address _feeRecipient,
         address _protocol
-    ) {
+    ) EIP712("Hook", "1.0.0") {
+        require(_priceOracleSigner != address(0), "Price oracle signer cannot be zero address");
+        require(_orderValidityOracleSigner != address(0), "Order validity oracle signer cannot be zero address");
+        require(_initialAdmin != address(0), "Initial admin cannot be zero address");
+        require(_feeRecipient != address(0), "Fee recipient cannot be zero address");
         weth = _weth;
         priceOracleSigner = _priceOracleSigner;
         orderValidityOracleSigner = _orderValidityOracleSigner;
         feeBips = _feeBips;
         feeRecipient = _feeRecipient;
         protocol = IHookProtocol(_protocol);
-        setAddressForEipDomain(_protocol);
 
         /// set the contract to be initially paused after deploy.
         /// it should not be unpaused until the relevant roles have been
@@ -239,13 +244,10 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         /// The role admin is also set to the role itself, such that
         /// the deployer cannot unilaterally reassign the roles.
         _grantRole(ORACLE_ROLE, _initialAdmin);
-        _setRoleAdmin(ORACLE_ROLE, ORACLE_ROLE);
         _grantRole(PAUSER_ROLE, _initialAdmin);
-        _setRoleAdmin(PAUSER_ROLE, PAUSER_ROLE);
         _grantRole(PROTOCOL_ROLE, _initialAdmin);
-        _setRoleAdmin(PROTOCOL_ROLE, PROTOCOL_ROLE);
         _grantRole(FEES_ROLE, _initialAdmin);
-        _setRoleAdmin(FEES_ROLE, FEES_ROLE);
+        _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
 
         /// emit events to make it easier for off chain indexers to
         /// track contract state from inception
@@ -266,7 +268,6 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// @param assetPrice the price of the underlying asset, signed off-chain by the oracle
     /// @param orderValidityOracleClaim the claim that the order is still valid, signed off-chain by the oracle
     /// @param saleProceeds the proceeds from the sale desired by the filler/caller, denominated in the quote asset
-    /// @param optionInstrumentAddress the address of the Hook option instrument contract
     /// @param optionId the id of the option token
     ///
     /// @dev the optionInstrumentAddress must be trusted by the orderer (maker) when signing to be related
@@ -283,31 +284,30 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// If they do this, the protocol won't earn extra fees -- that savings is passed on to the buyer.
     function sellOption(
         PoolOrders.Order calldata order,
-        Signatures.Signature calldata orderSignature,
+        bytes calldata orderSignature,
         AssetPriceClaim calldata assetPrice,
         OrderValidityOracleClaim calldata orderValidityOracleClaim,
         uint256 saleProceeds,
-        address optionInstrumentAddress,
         uint256 optionId
     ) external nonReentrant whenNotPaused {
         // input validity checks
-        bytes32 eip712hash = _getEIP712Hash(PoolOrders.getPoolOrderStructHash(order));
+        bytes32 eip712hash =_hashTypedDataV4(PoolOrders.getPoolOrderStructHash(order));
         (uint256 expiry, uint256 strikePrice) = _performSellOptionOrderChecks(
-            order, eip712hash, orderSignature, assetPrice, orderValidityOracleClaim, optionInstrumentAddress, optionId
+            order, eip712hash, orderSignature, assetPrice, orderValidityOracleClaim, optionId
         );
         (uint256 ask, uint256 bid) = _computeOptionAskAndBid(order, assetPrice, expiry, strikePrice, saleProceeds);
 
         require(bid >= ask, "order not high enough for the ask");
 
-        IERC721(optionInstrumentAddress).safeTransferFrom(msg.sender, order.maker, optionId);
+        address market = order.optionMarketAddress;
+        IERC721(market).safeTransferFrom(msg.sender, order.maker, optionId);
         IERC20(weth).safeTransferFrom(order.maker, msg.sender, saleProceeds);
         IERC20(weth).safeTransferFrom(order.maker, feeRecipient, ask - saleProceeds);
 
         // update order fills
         orderFills[eip712hash] += 1;
-        emit OrderFilled(
-            order.maker, msg.sender, eip712hash, saleProceeds, ask - saleProceeds, optionInstrumentAddress, optionId
-            );
+
+        emit OrderFilled(order.maker, msg.sender, eip712hash, saleProceeds, ask - saleProceeds, market, optionId);
     }
 
     /// @notice Function to allow a maker to cancel all examples of an order that they've already signed.
@@ -320,7 +320,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// as a result of the event that motivated the pause.
     function cancelOrder(PoolOrders.Order calldata order) external {
         require(msg.sender == order.maker, "Only the order maker can cancel the order");
-        bytes32 eip712hash = _getEIP712Hash(PoolOrders.getPoolOrderStructHash(order));
+        bytes32 eip712hash = _hashTypedDataV4(PoolOrders.getPoolOrderStructHash(order));
         orderCancellations[eip712hash] = true;
         emit OrderCancelled(order.maker, eip712hash);
     }
@@ -328,23 +328,24 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// EXTERNAL ACCESS-CONTROLLED FUNCTIONS ///
 
     function setProtocol(address _protocol) external onlyRole(PROTOCOL_ROLE) {
-        setAddressForEipDomain(_protocol);
         protocol = IHookProtocol(_protocol);
         emit ProtocolAddressSet(_protocol);
     }
 
     function setPriceOracleSigner(address _priceOracleSigner) external onlyRole(ORACLE_ROLE) {
+        require(_priceOracleSigner != address(0), "Price oracle signer cannot be zero address");
         priceOracleSigner = _priceOracleSigner;
         emit PriceOracleSignerUpdated(_priceOracleSigner);
     }
 
     function setOrderValidityOracleSigner(address _orderValidityOracleSigner) external onlyRole(ORACLE_ROLE) {
+        require(_orderValidityOracleSigner != address(0), "Order validity oracle signer cannot be zero address");
         orderValidityOracleSigner = _orderValidityOracleSigner;
         emit OrderValidityOracleSignerUpdated(_orderValidityOracleSigner);
     }
 
     function setFeeBips(uint64 _feeBips) external onlyRole(FEES_ROLE) {
-        require(_feeBips <= 10000, "Fee bips over 10000");
+        require(_feeBips <= BPS, "Fee bips over 10000");
         feeBips = _feeBips;
         emit FeesUpdated(_feeBips);
     }
@@ -391,14 +392,12 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         internal
         view
     {
-        bytes memory claimEncoded = abi.encode(orderHash, claim.goodTilTimestamp);
+        bytes32 prefixedHash = ECDSA.toEthSignedMessageHash(abi.encode(orderHash, claim.goodTilTimestamp));
 
-        bytes32 claimHash = keccak256(claimEncoded);
-        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", claimHash));
-
-        address signer = ecrecover(prefixedHash, claim.v, claim.r, claim.s);
-
-        require(signer == orderValidityOracleSigner, "Claim is not signed by the orderValidityOracle");
+        require(
+            SignatureChecker.isValidSignatureNow(orderValidityOracleSigner, prefixedHash, claim.signature),
+            "Claim is not signed by the orderValidityOracle"
+        );
         require(claim.goodTilTimestamp > block.timestamp, "Claim is expired");
     }
 
@@ -412,15 +411,14 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     ///
     /// @param claim the claim to be verified
     function _validateAssetPriceClaim(AssetPriceClaim calldata claim) internal view {
-        bytes memory claimEncoded =
-            abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp);
+        bytes32 prefixedHash = ECDSA.toEthSignedMessageHash(
+            abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp)
+        );
 
-        bytes32 claimHash = keccak256(claimEncoded);
-        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", claimHash));
-
-        address signer = ecrecover(prefixedHash, claim.v, claim.r, claim.s);
-
-        require(signer == priceOracleSigner, "Claim is not signed by the priceOracle");
+        require(
+            SignatureChecker.isValidSignatureNow(priceOracleSigner, prefixedHash, claim.signature),
+            "Claim is not signed by the priceOracle"
+        );
         require(claim.goodTilTimestamp > block.timestamp, "Claim is expired");
     }
 
@@ -432,16 +430,16 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// @param maker the maker of the order, who should have signed the order
     /// @param orderSignature the signature of the order
     /// @dev it is essential that the correct order maker is passed in at this step
-    function _validateOrderSignature(bytes32 hash, address maker, Signatures.Signature calldata orderSignature)
-        internal
-        view
-    {
-        address signer = ecrecover(hash, orderSignature.v, orderSignature.r, orderSignature.s);
-        require(signer != address(0), "Order signature is invalid"); // sanity check - maker should not be 0
-        if (signer == maker) {
+    function _validateOrderSignature(bytes32 hash, address maker, bytes calldata orderSignature) internal view {
+        if (SignatureChecker.isValidSignatureNow(maker, hash, orderSignature)) {
             // if the order maker signed the order, than accept the signer's signature
             return;
         }
+
+        // Lookup the signer to determine who signed the message if it was not the maker.
+        (address signer, ECDSA.RecoverError err) = ECDSA.tryRecover(hash, orderSignature);
+        require(err == ECDSA.RecoverError.NoError, "Order signature is invalid");
+
         // If the maker has delegated control of this contract to a different signer,
         // then accept this signed order as a valid signature.
         require(
@@ -473,10 +471,9 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     function _performSellOptionOrderChecks(
         PoolOrders.Order calldata order,
         bytes32 eip712hash,
-        Signatures.Signature calldata orderSignature,
+        bytes calldata orderSignature,
         AssetPriceClaim calldata assetPrice,
         OrderValidityOracleClaim calldata orderValidityOracleClaim,
-        address optionInstrumentAddress,
         uint256 optionId
     ) internal returns (uint256 expiry, uint256 strikePrice) {
         /// validate the signature from the order validity oracle
@@ -501,15 +498,15 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         require(order.orderExpiry > block.timestamp, "Order is expired");
         require(order.direction == PoolOrders.OrderDirection.BUY, "Order is not a buy order");
 
-        IHookOption hookOption = IHookOption(optionInstrumentAddress);
+        IHookOption hookOption = IHookOption(order.optionMarketAddress);
         strikePrice = hookOption.getStrikePrice(optionId);
         expiry = hookOption.getExpiration(optionId);
 
-        _validateOptionProperties(order, optionInstrumentAddress, optionId);
+        _validateOptionProperties(order, optionId);
         /// even if the order technically allows it, make sure this pool cannot be used for trading
         /// expired options.
-        require(expiry > block.timestamp, "Option is expired");
-        require(block.timestamp + order.minOptionDuration < expiry, "Option is too close to expiry");
+        /// This check also ensures that the option is not expired because minOptionDuration is positive
+        require(block.timestamp + order.minOptionDuration < expiry, "Option is too close to or past expiry");
         require(
             order.maxOptionDuration == 0 || block.timestamp + order.maxOptionDuration > expiry,
             "Option is too far from expiry"
@@ -519,7 +516,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         /// if one has been specified by the maker
         require(
             order.maxStrikePriceMultiple == 0
-                || (strikePrice - assetPrice.assetPriceInWei) * 10e18 / assetPrice.assetPriceInWei
+                || (strikePrice - assetPrice.assetPriceInWei) * UNIT / assetPrice.assetPriceInWei
                     < order.maxStrikePriceMultiple,
             "option is too far out of the money"
         );
@@ -532,7 +529,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         uint256 strikePrice,
         uint256 saleProceeds
     ) internal view returns (uint256 ask, uint256 bid) {
-        ask = (saleProceeds * (10000 + feeBips)) / 10000;
+        ask = (saleProceeds * (BPS + feeBips)) / BPS;
         uint256 decimalVol = _computeVolDecimalWithSkewDecimal(strikePrice, assetPrice.assetPriceInWei, order);
         int256 rateDecimal = int256(order.riskFreeRateBips * BPS_TO_DECIMAL);
         (uint256 callBid, uint256 putBid) = BlackScholes.optionPrices(
@@ -551,10 +548,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         }
     }
 
-    function _validateOptionProperties(PoolOrders.Order memory order, address optionInstrument, uint256 optionId)
-        internal
-        view
-    {
+    function _validateOptionProperties(PoolOrders.Order memory order, uint256 optionId) internal view {
         // If no properties are specified, the order is valid for any instrument.
         if (order.nftProperties.length == 0) {
             return;
@@ -570,8 +564,9 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
 
                 // Call the property validator and throw a descriptive error
                 // if the call reverts.
-                try property.propertyValidator.validateProperty(optionInstrument, optionId, property.propertyData) {}
-                catch {
+                try property.propertyValidator.validateProperty(
+                    order.optionMarketAddress, optionId, property.propertyData
+                ) {} catch {
                     revert("Property validation failed for the provided optionId");
                 }
             }

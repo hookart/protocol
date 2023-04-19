@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "./utils/base.t.sol";
+import { HookProtocolTest, HookProtocol } from "./utils/base.t.sol";
 import "./utils/mocks/PropertyValidator1.sol";
 import "./utils/mocks/PropertyValidatorReverts.sol";
 import "../HookBidPool.sol";
 import "../lib/PoolOrders.sol";
 
-import "../mixin/EIP712.sol";
+import { EIP712 as EIP712Legacy } from "../mixin/EIP712.sol";
 
-contract EIP712Imp is EIP712 {
+contract EIP712Imp is EIP712Legacy {
     constructor(address protocol) {
         setAddressForEipDomain(protocol);
     }
@@ -17,6 +17,18 @@ contract EIP712Imp is EIP712 {
     function hash(bytes32 hash) public view returns (bytes32) {
         return _getEIP712Hash(hash);
     }
+}
+
+contract FakeInstrument {
+    function getStrikePrice(uint256 id) public pure returns (uint256) {
+        return 1;
+    }
+
+    function getExpiration(uint256 id) public view returns (uint256) {
+        return block.timestamp + 79 days;
+    }
+
+    function safeTransferFrom(address from, address to, uint256 id) public {}
 }
 
 contract BidPoolTest is HookProtocolTest {
@@ -49,8 +61,6 @@ contract BidPoolTest is HookProtocolTest {
         setUpAddresses();
         setUpFullProtocol();
 
-        eip712 = new EIP712Imp(address(protocol));
-
         priceSignerPkey = 0xA11CE;
         orderSignerPkey = 0xB11CE;
         bidderPkey = 0xB0B;
@@ -62,6 +72,7 @@ contract BidPoolTest is HookProtocolTest {
         seller = address(0x45);
 
         bidPool = new HookBidPool(address(weth), admin, priceSigner, orderSigner, 500, feeRecipient, address(protocol));
+        eip712 = new EIP712Imp(address(bidPool));
         vm.prank(address(admin));
         bidPool.setPoolPaused(false);
         // add address to the allowlist for minting
@@ -263,15 +274,14 @@ contract BidPoolTest is HookProtocolTest {
         assertEq(put, 2042928280277283091, "bs should be 0");
     }
 
-    function _signOrder(PoolOrders.Order memory order, uint256 pkey)
-        internal
-        returns (Signatures.Signature memory, bytes32 hash)
-    {
+    function _signOrder(PoolOrders.Order memory order, uint256 pkey) internal returns (bytes memory, bytes32 hash) {
         bytes32 hash = PoolOrders.getPoolOrderStructHash(order);
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(pkey, eip712.hash(hash));
-        return (
-            Signatures.Signature({v: v, r: r, s: s, signatureType: Signatures.SignatureType.EIP712}), eip712.hash(hash)
-        );
+        return (combineSignature(v, r, s), eip712.hash(hash));
+    }
+
+    function combineSignature(uint8 v, bytes32 r, bytes32 s) internal pure returns (bytes memory) {
+        return abi.encodePacked(r, s, v);
     }
 
     function _makeAssetPriceClaim(uint256 assetPrice) internal returns (HookBidPool.AssetPriceClaim memory) {
@@ -279,24 +289,20 @@ contract BidPoolTest is HookProtocolTest {
             assetPriceInWei: assetPrice,
             priceObservedTimestamp: uint32(block.timestamp) - 30 seconds,
             goodTilTimestamp: uint32(block.timestamp) + 20 days,
-            v: 0,
-            r: 0,
-            s: 0
+            signature: new bytes(65)
         });
 
         (uint8 va, bytes32 ar, bytes32 sa) = vm.sign(
             priceSignerPkey,
             keccak256(
                 abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n32",
-                    keccak256(abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp))
+                    "\x19Ethereum Signed Message:\n96",
+                    abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp)
                 )
             )
         );
 
-        claim.v = va;
-        claim.r = ar;
-        claim.s = sa;
+        claim.signature = combineSignature(va, ar, sa);
         return claim;
     }
 
@@ -305,24 +311,20 @@ contract BidPoolTest is HookProtocolTest {
             assetPriceInWei: assetPrice,
             priceObservedTimestamp: uint32(block.timestamp) - 30 seconds,
             goodTilTimestamp: uint32(block.timestamp) + 20 days,
-            v: 0,
-            r: 0,
-            s: 0
+            signature: new bytes(65)
         });
 
         (uint8 va, bytes32 ar, bytes32 sa) = vm.sign(
             bidderPkey,
             keccak256(
                 abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n32",
-                    keccak256(abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp))
+                    "\x19Ethereum Signed Message:\n96",
+                    abi.encode(claim.assetPriceInWei, claim.priceObservedTimestamp, claim.goodTilTimestamp)
                 )
             )
         );
 
-        claim.v = va;
-        claim.r = ar;
-        claim.s = sa;
+        claim.signature = combineSignature(va, ar, sa);
         return claim;
     }
 
@@ -340,7 +342,7 @@ contract BidPoolTest is HookProtocolTest {
             maxOptionDuration: 80 days,
             maxPriceSignalAge: 0,
             optionMarketAddress: address(calls),
-            impliedVolBips: 5000,
+            impliedVolBips: 10000,
             nftProperties: properties,
             skewDecimal: 0,
             riskFreeRateBips: 500
@@ -350,14 +352,12 @@ contract BidPoolTest is HookProtocolTest {
     function _makeOrderClaim(bytes32 orderHash) internal returns (HookBidPool.OrderValidityOracleClaim memory) {
         bytes memory claimEncoded = abi.encode(orderHash, block.timestamp + 30);
 
-        bytes32 claimHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(claimEncoded)));
+        bytes32 claimHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n64", (claimEncoded)));
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(orderSignerPkey, claimHash);
 
         return HookBidPool.OrderValidityOracleClaim({
-            v: v,
-            r: r,
-            s: s,
+            signature: combineSignature(v, r, s),
             orderHash: orderHash,
             goodTilTimestamp: uint32(block.timestamp) + 30
         });
@@ -371,9 +371,7 @@ contract BidPoolTest is HookProtocolTest {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(bidderPkey, claimHash);
 
         return HookBidPool.OrderValidityOracleClaim({
-            v: v,
-            r: r,
-            s: s,
+            signature: combineSignature(v, r, s),
             orderHash: orderHash,
             goodTilTimestamp: uint32(block.timestamp) + 30
         });
@@ -382,25 +380,19 @@ contract BidPoolTest is HookProtocolTest {
     function testAcceptBid() public {
         vm.warp(block.timestamp + 20 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 30 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
         assertTrue(calls.ownerOf(optionId) == address(seller), "owner should own the option");
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         uint256 initialBalanceBidder = weth.balanceOf(address(bidder));
         uint256 initialBalanceSeller = weth.balanceOf(address(seller));
         uint256 initialBalanceFeeRecipient = weth.balanceOf(address(feeRecipient));
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         uint256 finalBalanceBidder = weth.balanceOf(bidder);
@@ -426,40 +418,29 @@ contract BidPoolTest is HookProtocolTest {
         PoolOrders.Order memory order = _makeDefaultOrder();
 
         order.impliedVolBips = 5; // set a very low vol for the order
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("order not high enough for the ask");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
     function testOrderExpired() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 90 days;
+        uint32 expiration = uint32(block.timestamp) + 40 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        order.impliedVolBips = 10000;
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.warp(block.timestamp + 3 weeks); // 1 week after order expiry
 
         vm.expectRevert("Order is expired");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.0000001 ether, optionId
         );
     }
 
@@ -488,17 +469,11 @@ contract BidPoolTest is HookProtocolTest {
             riskFreeRateBips: 500
         });
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("Order is not a buy order");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -511,17 +486,11 @@ contract BidPoolTest is HookProtocolTest {
         vm.warp(block.timestamp + 1 days + 1 hours); // warp to within 1 day of expiry
 
         PoolOrders.Order memory order = _makeDefaultOrder();
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
-        vm.expectRevert("Option is too close to expiry");
+        vm.expectRevert("Option is too close to or past expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -534,17 +503,11 @@ contract BidPoolTest is HookProtocolTest {
         // Max option duration is 80 days
 
         PoolOrders.Order memory order = _makeDefaultOrder();
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("Option is too far from expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -557,40 +520,28 @@ contract BidPoolTest is HookProtocolTest {
         // Max option duration is 80 days
 
         PoolOrders.Order memory order = _makeDefaultOrder();
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("Option is too far from expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
     function testAcceptSkewedBidDefaultBidTooLow() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 30 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        order.impliedVolBips = 1500; // set a low vol (15%) for order
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        order.impliedVolBips = 3000; // set a low vol (15%) for order
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("order not high enough for the ask");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         order.skewDecimal = 25000 * BPS_TO_DECIMAL; // will increase vol to 20%
@@ -600,13 +551,7 @@ contract BidPoolTest is HookProtocolTest {
         uint256 initialBalanceSeller = weth.balanceOf(address(seller));
         uint256 initialBalanceFeeRecipient = weth.balanceOf(address(feeRecipient));
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
         uint256 finalBalanceBidder = weth.balanceOf(bidder);
         uint256 finalBalanceSeller = weth.balanceOf(seller);
@@ -625,23 +570,17 @@ contract BidPoolTest is HookProtocolTest {
     function testBidTooLowWithFees() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 79 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        order.impliedVolBips = 1820; // set a very low vol for the order
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        order.impliedVolBips = 4625; // set a very low vol for the order
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("order not high enough for the ask");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         vm.stopPrank();
@@ -651,13 +590,7 @@ contract BidPoolTest is HookProtocolTest {
         // should work with no fees
         vm.prank(seller);
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -670,17 +603,11 @@ contract BidPoolTest is HookProtocolTest {
         PoolOrders.Order memory order = _makeDefaultOrder();
         order.minOptionDuration = 10 days;
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
-        vm.expectRevert("Option is too close to expiry");
+        vm.expectRevert("Option is too close to or past expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -693,17 +620,11 @@ contract BidPoolTest is HookProtocolTest {
         PoolOrders.Order memory order = _makeDefaultOrder();
         order.maxOptionDuration = 10 days;
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("Option is too far from expiry");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -716,17 +637,11 @@ contract BidPoolTest is HookProtocolTest {
         PoolOrders.Order memory order = _makeDefaultOrder();
         order.maxPriceSignalAge = 10;
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("Price signal is too old");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -737,29 +652,17 @@ contract BidPoolTest is HookProtocolTest {
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.4 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
-        order.maxStrikePriceMultiple = 5 * 10e17;
+        order.maxStrikePriceMultiple = 5e17;
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("option is too far out of the money");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.1 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.1 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.35 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.35 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -771,7 +674,7 @@ contract BidPoolTest is HookProtocolTest {
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.stopPrank();
         vm.prank(bidder);
@@ -780,13 +683,7 @@ contract BidPoolTest is HookProtocolTest {
         vm.prank(seller);
         vm.expectRevert("Order is cancelled");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.3 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.3 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -802,37 +699,19 @@ contract BidPoolTest is HookProtocolTest {
 
         PoolOrders.Order memory order = _makeDefaultOrder();
         order.size = 2;
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.3 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.3 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.29 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId1
+            order, signature, _makeAssetPriceClaim(0.29 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId1
         );
 
         vm.expectRevert("Order is filled");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.3 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId1
+            order, signature, _makeAssetPriceClaim(0.3 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId1
         );
     }
 
@@ -854,17 +733,11 @@ contract BidPoolTest is HookProtocolTest {
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, priceSignerPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, priceSignerPkey);
 
         vm.expectRevert("Order signature is invalid");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -881,21 +754,15 @@ contract BidPoolTest is HookProtocolTest {
             abi.encode(true)
         );
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 30 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, priceSignerPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, priceSignerPkey);
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -916,17 +783,11 @@ contract BidPoolTest is HookProtocolTest {
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, priceSignerPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, priceSignerPkey);
 
         vm.expectRevert("Claim is not signed by the orderValidityOracle");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeInvalidOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeInvalidOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -947,17 +808,11 @@ contract BidPoolTest is HookProtocolTest {
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, priceSignerPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("Claim is not signed by the priceOracle");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeInvalidAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeInvalidAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
@@ -969,14 +824,12 @@ contract BidPoolTest is HookProtocolTest {
 
         PoolOrders.Order memory order = _makeDefaultOrder();
 
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
         HookBidPool.OrderValidityOracleClaim memory claim = _makeOrderClaim(orderHash);
 
         vm.warp(block.timestamp + 1 days);
         vm.expectRevert("Claim is expired");
-        bidPool.sellOption(
-            order, signature, _makeAssetPriceClaim(0.2 ether), claim, 0.01 ether, address(calls), optionId
-        );
+        bidPool.sellOption(order, signature, _makeAssetPriceClaim(0.2 ether), claim, 0.01 ether, optionId);
     }
 
     function testPropertyValidatorReverts() public {
@@ -990,24 +843,18 @@ contract BidPoolTest is HookProtocolTest {
         IPropertyValidator validator = new PropertyValidatorReverts();
         order.nftProperties = new PoolOrders.Property[](1);
         order.nftProperties[0] = PoolOrders.Property(validator, abi.encodePacked());
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         vm.expectRevert("Property validation failed for the provided optionId");
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
     }
 
     function testPropertyValidatorSuccess() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 30 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
@@ -1017,16 +864,10 @@ contract BidPoolTest is HookProtocolTest {
         order.nftProperties[0] = PoolOrders.Property(
             validator, abi.encode(0, Types.Operation.Ignore, 0, Types.Operation.Ignore, false, 0, 0)
         );
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         assertEq(calls.ownerOf(optionId), address(bidder), "Option should be transferred to the bidder");
@@ -1035,7 +876,7 @@ contract BidPoolTest is HookProtocolTest {
     function testPropertyValidatorSuccessNullValidator() public {
         vm.warp(block.timestamp + 1 days);
         vm.startPrank(address(seller));
-        uint32 expiration = uint32(block.timestamp) + 5 days;
+        uint32 expiration = uint32(block.timestamp) + 20 days;
         uint256 optionId = calls.mintWithErc721(address(token), underlyingTokenId, 0.22 ether, expiration);
 
         PoolOrders.Order memory order = _makeDefaultOrder();
@@ -1045,18 +886,17 @@ contract BidPoolTest is HookProtocolTest {
         order.nftProperties[0] = PoolOrders.Property(
             IPropertyValidator(validator), abi.encode(0, Types.Operation.Ignore, 0, Types.Operation.Ignore, false, 0, 0)
         );
-        (Signatures.Signature memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
+        (bytes memory signature, bytes32 orderHash) = _signOrder(order, bidderPkey);
 
         bidPool.sellOption(
-            order,
-            signature,
-            _makeAssetPriceClaim(0.2 ether),
-            _makeOrderClaim(orderHash),
-            0.01 ether,
-            address(calls),
-            optionId
+            order, signature, _makeAssetPriceClaim(0.2 ether), _makeOrderClaim(orderHash), 0.01 ether, optionId
         );
 
         assertEq(calls.ownerOf(optionId), address(bidder), "Option should be transferred to the bidder");
+    }
+
+
+    function testEnsureConstructorDoesNotHaveAdminRole() public {
+        assertFalse(bidPool.hasRole(bidPool.DEFAULT_ADMIN_ROLE(), address(this)), "deployer should not have admin role");
     }
 }

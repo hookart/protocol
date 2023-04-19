@@ -91,7 +91,7 @@ library PoolOrders {
         /// @notice the maximum number of times this order can be filled
         uint8 size;
         OptionType optionType;
-        /// @notice bips in the money or out of the money an option can be filled at. For example, 5000 == 50% out of the money max for a call option. 0 means no max
+        /// @notice decimal in the money or out of the money an option can be filled at. For example, 5e17 == 50% out of the money max for a call option. 0 means no max
         uint256 maxStrikePriceMultiple;
         /// @notice minimum time from the time the order is filled that the option could expire. 0 means no min
         uint64 minOptionDuration;
@@ -153,7 +153,7 @@ library PoolOrders {
         );
     }
 
-    function getPoolOrderStructHash(Order memory poolOrder) internal view returns (bytes32) {
+    function getPoolOrderStructHash(Order memory poolOrder) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(_hashPt1(poolOrder), _hashPt2(poolOrder)));
     }
 }
