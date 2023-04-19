@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "./utils/base.t.sol";
+import { HookProtocolTest, HookProtocol } from "./utils/base.t.sol";
 import "./utils/mocks/PropertyValidator1.sol";
 import "./utils/mocks/PropertyValidatorReverts.sol";
 import "../HookBidPool.sol";
 import "../lib/PoolOrders.sol";
 
-import "../mixin/EIP712.sol";
+import { EIP712 as EIP712Legacy } from "../mixin/EIP712.sol";
 
-contract EIP712Imp is EIP712 {
+contract EIP712Imp is EIP712Legacy {
     constructor(address protocol) {
         setAddressForEipDomain(protocol);
     }

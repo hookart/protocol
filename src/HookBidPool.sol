@@ -39,12 +39,12 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 
 import "./lib/PoolOrders.sol";
 import "./lib/Signatures.sol";
 import "./lib/lyra/BlackScholes.sol";
 
-import "./mixin/EIP712.sol";
 
 import "./interfaces/IHookProtocol.sol";
 import "./interfaces/IHookOption.sol";
@@ -224,7 +224,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         uint64 _feeBips,
         address _feeRecipient,
         address _protocol
-    ) {
+    ) EIP712("Hook", "1.0.0") {
         require(_priceOracleSigner != address(0), "Price oracle signer cannot be zero address");
         require(_orderValidityOracleSigner != address(0), "Order validity oracle signer cannot be zero address");
         require(_initialAdmin != address(0), "Initial admin cannot be zero address");
@@ -235,7 +235,6 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         feeBips = _feeBips;
         feeRecipient = _feeRecipient;
         protocol = IHookProtocol(_protocol);
-        setAddressForEipDomain(address(this));
 
         /// set the contract to be initially paused after deploy.
         /// it should not be unpaused until the relevant roles have been
@@ -294,7 +293,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
         uint256 optionId
     ) external nonReentrant whenNotPaused {
         // input validity checks
-        bytes32 eip712hash = _getEIP712Hash(PoolOrders.getPoolOrderStructHash(order));
+        bytes32 eip712hash =_hashTypedDataV4(PoolOrders.getPoolOrderStructHash(order));
         (uint256 expiry, uint256 strikePrice) = _performSellOptionOrderChecks(
             order, eip712hash, orderSignature, assetPrice, orderValidityOracleClaim, optionId
         );
@@ -323,7 +322,7 @@ contract HookBidPool is EIP712, ReentrancyGuard, AccessControl {
     /// as a result of the event that motivated the pause.
     function cancelOrder(PoolOrders.Order calldata order) external {
         require(msg.sender == order.maker, "Only the order maker can cancel the order");
-        bytes32 eip712hash = _getEIP712Hash(PoolOrders.getPoolOrderStructHash(order));
+        bytes32 eip712hash = _hashTypedDataV4(PoolOrders.getPoolOrderStructHash(order));
         orderCancellations[eip712hash] = true;
         emit OrderCancelled(order.maker, eip712hash);
     }
